@@ -1,21 +1,25 @@
 {
-  "name": "BJJ Hub",
+  "name": "BJJ Hub - 柔術テクニック管理",
   "short_name": "BJJ Hub",
-  "description": "柔術テクニック管理アプリ",
+  "description": "柔術の技とコンビネーションを管理・記録するアプリ",
   "start_url": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#030712",
   "theme_color": "#3b82f6",
+  "categories": ["sports", "lifestyle"],
   "icons": [
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
