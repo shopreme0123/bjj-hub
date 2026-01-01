@@ -45,7 +45,7 @@ interface AppContextType {
   addTrainingLog: (log: Omit<TrainingLog, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => Promise<void>;
   updateTrainingLog: (id: string, updates: Partial<TrainingLog>) => Promise<void>;
   deleteTrainingLog: (id: string) => Promise<void>;
-  getLogByDate: (date: string) => TrainingLog | undefined;
+  getLogsByDate: (date: string) => TrainingLog[];
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -377,9 +377,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // 日付で練習日記を取得
-  const getLogByDate = (date: string) => {
-    return trainingLogs.find(l => l.training_date === date);
+  // 日付で練習日記を取得（複数対応）
+  const getLogsByDate = (date: string) => {
+    return trainingLogs.filter(l => l.training_date === date);
   };
 
   return (
@@ -407,7 +407,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         addTrainingLog,
         updateTrainingLog,
         deleteTrainingLog,
-        getLogByDate,
+        getLogsByDate,
       }}
     >
       {children}

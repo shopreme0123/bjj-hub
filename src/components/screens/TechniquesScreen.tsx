@@ -1,14 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter, ChevronRight, Star, Play, ChevronLeft, X, GitBranch, Trash2 } from 'lucide-react';
 import { useApp } from '@/lib/context';
+import { useToast } from '@/components/ui/Toast';
 import { Card } from '@/components/ui/Card';
 import { Header } from '@/components/ui/Header';
 import { Technique, TechniqueType, Flow } from '@/types';
 
-// カテゴリ定義（エクスポートしてフローエディタでも使用）
-export const techniqueCategories = [
+// デフォルトカテゴリ
+const defaultCategories = [
   { id: 'guard', name: 'ガード（ボトム）', icon: '🛡️' },
   { id: 'top', name: 'トップポジション', icon: '⬆️' },
   { id: 'stand', name: 'スタンド', icon: '🧍' },
@@ -17,16 +18,49 @@ export const techniqueCategories = [
   { id: 'back', name: 'バック', icon: '🔙' },
 ];
 
+// カテゴリ型
+export interface TechniqueCategory {
+  id: string;
+  name: string;
+  icon: string;
+}
+
+// エクスポート用（FlowsScreenで使用）
+export const techniqueCategories = defaultCategories;
+
 interface TechniquesScreenProps {
   onSelectTechnique: (technique: Technique) => void;
 }
 
 export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
   const { theme, techniques, addTechnique } = useApp();
+  const { showToast } = useToast();
   const [view, setView] = useState<'categories' | 'list'>('categories');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [customCategories, setCustomCategories] = useState<TechniqueCategory[]>([]);
+
+  // カスタムカテゴリをlocalStorageから読み込み
+  useEffect(() => {
+    const saved = localStorage.getItem('bjj-hub-custom-categories');
+    if (saved) {
+      setCustomCategories(JSON.parse(saved));
+    }
+  }, []);
+
+  // 全カテゴリ（デフォルト + カスタム）
+  const allCategories = [...defaultCategories, ...customCategories];
+
+  // カスタムカテゴリを保存
+  const saveCustomCategory = (category: TechniqueCategory) => {
+    const updated = [...customCategories, category];
+    setCustomCategories(updated);
+    localStorage.setItem('bjj-hub-custom-categories', JSON.stringify(updated));
+    showToast('カテゴリを追加しました');
+    setShowCategoryModal(false);
+  };
 
   // カテゴリでフィルタリング
   const filteredTechniques = techniques.filter(tech => {
@@ -38,7 +72,7 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
     const matchesCategory = !selectedCategory || 
       tech.category === selectedCategory ||
       tech.tags.some(tag => {
-        const cat = techniqueCategories.find(c => c.id === selectedCategory);
+        const cat = allCategories.find(c => c.id === selectedCategory);
         return cat && tag.includes(cat.name);
       });
     
@@ -50,13 +84,13 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
     return techniques.filter(t => 
       t.category === categoryId || 
       t.tags.some(tag => {
-        const cat = techniqueCategories.find(c => c.id === categoryId);
+        const cat = allCategories.find(c => c.id === categoryId);
         return cat && tag.includes(cat.name);
       })
     ).length;
   };
 
-  const handleAddTechnique = (data: {
+  const handleAddTechnique = async (data: {
     name: string;
     name_en?: string;
     technique_type: TechniqueType;
@@ -65,7 +99,7 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
     tags: string[];
     category?: string;
   }) => {
-    addTechnique({
+    await addTechnique({
       name: data.name,
       name_en: data.name_en,
       technique_type: data.technique_type,
@@ -77,6 +111,7 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
       mastery_level: 'learning',
     });
     setShowAddModal(false);
+    showToast('技を登録しました');
   };
 
   const renderCategoryList = () => (
@@ -102,7 +137,7 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
         <ChevronRight size={18} className="text-white/20" />
       </Card>
 
-      {techniqueCategories.map((cat) => (
+      {allCategories.map((cat) => (
         <Card
           key={cat.id}
           onClick={() => {
@@ -124,6 +159,16 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
           <ChevronRight size={18} className="text-white/20" />
         </Card>
       ))}
+
+      {/* カテゴリ追加ボタン */}
+      <button
+        onClick={() => setShowCategoryModal(true)}
+        className="w-full rounded-xl py-4 border-2 border-dashed flex items-center justify-center gap-2 transition-all hover:border-solid"
+        style={{ borderColor: theme.cardBorder, color: 'rgba(255,255,255,0.4)' }}
+      >
+        <Plus size={18} />
+        <span className="text-sm">カテゴリを追加</span>
+      </button>
     </div>
   );
 
@@ -246,8 +291,18 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
       {showAddModal && (
         <AddTechniqueModal
           theme={theme}
+          categories={allCategories}
           onClose={() => setShowAddModal(false)}
           onSave={handleAddTechnique}
+        />
+      )}
+
+      {/* カテゴリ追加モーダル */}
+      {showCategoryModal && (
+        <AddCategoryModal
+          theme={theme}
+          onClose={() => setShowCategoryModal(false)}
+          onSave={saveCustomCategory}
         />
       )}
     </div>
@@ -257,6 +312,7 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
 // 技追加モーダル
 interface AddTechniqueModalProps {
   theme: any;
+  categories: TechniqueCategory[];
   onClose: () => void;
   onSave: (data: {
     name: string;
@@ -269,7 +325,7 @@ interface AddTechniqueModalProps {
   }) => void;
 }
 
-function AddTechniqueModal({ theme, onClose, onSave }: AddTechniqueModalProps) {
+function AddTechniqueModal({ theme, categories, onClose, onSave }: AddTechniqueModalProps) {
   const [name, setName] = useState('');
   const [nameEn, setNameEn] = useState('');
   const [type, setType] = useState<TechniqueType>('submission');
@@ -333,8 +389,8 @@ function AddTechniqueModal({ theme, onClose, onSave }: AddTechniqueModalProps) {
           {/* カテゴリ */}
           <div>
             <label className="text-white/50 text-sm mb-2 block">カテゴリ *</label>
-            <div className="grid grid-cols-3 gap-2">
-              {techniqueCategories.map((cat) => (
+            <div className="grid grid-cols-3 gap-2 max-h-48 overflow-auto">
+              {categories.map((cat) => (
                 <button
                   key={cat.id}
                   onClick={() => setCategory(cat.id)}
@@ -657,6 +713,93 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
           <Trash2 size={18} />
           この技を削除
         </button>
+      </div>
+    </div>
+  );
+}
+
+// カテゴリ追加モーダル
+interface AddCategoryModalProps {
+  theme: any;
+  onClose: () => void;
+  onSave: (category: TechniqueCategory) => void;
+}
+
+const emojiOptions = ['🥋', '💪', '🦶', '✋', '🔄', '⚔️', '🎯', '🏆', '⭐', '🔥', '💎', '🌟'];
+
+function AddCategoryModal({ theme, onClose, onSave }: AddCategoryModalProps) {
+  const [name, setName] = useState('');
+  const [icon, setIcon] = useState('🥋');
+
+  const handleSubmit = () => {
+    if (!name.trim()) return;
+    onSave({
+      id: `custom-${Date.now()}`,
+      name: name.trim(),
+      icon,
+    });
+  };
+
+  return (
+    <div 
+      className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-end z-50 animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="w-full rounded-t-3xl p-5 animate-slide-up"
+        style={{ background: theme.bg }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-white font-semibold text-lg">カテゴリを追加</h3>
+          <button onClick={onClose}>
+            <X size={24} className="text-white/60" />
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {/* アイコン選択 */}
+          <div>
+            <label className="text-white/50 text-sm mb-2 block">アイコン</label>
+            <div className="flex flex-wrap gap-2">
+              {emojiOptions.map((emoji) => (
+                <button
+                  key={emoji}
+                  onClick={() => setIcon(emoji)}
+                  className="w-12 h-12 rounded-xl text-2xl flex items-center justify-center transition-all"
+                  style={{
+                    background: icon === emoji ? theme.gradient : theme.card,
+                    border: `1px solid ${icon === emoji ? 'transparent' : theme.cardBorder}`,
+                  }}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* カテゴリ名 */}
+          <div>
+            <label className="text-white/50 text-sm mb-2 block">カテゴリ名 *</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="例: ハーフガード"
+              className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30"
+            />
+          </div>
+
+          {/* 保存ボタン */}
+          <button
+            onClick={handleSubmit}
+            disabled={!name.trim()}
+            className="w-full py-4 rounded-xl text-white font-semibold mt-4 disabled:opacity-50"
+            style={{ background: theme.gradient }}
+          >
+            追加
+          </button>
+        </div>
       </div>
     </div>
   );

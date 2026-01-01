@@ -1,42 +1,23 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Plus, Users, ChevronRight, GitBranch, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Users, ChevronRight, GitBranch, X, Copy, Check, ChevronLeft } from 'lucide-react';
 import { useApp } from '@/lib/context';
+import { useAuth } from '@/lib/auth-context';
+import { useToast } from '@/components/ui/Toast';
 import { Card } from '@/components/ui/Card';
 import { Header } from '@/components/ui/Header';
-import { Group } from '@/types';
+import { Group, Flow } from '@/types';
 
-// サンプルデータ
-const sampleGroups: (Group & { members: number; newFlows: number; isAdmin?: boolean })[] = [
-  {
-    id: '1',
-    name: 'BJJ Tokyo',
-    description: '東京の柔術愛好家グループ',
-    created_by: 'demo',
-    members: 24,
-    newFlows: 3,
-    created_at: '',
-    updated_at: '',
-  },
-  {
-    id: '2',
-    name: '青帯研究会',
-    description: '青帯向けの技術研究グループ',
-    created_by: 'demo',
-    members: 8,
-    newFlows: 0,
-    isAdmin: true,
-    created_at: '',
-    updated_at: '',
-  },
-];
-
-const sampleSharedFlows = [
-  { id: '1', name: 'デラヒーバからのバックテイク', author: '山田さん', date: '2日前' },
-  { id: '2', name: 'ハーフガードパス5選', author: '佐藤さん', date: '5日前' },
-  { id: '3', name: 'ベリンボロ入門', author: '鈴木さん', date: '1週間前' },
-];
+interface LocalGroup {
+  id: string;
+  name: string;
+  description?: string;
+  invite_code: string;
+  created_by: string;
+  members: string[];
+  created_at: string;
+}
 
 interface GroupsScreenProps {
   onSelectGroup: (group: Group) => void;
@@ -44,8 +25,75 @@ interface GroupsScreenProps {
 
 export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
   const { theme } = useApp();
+  const { user } = useAuth();
+  const { showToast } = useToast();
   const [inviteCode, setInviteCode] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [groups, setGroups] = useState<LocalGroup[]>([]);
+
+  // localStorageからグループを読み込み
+  useEffect(() => {
+    const saved = localStorage.getItem('bjj-hub-groups');
+    if (saved) {
+      setGroups(JSON.parse(saved));
+    }
+  }, []);
+
+  // グループを保存
+  const saveGroups = (newGroups: LocalGroup[]) => {
+    setGroups(newGroups);
+    localStorage.setItem('bjj-hub-groups', JSON.stringify(newGroups));
+  };
+
+  // グループを作成
+  const handleCreateGroup = (data: { name: string; description?: string }) => {
+    if (!user) return;
+    
+    const inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const newGroup: LocalGroup = {
+      id: `group-${Date.now()}`,
+      name: data.name,
+      description: data.description,
+      invite_code: inviteCode,
+      created_by: user.id,
+      members: [user.id],
+      created_at: new Date().toISOString(),
+    };
+    
+    saveGroups([...groups, newGroup]);
+    setShowCreateModal(false);
+    showToast('グループを作成しました');
+  };
+
+  // 招待コードで参加
+  const handleJoinGroup = () => {
+    if (!user || !inviteCode.trim()) return;
+    
+    const code = inviteCode.trim().toUpperCase();
+    const group = groups.find(g => g.invite_code === code);
+    
+    if (!group) {
+      showToast('招待コードが見つかりません', 'error');
+      return;
+    }
+    
+    if (group.members.includes(user.id)) {
+      showToast('すでに参加しています', 'info');
+      return;
+    }
+    
+    const updated = groups.map(g => 
+      g.id === group.id 
+        ? { ...g, members: [...g.members, user.id] }
+        : g
+    );
+    saveGroups(updated);
+    setInviteCode('');
+    showToast('グループに参加しました');
+  };
+
+  // ユーザーが参加しているグループのみ表示
+  const myGroups = groups.filter(g => user && g.members.includes(user.id));
 
   return (
     <div className="flex flex-col h-full">
@@ -56,58 +104,23 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
 
       <Header title="グループ" />
 
-      <div className="flex-1 overflow-auto px-5 pb-24 space-y-3 relative z-10">
-        {/* グループ一覧 */}
-        {sampleGroups.map((group) => (
-          <Card key={group.id} onClick={() => onSelectGroup(group)}>
-            <div className="flex items-center gap-4">
-              <div
-                className="w-14 h-14 rounded-xl flex items-center justify-center"
-                style={{ background: theme.gradient }}
-              >
-                <Users size={24} className="text-white" />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <p className="text-white font-medium">{group.name}</p>
-                  {group.isAdmin && (
-                    <span
-                      className="text-[10px] px-1.5 py-0.5 rounded"
-                      style={{ background: `${theme.accent}20`, color: theme.accent }}
-                    >
-                      管理者
-                    </span>
-                  )}
-                </div>
-                <p className="text-white/40 text-sm mt-0.5">{group.members}人</p>
-              </div>
-              {group.newFlows > 0 && (
-                <div
-                  className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                  style={{ background: theme.gradient }}
-                >
-                  {group.newFlows}
-                </div>
-              )}
-              <ChevronRight size={18} className="text-white/20" />
-            </div>
-          </Card>
-        ))}
-
-        {/* 招待コード */}
+      <div className="flex-1 overflow-auto px-5 pb-24 space-y-4 relative z-10">
+        {/* 招待コードで参加 */}
         <Card>
           <p className="text-white/50 text-sm mb-3">招待コードで参加</p>
           <div className="flex gap-2">
             <input
               type="text"
               value={inviteCode}
-              onChange={(e) => setInviteCode(e.target.value)}
-              placeholder="コードを入力"
-              className="flex-1 bg-black/20 rounded-lg px-3 py-2 text-white text-sm outline-none placeholder:text-white/30"
-              style={{ border: `1px solid ${theme.cardBorder}` }}
+              onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+              placeholder="招待コードを入力"
+              maxLength={6}
+              className="flex-1 bg-white/5 rounded-lg px-4 py-2.5 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30 text-center tracking-widest font-mono"
             />
             <button
-              className="px-4 py-2 rounded-lg text-sm font-medium text-white"
+              onClick={handleJoinGroup}
+              disabled={!inviteCode.trim()}
+              className="px-4 rounded-lg text-white font-medium disabled:opacity-50"
               style={{ background: theme.gradient }}
             >
               参加
@@ -115,7 +128,49 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
           </div>
         </Card>
 
-        {/* グループ作成ボタン */}
+        {/* グループ一覧 */}
+        {myGroups.length > 0 ? (
+          <div className="space-y-3">
+            <h3 className="text-white/50 text-sm font-medium">参加中のグループ</h3>
+            {myGroups.map((group) => (
+              <Card key={group.id} onClick={() => onSelectGroup(group as any)}>
+                <div className="flex items-center gap-4">
+                  <div
+                    className="w-14 h-14 rounded-xl flex items-center justify-center"
+                    style={{ background: theme.gradient }}
+                  >
+                    <Users size={24} className="text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="text-white font-medium">{group.name}</p>
+                      {user && group.created_by === user.id && (
+                        <span
+                          className="text-[10px] px-1.5 py-0.5 rounded"
+                          style={{ background: `${theme.accent}20`, color: theme.accent }}
+                        >
+                          管理者
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-white/40 text-sm mt-0.5">{group.members.length}人</p>
+                  </div>
+                  <ChevronRight size={18} className="text-white/20" />
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <Users size={48} className="mx-auto mb-4 text-white/20" />
+            <p className="text-white/40 mb-2">グループに参加していません</p>
+            <p className="text-white/30 text-sm">
+              グループを作成するか、招待コードで参加してください
+            </p>
+          </div>
+        )}
+
+        {/* 新規作成ボタン */}
         <button
           onClick={() => setShowCreateModal(true)}
           className="w-full rounded-xl py-4 border-2 border-dashed flex items-center justify-center gap-2 transition-all hover:border-solid"
@@ -128,113 +183,12 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
 
       {/* グループ作成モーダル */}
       {showCreateModal && (
-        <CreateGroupModal theme={theme} onClose={() => setShowCreateModal(false)} />
+        <CreateGroupModal
+          theme={theme}
+          onClose={() => setShowCreateModal(false)}
+          onSave={handleCreateGroup}
+        />
       )}
-    </div>
-  );
-}
-
-// グループ詳細画面
-interface GroupDetailProps {
-  group: Group;
-  onBack: () => void;
-  onOpenFlow?: (flow: any) => void;
-}
-
-export function GroupDetailScreen({ group, onBack, onOpenFlow }: GroupDetailProps) {
-  const { theme } = useApp();
-  const [activeTab, setActiveTab] = useState<'flows' | 'members'>('flows');
-
-  return (
-    <div className="flex flex-col h-full">
-      <Header title={group.name} showBack onBack={onBack} />
-
-      {/* グループ情報 */}
-      <div className="px-5 pb-4 border-b" style={{ borderColor: theme.cardBorder }}>
-        <div className="flex items-center gap-4">
-          <div
-            className="w-16 h-16 rounded-xl flex items-center justify-center"
-            style={{ background: theme.gradient }}
-          >
-            <Users size={28} className="text-white" />
-          </div>
-          <div>
-            <h2 className="text-white font-bold text-lg">{group.name}</h2>
-            <p className="text-white/50 text-sm">メンバー 24人</p>
-          </div>
-        </div>
-      </div>
-
-      {/* タブ */}
-      <div className="flex border-b" style={{ borderColor: theme.cardBorder }}>
-        {[
-          { id: 'flows', label: '共有フロー' },
-          { id: 'members', label: 'メンバー' },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
-            className="flex-1 py-3 text-sm transition-all"
-            style={{
-              color: activeTab === tab.id ? theme.accent : 'rgba(255,255,255,0.4)',
-              borderBottom: activeTab === tab.id ? `2px solid ${theme.accent}` : 'none',
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="flex-1 overflow-auto px-5 py-4 pb-24 space-y-3">
-        {activeTab === 'flows' ? (
-          sampleSharedFlows.map((flow) => (
-            <Card key={flow.id} onClick={() => onOpenFlow?.({ id: flow.id, name: flow.name, user_id: 'demo', tags: [], is_favorite: false, created_at: '', updated_at: '' })}>
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-10 h-10 rounded-lg flex items-center justify-center"
-                  style={{ background: `${theme.primary}20` }}
-                >
-                  <GitBranch size={18} style={{ color: theme.primary }} />
-                </div>
-                <div className="flex-1">
-                  <p className="text-white font-medium text-sm">{flow.name}</p>
-                  <p className="text-white/40 text-xs mt-0.5">
-                    {flow.author} • {flow.date}
-                  </p>
-                </div>
-                <ChevronRight size={16} className="text-white/20" />
-              </div>
-            </Card>
-          ))
-        ) : (
-          <div className="space-y-3">
-            {['山田 太郎', '佐藤 花子', '鈴木 一郎', '田中 美咲'].map((name, i) => (
-              <Card key={i} className="flex items-center gap-3">
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center"
-                  style={{ background: theme.gradient }}
-                >
-                  <span className="text-white text-sm font-medium">
-                    {name.charAt(0)}
-                  </span>
-                </div>
-                <div className="flex-1">
-                  <p className="text-white text-sm">{name}</p>
-                  <p className="text-white/40 text-xs">🟦 青帯</p>
-                </div>
-                {i === 0 && (
-                  <span
-                    className="text-[10px] px-2 py-0.5 rounded"
-                    style={{ background: `${theme.accent}20`, color: theme.accent }}
-                  >
-                    管理者
-                  </span>
-                )}
-              </Card>
-            ))}
-          </div>
-        )}
-      </div>
     </div>
   );
 }
@@ -243,17 +197,30 @@ export function GroupDetailScreen({ group, onBack, onOpenFlow }: GroupDetailProp
 interface CreateGroupModalProps {
   theme: any;
   onClose: () => void;
+  onSave: (data: { name: string; description?: string }) => void;
 }
 
-function CreateGroupModal({ theme, onClose }: CreateGroupModalProps) {
+function CreateGroupModal({ theme, onClose, onSave }: CreateGroupModalProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
+  const handleSubmit = () => {
+    if (!name.trim()) return;
+    onSave({
+      name: name.trim(),
+      description: description.trim() || undefined,
+    });
+  };
+
   return (
-    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-end z-50 animate-fade-in">
+    <div 
+      className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-end z-50 animate-fade-in"
+      onClick={onClose}
+    >
       <div
-        className="w-full rounded-t-3xl p-5 max-h-[70%] overflow-auto animate-slide-up"
+        className="w-full rounded-t-3xl p-5 animate-slide-up"
         style={{ background: theme.bg }}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-white font-semibold text-lg">グループを作成</h3>
@@ -263,39 +230,140 @@ function CreateGroupModal({ theme, onClose }: CreateGroupModalProps) {
         </div>
 
         <div className="space-y-4">
-          {/* グループ名 */}
           <div>
             <label className="text-white/50 text-sm mb-2 block">グループ名 *</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="例: BJJ Tokyo"
+              placeholder="例: 青帯研究会"
               className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30"
             />
           </div>
 
-          {/* 説明 */}
           <div>
             <label className="text-white/50 text-sm mb-2 block">説明</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="グループの説明..."
-              rows={3}
+              rows={2}
               className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30 resize-none"
             />
           </div>
 
-          {/* 作成ボタン */}
           <button
-            onClick={onClose}
-            disabled={!name}
+            onClick={handleSubmit}
+            disabled={!name.trim()}
             className="w-full py-4 rounded-xl text-white font-semibold mt-4 disabled:opacity-50"
             style={{ background: theme.gradient }}
           >
             作成
           </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// グループ詳細画面
+interface GroupDetailScreenProps {
+  group: Group;
+  onBack: () => void;
+  onOpenFlow?: (flow: Flow) => void;
+}
+
+export function GroupDetailScreen({ group, onBack }: GroupDetailScreenProps) {
+  const { theme } = useApp();
+  const { user } = useAuth();
+  const { showToast } = useToast();
+  const [copied, setCopied] = useState(false);
+  const [localGroup, setLocalGroup] = useState<LocalGroup | null>(null);
+
+  // localStorageからグループ情報を取得
+  useEffect(() => {
+    const saved = localStorage.getItem('bjj-hub-groups');
+    if (saved) {
+      const groups: LocalGroup[] = JSON.parse(saved);
+      const found = groups.find(g => g.id === group.id);
+      if (found) {
+        setLocalGroup(found);
+      }
+    }
+  }, [group.id]);
+
+  const handleCopyCode = () => {
+    if (localGroup?.invite_code) {
+      navigator.clipboard.writeText(localGroup.invite_code);
+      setCopied(true);
+      showToast('招待コードをコピーしました');
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-full" style={{ background: theme.bg }}>
+      <Header title={group.name} showBack onBack={onBack} />
+
+      <div className="flex-1 overflow-auto px-5 pb-24 space-y-4">
+        {/* グループ情報 */}
+        <Card>
+          <div className="flex items-center gap-4 mb-4">
+            <div
+              className="w-16 h-16 rounded-xl flex items-center justify-center"
+              style={{ background: theme.gradient }}
+            >
+              <Users size={28} className="text-white" />
+            </div>
+            <div>
+              <h2 className="text-white font-semibold text-lg">{group.name}</h2>
+              <p className="text-white/40 text-sm">{localGroup?.members.length || 1}人のメンバー</p>
+            </div>
+          </div>
+          {group.description && (
+            <p className="text-white/60 text-sm">{group.description}</p>
+          )}
+        </Card>
+
+        {/* 招待コード */}
+        {localGroup && (
+          <Card>
+            <p className="text-white/50 text-sm mb-2">招待コード</p>
+            <div className="flex items-center gap-3">
+              <div
+                className="flex-1 py-3 px-4 rounded-lg text-center text-2xl font-mono tracking-widest text-white"
+                style={{ background: theme.card }}
+              >
+                {localGroup.invite_code}
+              </div>
+              <button
+                onClick={handleCopyCode}
+                className="p-3 rounded-lg"
+                style={{ background: theme.card }}
+              >
+                {copied ? (
+                  <Check size={20} className="text-green-400" />
+                ) : (
+                  <Copy size={20} className="text-white/60" />
+                )}
+              </button>
+            </div>
+            <p className="text-white/30 text-xs mt-2 text-center">
+              このコードを共有してメンバーを招待
+            </p>
+          </Card>
+        )}
+
+        {/* 共有フロー（今後実装） */}
+        <div>
+          <h3 className="text-white/50 text-sm font-medium mb-3">共有フロー</h3>
+          <Card className="text-center py-8">
+            <GitBranch size={32} className="mx-auto mb-3 text-white/20" />
+            <p className="text-white/40 text-sm">共有フローはまだありません</p>
+            <p className="text-white/30 text-xs mt-2">
+              今後のアップデートで追加予定
+            </p>
+          </Card>
         </div>
       </div>
     </div>

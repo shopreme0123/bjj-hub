@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from '@/lib/auth-context';
 import { AppProvider, useApp } from '@/lib/context';
+import { ToastProvider } from '@/components/ui/Toast';
 import { BottomNav, TabId } from '@/components/ui/BottomNav';
 import { HomeScreen } from '@/components/screens/HomeScreen';
 import { TechniquesScreen, TechniqueDetailScreen } from '@/components/screens/TechniquesScreen';
@@ -62,85 +63,103 @@ function AppContent() {
   };
 
   const renderScreen = () => {
-    // サブ画面
+    // サブ画面（右からスライドイン）
     if (subScreen) {
-      switch (subScreen.type) {
-        case 'technique-detail':
-          return (
-            <TechniqueDetailScreen
-              technique={subScreen.technique}
-              onBack={handleBack}
-              onOpenFlow={(flow) => navigateTo.flowEditor(flow)}
-            />
-          );
-        case 'flow-editor':
-          return (
-            <FlowEditorScreen
-              flow={subScreen.flow}
-              onBack={handleBack}
-            />
-          );
-        case 'group-detail':
-          return (
-            <GroupDetailScreen
-              group={subScreen.group}
-              onBack={handleBack}
-              onOpenFlow={(flow) => navigateTo.flowEditor(flow)}
-            />
-          );
-        case 'diary-detail':
-          return (
-            <DiaryDetailScreen
-              log={subScreen.log}
-              onBack={handleBack}
-              onOpenTechnique={(technique) => navigateTo.techniqueDetail(technique)}
-              onOpenFlow={(flow) => navigateTo.flowEditor(flow)}
-            />
-          );
-        case 'settings':
-          return <SettingsScreen onBack={handleBack} />;
-      }
+      const content = (() => {
+        switch (subScreen.type) {
+          case 'technique-detail':
+            return (
+              <TechniqueDetailScreen
+                technique={subScreen.technique}
+                onBack={handleBack}
+                onOpenFlow={(flow) => navigateTo.flowEditor(flow)}
+              />
+            );
+          case 'flow-editor':
+            return (
+              <FlowEditorScreen
+                flow={subScreen.flow}
+                onBack={handleBack}
+              />
+            );
+          case 'group-detail':
+            return (
+              <GroupDetailScreen
+                group={subScreen.group}
+                onBack={handleBack}
+                onOpenFlow={(flow) => navigateTo.flowEditor(flow)}
+              />
+            );
+          case 'diary-detail':
+            return (
+              <DiaryDetailScreen
+                log={subScreen.log}
+                onBack={handleBack}
+                onOpenTechnique={(technique) => navigateTo.techniqueDetail(technique)}
+                onOpenFlow={(flow) => navigateTo.flowEditor(flow)}
+              />
+            );
+          case 'settings':
+            return <SettingsScreen onBack={handleBack} />;
+          default:
+            return null;
+        }
+      })();
+      
+      return (
+        <div key={subScreen.type} className="h-full animate-slide-in-right">
+          {content}
+        </div>
+      );
     }
 
-    // メイン画面
-    switch (activeTab) {
-      case 'home':
-        return (
-          <HomeScreen
-            onOpenSettings={navigateTo.settings}
-            onOpenDiary={navigateTo.diary}
-            onOpenDiaryDetail={navigateTo.diaryDetail}
-            onOpenTechnique={navigateTo.techniqueDetail}
-            onOpenTechniques={navigateTo.techniques}
-          />
-        );
-      case 'techniques':
-        return (
-          <TechniquesScreen
-            onSelectTechnique={navigateTo.techniqueDetail}
-          />
-        );
-      case 'flows':
-        return (
-          <FlowsScreen
-            onOpenEditor={navigateTo.flowEditor}
-          />
-        );
-      case 'diary':
-        return (
-          <DiaryScreen
-            onOpenDetail={navigateTo.diaryDetail}
-          />
-        );
-      case 'groups':
-        return (
-          <GroupsScreen
-            onSelectGroup={navigateTo.groupDetail}
-          />
-        );
-      default:
-        return <HomeScreen onOpenSettings={navigateTo.settings} onOpenDiary={navigateTo.diary} onOpenDiaryDetail={navigateTo.diaryDetail} onOpenTechnique={navigateTo.techniqueDetail} onOpenTechniques={navigateTo.techniques} />;
-    }
+    // メイン画面（フェードイン）
+    const mainContent = (() => {
+      switch (activeTab) {
+        case 'home':
+          return (
+            <HomeScreen
+              onOpenSettings={navigateTo.settings}
+              onOpenDiary={navigateTo.diary}
+              onOpenDiaryDetail={navigateTo.diaryDetail}
+              onOpenTechnique={navigateTo.techniqueDetail}
+              onOpenTechniques={navigateTo.techniques}
+            />
+          );
+        case 'techniques':
+          return (
+            <TechniquesScreen
+              onSelectTechnique={navigateTo.techniqueDetail}
+            />
+          );
+        case 'flows':
+          return (
+            <FlowsScreen
+              onOpenEditor={navigateTo.flowEditor}
+            />
+          );
+        case 'diary':
+          return (
+            <DiaryScreen
+              onOpenDetail={navigateTo.diaryDetail}
+            />
+          );
+        case 'groups':
+          return (
+            <GroupsScreen
+              onSelectGroup={navigateTo.groupDetail}
+            />
+          );
+        default:
+          return <HomeScreen onOpenSettings={navigateTo.settings} onOpenDiary={navigateTo.diary} onOpenDiaryDetail={navigateTo.diaryDetail} onOpenTechnique={navigateTo.techniqueDetail} onOpenTechniques={navigateTo.techniques} />;
+      }
+    })();
+    
+    return (
+      <div key={activeTab} className="h-full animate-fade-in">
+        {mainContent}
+      </div>
+    );
   };
 
   return (
@@ -186,7 +205,9 @@ export default function Home() {
   return (
     <AuthProvider>
       <AppProvider>
-        <AuthenticatedApp />
+        <ToastProvider>
+          <AuthenticatedApp />
+        </ToastProvider>
       </AppProvider>
     </AuthProvider>
   );

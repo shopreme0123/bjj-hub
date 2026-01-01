@@ -5,6 +5,7 @@ import { Plus, ChevronLeft, ChevronRight, Clock, X, GitBranch, BookOpen, Trash2 
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isToday, getDay, addMonths, subMonths } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { useApp } from '@/lib/context';
+import { useToast } from '@/components/ui/Toast';
 import { Card } from '@/components/ui/Card';
 import { Header } from '@/components/ui/Header';
 import { TrainingLog, Technique, Flow } from '@/types';
@@ -14,7 +15,8 @@ interface DiaryScreenProps {
 }
 
 export function DiaryScreen({ onOpenDetail }: DiaryScreenProps) {
-  const { theme, trainingLogs, addTrainingLog, getLogByDate, techniques } = useApp();
+  const { theme, trainingLogs, addTrainingLog, getLogsByDate, techniques } = useApp();
+  const { showToast } = useToast();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [activeTab, setActiveTab] = useState<'calendar' | 'stats'>('calendar');
@@ -34,6 +36,12 @@ export function DiaryScreen({ onOpenDetail }: DiaryScreenProps) {
     return trainingLogs.some(log => log.training_date === dateStr);
   };
 
+  // その日の練習数
+  const getPracticeCount = (date: Date) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    return getLogsByDate(dateStr).length;
+  };
+
   // 月間の練習回数
   const monthlyCount = trainingLogs.filter(log => {
     const logDate = new Date(log.training_date);
@@ -50,9 +58,10 @@ export function DiaryScreen({ onOpenDetail }: DiaryScreenProps) {
     })
     .reduce((sum, log) => sum + (log.duration_minutes || 0), 0);
 
-  const handleAddLog = (data: Omit<TrainingLog, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
-    addTrainingLog(data);
+  const handleAddLog = async (data: Omit<TrainingLog, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+    await addTrainingLog(data);
     setShowAddModal(false);
+    showToast('練習を記録しました');
   };
 
   return (
@@ -167,46 +176,53 @@ export function DiaryScreen({ onOpenDetail }: DiaryScreenProps) {
             {/* 選択日の詳細 */}
             {selectedDate && (
               <div>
-                <h3 className="text-white/50 text-sm font-medium mb-3">
-                  {format(selectedDate, 'M月d日（E）', { locale: ja })}
-                </h3>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-white/50 text-sm font-medium">
+                    {format(selectedDate, 'M月d日（E）', { locale: ja })}
+                  </h3>
+                  <button
+                    onClick={() => setShowAddModal(true)}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs"
+                    style={{ background: theme.gradient, color: 'white' }}
+                  >
+                    <Plus size={14} />
+                    記録を追加
+                  </button>
+                </div>
                 {(() => {
                   const dateStr = format(selectedDate, 'yyyy-MM-dd');
-                  const log = getLogByDate(dateStr);
+                  const logs = getLogsByDate(dateStr);
                   
-                  if (log) {
+                  if (logs.length > 0) {
                     return (
-                      <Card onClick={() => onOpenDetail?.(log)}>
-                        <div className="flex items-center gap-2 mb-3">
-                          <Clock size={14} style={{ color: theme.accent }} />
-                          <span className="text-white/70 text-sm">
-                            {log.start_time} - {log.end_time}（{log.duration_minutes}分）
-                          </span>
-                        </div>
-                        <p className="text-white/80 text-sm leading-relaxed mb-3">
-                          {log.notes || log.content}
-                        </p>
-                        {log.sparring_rounds && (
-                          <p className="text-white/50 text-xs">
-                            スパーリング {log.sparring_rounds}本
-                          </p>
-                        )}
-                        <div className="flex items-center justify-end mt-3">
-                          <ChevronRight size={16} className="text-white/20" />
-                        </div>
-                      </Card>
+                      <div className="space-y-2">
+                        {logs.map((log) => (
+                          <Card key={log.id} onClick={() => onOpenDetail?.(log)}>
+                            <div className="flex items-center gap-2 mb-2">
+                              <Clock size={14} style={{ color: theme.accent }} />
+                              <span className="text-white/70 text-sm">
+                                {log.start_time} - {log.end_time}（{log.duration_minutes}分）
+                              </span>
+                            </div>
+                            <p className="text-white/80 text-sm leading-relaxed mb-2">
+                              {log.notes || log.content || '練習'}
+                            </p>
+                            {log.sparring_rounds && (
+                              <p className="text-white/50 text-xs">
+                                スパーリング {log.sparring_rounds}本
+                              </p>
+                            )}
+                            <div className="flex items-center justify-end mt-2">
+                              <ChevronRight size={16} className="text-white/20" />
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
                     );
                   } else {
                     return (
                       <Card className="text-center py-6">
-                        <p className="text-white/50 text-sm mb-3">練習記録がありません</p>
-                        <button
-                          onClick={() => setShowAddModal(true)}
-                          className="px-4 py-2 rounded-lg text-sm"
-                          style={{ background: theme.gradient, color: 'white' }}
-                        >
-                          記録を追加
-                        </button>
+                        <p className="text-white/50 text-sm">この日の練習記録はありません</p>
                       </Card>
                     );
                   }

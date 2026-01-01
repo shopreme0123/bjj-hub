@@ -18,6 +18,7 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import { Plus, GitBranch, Star, X, GripVertical, Trash2, ChevronLeft } from 'lucide-react';
 import { useApp } from '@/lib/context';
+import { useToast } from '@/components/ui/Toast';
 import { Card } from '@/components/ui/Card';
 import { Header } from '@/components/ui/Header';
 import { Flow, Technique } from '@/types';
@@ -28,6 +29,7 @@ interface FlowsScreenProps {
 
 export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
   const { theme, flows, addFlow, updateFlow, deleteFlow } = useApp();
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'all' | 'favorite'>('all');
   const [showAddModal, setShowAddModal] = useState(false);
 
@@ -36,14 +38,15 @@ export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
     return true;
   });
 
-  const handleAddFlow = (data: { name: string; description?: string; tags: string[] }) => {
-    addFlow({
+  const handleAddFlow = async (data: { name: string; description?: string; tags: string[] }) => {
+    await addFlow({
       name: data.name,
       description: data.description,
       tags: data.tags,
       is_favorite: false,
     });
     setShowAddModal(false);
+    showToast('フローを作成しました');
   };
 
   const handleToggleFavorite = (e: React.MouseEvent, flow: Flow) => {
@@ -98,16 +101,13 @@ export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
       <div className="flex-1 overflow-auto px-5 pb-24 space-y-3 relative z-10">
         {filteredFlows.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-white/40 mb-4">
+            <GitBranch size={48} className="mx-auto mb-4 text-white/20" />
+            <p className="text-white/40 mb-2">
               {activeTab === 'favorite' ? 'お気に入りのフローがありません' : 'フローが登録されていません'}
             </p>
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="px-4 py-2 rounded-lg text-sm"
-              style={{ background: theme.gradient, color: 'white' }}
-            >
-              フローを作成
-            </button>
+            <p className="text-white/30 text-sm">
+              右上の＋ボタンから作成できます
+            </p>
           </div>
         ) : (
           filteredFlows.map((flow) => (
@@ -151,16 +151,6 @@ export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
             </Card>
           ))
         )}
-
-        {/* 新規作成ボタン */}
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="w-full rounded-xl py-4 border-2 border-dashed flex items-center justify-center gap-2 transition-all hover:border-solid"
-          style={{ borderColor: theme.cardBorder, color: 'rgba(255,255,255,0.4)' }}
-        >
-          <Plus size={18} />
-          <span className="text-sm">新しいフローを作成</span>
-        </button>
       </div>
 
       {/* フロー作成モーダル */}
