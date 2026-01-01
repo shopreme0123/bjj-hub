@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Bell, Shield, Download, LogOut, ChevronRight, X, User } from 'lucide-react';
 import { useApp } from '@/lib/context';
+import { useAuth } from '@/lib/auth-context';
 import { Card } from '@/components/ui/Card';
 import { Header } from '@/components/ui/Header';
 import { beltThemes, BeltColor } from '@/types';
@@ -12,12 +13,16 @@ interface SettingsScreenProps {
 }
 
 export function SettingsScreen({ onBack }: SettingsScreenProps) {
-  const { theme, beltColor, setBeltColor, stripes, setStripes, techniques, flows, trainingLogs } = useApp();
+  const { theme, beltColor, setBeltColor, stripes, setStripes, techniques, flows, trainingLogs, profile } = useApp();
+  const { user, signOut } = useAuth();
   const maxStripes = beltThemes[beltColor].maxStripes;
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
+
+  const displayName = profile?.display_name || user?.email?.split('@')[0] || 'ユーザー';
+  const initial = displayName.charAt(0).toUpperCase();
 
   const beltOptions: { value: BeltColor; label: string; emoji: string }[] = [
     { value: 'white', label: '白帯', emoji: '⬜' },
@@ -64,10 +69,10 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
                 className="w-16 h-16 rounded-2xl flex items-center justify-center"
                 style={{ background: theme.gradient }}
               >
-                <span className="text-2xl font-bold text-white">S</span>
+                <span className="text-2xl font-bold text-white">{initial}</span>
               </div>
               <div className="flex-1">
-                <p className="text-white font-medium">Shogo</p>
+                <p className="text-white font-medium">{displayName}</p>
                 <p className="text-white/40 text-sm">プロフィールを編集</p>
               </div>
               <ChevronRight size={18} className="text-white/20" />
@@ -204,7 +209,14 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
         </div>
 
         {/* ログアウト */}
-        <Card className="flex items-center gap-4">
+        <Card 
+          className="flex items-center gap-4"
+          onClick={async () => {
+            if (confirm('ログアウトしますか？')) {
+              await signOut();
+            }
+          }}
+        >
           <div
             className="w-10 h-10 rounded-lg flex items-center justify-center"
             style={{ background: 'rgba(239, 68, 68, 0.2)' }}

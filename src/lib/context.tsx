@@ -1,241 +1,383 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { BeltColor, BeltTheme, beltThemes, User, Technique, Flow, TrainingLog } from '@/types';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { BeltColor, BeltTheme, beltThemes, Technique, Flow, TrainingLog } from '@/types';
+import { supabase } from './supabase';
+import { useAuth } from './auth-context';
 
-// 初期サンプルデータ
-const initialTechniques: Technique[] = [
-  {
-    id: '1',
-    user_id: 'demo',
-    name: '三角絞め',
-    name_en: 'Triangle Choke',
-    technique_type: 'submission',
-    description: '足を相手の首と腕に絡めて絞める基本的なサブミッション。角度の調整が重要で、自分の体を斜めにすることで絞めが深くなる。',
-    tags: ['絞め技', 'クローズドガード系', '初心者向け'],
-    mastery_level: 'favorite',
-    video_type: 'youtube',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: '2',
-    user_id: 'demo',
-    name: 'シザースイープ',
-    name_en: 'Scissor Sweep',
-    technique_type: 'sweep',
-    description: 'クローズドガードからの基本スイープ。相手の袖と襟を掴み、膝を入れて足をハサミのように動かす。',
-    tags: ['スイープ', 'クローズドガード系'],
-    mastery_level: 'learned',
-    video_type: 'youtube',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: '3',
-    user_id: 'demo',
-    name: 'アームバー',
-    name_en: 'Armbar',
-    technique_type: 'submission',
-    description: '相手の腕を伸ばして極める基本的な関節技。',
-    tags: ['関節技', 'マウント'],
-    mastery_level: 'learning',
-    video_type: 'youtube',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-];
-
-const initialFlows: Flow[] = [
-  {
-    id: '1',
-    user_id: 'demo',
-    name: '三角絞めからの派生',
-    description: 'クローズドガードから三角絞め、オモプラータへの分岐',
-    tags: ['三角絞め', 'クローズド'],
-    is_favorite: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: '2',
-    user_id: 'demo',
-    name: 'デラヒーバ→バックテイク',
-    description: 'デラヒーバガードからバックを取るまでの流れ',
-    tags: ['デラヒーバ', 'バック'],
-    is_favorite: false,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-];
-
-const initialLogs: TrainingLog[] = [];
+interface Profile {
+  id: string;
+  display_name: string | null;
+  avatar_url: string | null;
+  belt_color: BeltColor;
+  belt_stripes: number;
+  bjj_start_date: string | null;
+  bio: string | null;
+}
 
 interface AppContextType {
-  // ユーザー・テーマ
-  user: User | null;
-  setUser: (user: User | null) => void;
+  // プロフィール・テーマ
+  profile: Profile | null;
   theme: BeltTheme;
   beltColor: BeltColor;
   setBeltColor: (color: BeltColor) => void;
   stripes: number;
   setStripes: (stripes: number) => void;
+  updateProfile: (updates: Partial<Profile>) => Promise<void>;
   
   // 技
   techniques: Technique[];
-  addTechnique: (technique: Omit<Technique, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => void;
-  updateTechnique: (id: string, updates: Partial<Technique>) => void;
-  deleteTechnique: (id: string) => void;
+  loadingTechniques: boolean;
+  addTechnique: (technique: Omit<Technique, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  updateTechnique: (id: string, updates: Partial<Technique>) => Promise<void>;
+  deleteTechnique: (id: string) => Promise<void>;
   
   // フロー
   flows: Flow[];
-  addFlow: (flow: Omit<Flow, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => void;
-  updateFlow: (id: string, updates: Partial<Flow>) => void;
-  deleteFlow: (id: string) => void;
+  loadingFlows: boolean;
+  addFlow: (flow: Omit<Flow, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  updateFlow: (id: string, updates: Partial<Flow>) => Promise<void>;
+  deleteFlow: (id: string) => Promise<void>;
   
   // 練習日記
   trainingLogs: TrainingLog[];
-  addTrainingLog: (log: Omit<TrainingLog, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => void;
-  updateTrainingLog: (id: string, updates: Partial<TrainingLog>) => void;
-  deleteTrainingLog: (id: string) => void;
+  loadingLogs: boolean;
+  addTrainingLog: (log: Omit<TrainingLog, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  updateTrainingLog: (id: string, updates: Partial<TrainingLog>) => Promise<void>;
+  deleteTrainingLog: (id: string) => Promise<void>;
   getLogByDate: (date: string) => TrainingLog | undefined;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [beltColor, setBeltColor] = useState<BeltColor>('blue');
-  const [stripes, setStripes] = useState(2);
-  const [techniques, setTechniques] = useState<Technique[]>(initialTechniques);
-  const [flows, setFlows] = useState<Flow[]>(initialFlows);
-  const [trainingLogs, setTrainingLogs] = useState<TrainingLog[]>(initialLogs);
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [beltColor, setBeltColorState] = useState<BeltColor>('blue');
+  const [stripes, setStripesState] = useState(0);
+  const [techniques, setTechniques] = useState<Technique[]>([]);
+  const [flows, setFlows] = useState<Flow[]>([]);
+  const [trainingLogs, setTrainingLogs] = useState<TrainingLog[]>([]);
+  const [loadingTechniques, setLoadingTechniques] = useState(true);
+  const [loadingFlows, setLoadingFlows] = useState(true);
+  const [loadingLogs, setLoadingLogs] = useState(true);
 
   const theme = beltThemes[beltColor];
 
-  // 帯色変更時にストライプを調整
-  useEffect(() => {
-    const maxStripes = beltThemes[beltColor].maxStripes;
-    if (stripes > maxStripes) {
-      setStripes(maxStripes);
-    }
-  }, [beltColor, stripes]);
-
-  // ローカルストレージからユーザー設定を復元
-  useEffect(() => {
-    const savedBelt = localStorage.getItem('bjj-hub-belt');
-    const savedStripes = localStorage.getItem('bjj-hub-stripes');
-    const savedTechniques = localStorage.getItem('bjj-hub-techniques');
-    const savedFlows = localStorage.getItem('bjj-hub-flows');
-    const savedLogs = localStorage.getItem('bjj-hub-logs');
+  // プロフィール読み込み
+  const loadProfile = useCallback(async () => {
+    if (!user) return;
     
-    if (savedBelt && Object.keys(beltThemes).includes(savedBelt)) {
-      setBeltColor(savedBelt as BeltColor);
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+    
+    if (data && !error) {
+      setProfile(data);
+      setBeltColorState(data.belt_color as BeltColor || 'white');
+      setStripesState(data.belt_stripes || 0);
     }
-    if (savedStripes) {
-      setStripes(parseInt(savedStripes, 10));
-    }
-    if (savedTechniques) {
-      try {
-        setTechniques(JSON.parse(savedTechniques));
-      } catch (e) {}
-    }
-    if (savedFlows) {
-      try {
-        setFlows(JSON.parse(savedFlows));
-      } catch (e) {}
-    }
-    if (savedLogs) {
-      try {
-        setTrainingLogs(JSON.parse(savedLogs));
-      } catch (e) {}
-    }
-  }, []);
+  }, [user]);
 
-  // 設定を保存
+  // 技読み込み
+  const loadTechniques = useCallback(async () => {
+    if (!user) return;
+    setLoadingTechniques(true);
+    
+    const { data, error } = await supabase
+      .from('techniques')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+    
+    if (data && !error) {
+      setTechniques(data.map(t => ({
+        ...t,
+        tags: t.tags || [],
+        video_type: 'youtube' as const,
+      })));
+    }
+    setLoadingTechniques(false);
+  }, [user]);
+
+  // フロー読み込み
+  const loadFlows = useCallback(async () => {
+    if (!user) return;
+    setLoadingFlows(true);
+    
+    const { data, error } = await supabase
+      .from('flows')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+    
+    if (data && !error) {
+      setFlows(data.map(f => ({
+        ...f,
+        tags: f.tags || [],
+      })));
+    }
+    setLoadingFlows(false);
+  }, [user]);
+
+  // 練習日記読み込み
+  const loadTrainingLogs = useCallback(async () => {
+    if (!user) return;
+    setLoadingLogs(true);
+    
+    const { data, error } = await supabase
+      .from('training_logs')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('training_date', { ascending: false });
+    
+    if (data && !error) {
+      setTrainingLogs(data);
+    }
+    setLoadingLogs(false);
+  }, [user]);
+
+  // ユーザーログイン時にデータ読み込み
   useEffect(() => {
-    localStorage.setItem('bjj-hub-belt', beltColor);
-    localStorage.setItem('bjj-hub-stripes', stripes.toString());
-  }, [beltColor, stripes]);
+    if (user) {
+      loadProfile();
+      loadTechniques();
+      loadFlows();
+      loadTrainingLogs();
+    } else {
+      setProfile(null);
+      setTechniques([]);
+      setFlows([]);
+      setTrainingLogs([]);
+    }
+  }, [user, loadProfile, loadTechniques, loadFlows, loadTrainingLogs]);
 
-  useEffect(() => {
-    localStorage.setItem('bjj-hub-techniques', JSON.stringify(techniques));
-  }, [techniques]);
-
-  useEffect(() => {
-    localStorage.setItem('bjj-hub-flows', JSON.stringify(flows));
-  }, [flows]);
-
-  useEffect(() => {
-    localStorage.setItem('bjj-hub-logs', JSON.stringify(trainingLogs));
-  }, [trainingLogs]);
-
-  // 技の操作
-  const addTechnique = (technique: Omit<Technique, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
-    const newTechnique: Technique = {
-      ...technique,
-      id: `tech-${Date.now()}`,
-      user_id: 'demo',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    setTechniques(prev => [newTechnique, ...prev]);
+  // 帯色変更
+  const setBeltColor = async (color: BeltColor) => {
+    setBeltColorState(color);
+    const maxStripes = beltThemes[color].maxStripes;
+    if (stripes > maxStripes) {
+      setStripesState(maxStripes);
+    }
+    
+    if (user) {
+      await supabase
+        .from('profiles')
+        .update({ 
+          belt_color: color,
+          belt_stripes: stripes > maxStripes ? maxStripes : stripes,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+    }
   };
 
-  const updateTechnique = (id: string, updates: Partial<Technique>) => {
-    setTechniques(prev => prev.map(t => 
-      t.id === id ? { ...t, ...updates, updated_at: new Date().toISOString() } : t
-    ));
+  // ストライプ変更
+  const setStripes = async (newStripes: number) => {
+    setStripesState(newStripes);
+    
+    if (user) {
+      await supabase
+        .from('profiles')
+        .update({ 
+          belt_stripes: newStripes,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+    }
   };
 
-  const deleteTechnique = (id: string) => {
-    setTechniques(prev => prev.filter(t => t.id !== id));
+  // プロフィール更新
+  const updateProfile = async (updates: Partial<Profile>) => {
+    if (!user) return;
+    
+    const { error } = await supabase
+      .from('profiles')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', user.id);
+    
+    if (!error) {
+      setProfile(prev => prev ? { ...prev, ...updates } : null);
+    }
   };
 
-  // フローの操作
-  const addFlow = (flow: Omit<Flow, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
-    const newFlow: Flow = {
-      ...flow,
-      id: `flow-${Date.now()}`,
-      user_id: 'demo',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    setFlows(prev => [newFlow, ...prev]);
+  // 技の追加
+  const addTechnique = async (technique: Omit<Technique, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from('techniques')
+      .insert({
+        user_id: user.id,
+        name: technique.name,
+        name_en: technique.name_en,
+        category: technique.category,
+        technique_type: technique.technique_type,
+        description: technique.description,
+        video_url: technique.video_url,
+        tags: technique.tags,
+        mastery_level: technique.mastery_level,
+      })
+      .select()
+      .single();
+    
+    if (data && !error) {
+      setTechniques(prev => [{
+        ...data,
+        tags: data.tags || [],
+        video_type: 'youtube' as const,
+      }, ...prev]);
+    }
   };
 
-  const updateFlow = (id: string, updates: Partial<Flow>) => {
-    setFlows(prev => prev.map(f => 
-      f.id === id ? { ...f, ...updates, updated_at: new Date().toISOString() } : f
-    ));
+  // 技の更新
+  const updateTechnique = async (id: string, updates: Partial<Technique>) => {
+    if (!user) return;
+    
+    const { error } = await supabase
+      .from('techniques')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .eq('user_id', user.id);
+    
+    if (!error) {
+      setTechniques(prev => prev.map(t => 
+        t.id === id ? { ...t, ...updates, updated_at: new Date().toISOString() } : t
+      ));
+    }
   };
 
-  const deleteFlow = (id: string) => {
-    setFlows(prev => prev.filter(f => f.id !== id));
+  // 技の削除
+  const deleteTechnique = async (id: string) => {
+    if (!user) return;
+    
+    const { error } = await supabase
+      .from('techniques')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', user.id);
+    
+    if (!error) {
+      setTechniques(prev => prev.filter(t => t.id !== id));
+    }
   };
 
-  // 練習日記の操作
-  const addTrainingLog = (log: Omit<TrainingLog, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
-    const newLog: TrainingLog = {
-      ...log,
-      id: `log-${Date.now()}`,
-      user_id: 'demo',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    setTrainingLogs(prev => [newLog, ...prev]);
+  // フローの追加
+  const addFlow = async (flow: Omit<Flow, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from('flows')
+      .insert({
+        user_id: user.id,
+        name: flow.name,
+        description: flow.description,
+        tags: flow.tags,
+        is_favorite: flow.is_favorite,
+      })
+      .select()
+      .single();
+    
+    if (data && !error) {
+      setFlows(prev => [{
+        ...data,
+        tags: data.tags || [],
+      }, ...prev]);
+    }
   };
 
-  const updateTrainingLog = (id: string, updates: Partial<TrainingLog>) => {
-    setTrainingLogs(prev => prev.map(l => 
-      l.id === id ? { ...l, ...updates, updated_at: new Date().toISOString() } : l
-    ));
+  // フローの更新
+  const updateFlow = async (id: string, updates: Partial<Flow>) => {
+    if (!user) return;
+    
+    const { error } = await supabase
+      .from('flows')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .eq('user_id', user.id);
+    
+    if (!error) {
+      setFlows(prev => prev.map(f => 
+        f.id === id ? { ...f, ...updates, updated_at: new Date().toISOString() } : f
+      ));
+    }
   };
 
-  const deleteTrainingLog = (id: string) => {
-    setTrainingLogs(prev => prev.filter(l => l.id !== id));
+  // フローの削除
+  const deleteFlow = async (id: string) => {
+    if (!user) return;
+    
+    const { error } = await supabase
+      .from('flows')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', user.id);
+    
+    if (!error) {
+      setFlows(prev => prev.filter(f => f.id !== id));
+    }
   };
 
+  // 練習日記の追加
+  const addTrainingLog = async (log: Omit<TrainingLog, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from('training_logs')
+      .insert({
+        user_id: user.id,
+        training_date: log.training_date,
+        start_time: log.start_time,
+        end_time: log.end_time,
+        duration_minutes: log.duration_minutes,
+        content: log.content,
+        notes: log.notes,
+        condition: log.condition,
+        sparring_rounds: log.sparring_rounds,
+      })
+      .select()
+      .single();
+    
+    if (data && !error) {
+      setTrainingLogs(prev => [data, ...prev]);
+    }
+  };
+
+  // 練習日記の更新
+  const updateTrainingLog = async (id: string, updates: Partial<TrainingLog>) => {
+    if (!user) return;
+    
+    const { error } = await supabase
+      .from('training_logs')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .eq('user_id', user.id);
+    
+    if (!error) {
+      setTrainingLogs(prev => prev.map(l => 
+        l.id === id ? { ...l, ...updates, updated_at: new Date().toISOString() } : l
+      ));
+    }
+  };
+
+  // 練習日記の削除
+  const deleteTrainingLog = async (id: string) => {
+    if (!user) return;
+    
+    const { error } = await supabase
+      .from('training_logs')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', user.id);
+    
+    if (!error) {
+      setTrainingLogs(prev => prev.filter(l => l.id !== id));
+    }
+  };
+
+  // 日付で練習日記を取得
   const getLogByDate = (date: string) => {
     return trainingLogs.find(l => l.training_date === date);
   };
@@ -243,22 +385,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   return (
     <AppContext.Provider
       value={{
-        user,
-        setUser,
+        profile,
         theme,
         beltColor,
         setBeltColor,
         stripes,
         setStripes,
+        updateProfile,
         techniques,
+        loadingTechniques,
         addTechnique,
         updateTechnique,
         deleteTechnique,
         flows,
+        loadingFlows,
         addFlow,
         updateFlow,
         deleteFlow,
         trainingLogs,
+        loadingLogs,
         addTrainingLog,
         updateTrainingLog,
         deleteTrainingLog,

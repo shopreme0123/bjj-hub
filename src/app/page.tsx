@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { AuthProvider, useAuth } from '@/lib/auth-context';
 import { AppProvider, useApp } from '@/lib/context';
 import { BottomNav, TabId } from '@/components/ui/BottomNav';
 import { HomeScreen } from '@/components/screens/HomeScreen';
@@ -9,7 +10,9 @@ import { FlowsScreen, FlowEditorScreen } from '@/components/screens/FlowsScreen'
 import { DiaryScreen, DiaryDetailScreen } from '@/components/screens/DiaryScreen';
 import { GroupsScreen, GroupDetailScreen } from '@/components/screens/GroupsScreen';
 import { SettingsScreen } from '@/components/screens/SettingsScreen';
+import { AuthScreen } from '@/components/screens/AuthScreen';
 import { Technique, Flow, Group, TrainingLog } from '@/types';
+import { Loader2 } from 'lucide-react';
 
 type SubScreen =
   | { type: 'technique-detail'; technique: Technique }
@@ -156,10 +159,35 @@ function AppContent() {
   );
 }
 
+// 認証チェックコンポーネント
+function AuthenticatedApp() {
+  const { user, loading } = useAuth();
+  const { theme } = useApp();
+
+  if (loading) {
+    return (
+      <div
+        className="h-screen w-full flex items-center justify-center"
+        style={{ background: '#030712' }}
+      >
+        <Loader2 className="animate-spin text-blue-500" size={40} />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthScreen />;
+  }
+
+  return <AppContent />;
+}
+
 export default function Home() {
   return (
-    <AppProvider>
-      <AppContent />
-    </AppProvider>
+    <AuthProvider>
+      <AppProvider>
+        <AuthenticatedApp />
+      </AppProvider>
+    </AuthProvider>
   );
 }

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Bell, Settings, Flame, Check, Clock, ChevronRight, Play, Plus, X } from 'lucide-react';
 import { useApp } from '@/lib/context';
+import { useAuth } from '@/lib/auth-context';
 import { Card } from '@/components/ui/Card';
 import { Header } from '@/components/ui/Header';
 import { Technique, TrainingLog } from '@/types';
@@ -22,8 +23,12 @@ export function HomeScreen({
   onOpenTechnique,
   onOpenTechniques,
 }: HomeScreenProps) {
-  const { theme, stripes, techniques, trainingLogs } = useApp();
+  const { theme, stripes, techniques, trainingLogs, profile } = useApp();
+  const { user } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
+  
+  const displayName = profile?.display_name || user?.email?.split('@')[0] || 'ユーザー';
+  const initial = displayName.charAt(0).toUpperCase();
 
   // 今週の練習日を計算
   const today = new Date();
@@ -102,10 +107,10 @@ export function HomeScreen({
             className="w-16 h-16 rounded-2xl flex items-center justify-center"
             style={{ background: theme.gradient }}
           >
-            <span className="text-2xl font-bold text-white">S</span>
+            <span className="text-2xl font-bold text-white">{initial}</span>
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white">Shogo</h2>
+            <h2 className="text-xl font-bold text-white">{displayName}</h2>
             <div className="flex items-center gap-2 mt-1">
               <div
                 className="h-3 w-20 rounded-full flex items-center justify-end px-1 gap-0.5"
