@@ -16,11 +16,11 @@ import ReactFlow, {
   NodeProps,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Plus, GitBranch, Star, X, Link, GripVertical, Trash2 } from 'lucide-react';
+import { Plus, GitBranch, Star, X, GripVertical, Trash2, ChevronLeft } from 'lucide-react';
 import { useApp } from '@/lib/context';
 import { Card } from '@/components/ui/Card';
 import { Header } from '@/components/ui/Header';
-import { Flow } from '@/types';
+import { Flow, Technique } from '@/types';
 
 interface FlowsScreenProps {
   onOpenEditor: (flow?: Flow) => void;
@@ -371,6 +371,7 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
   const { theme, techniques, updateFlow, deleteFlow } = useApp();
   const [flowName, setFlowName] = useState(flow?.name || '新しいフロー');
   const [showTechniquePanel, setShowTechniquePanel] = useState(false);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
   const initialNodes: Node<CustomNodeData>[] = [
     {
@@ -397,6 +398,25 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
     [setEdges, theme.primary]
   );
 
+  // ノード選択時の処理
+  const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
+    setSelectedNodeId(node.id);
+  }, []);
+
+  // 背景クリックで選択解除
+  const onPaneClick = useCallback(() => {
+    setSelectedNodeId(null);
+  }, []);
+
+  // 選択中のノードを削除
+  const deleteSelectedNode = () => {
+    if (selectedNodeId) {
+      setNodes((nds) => nds.filter((n) => n.id !== selectedNodeId));
+      setEdges((eds) => eds.filter((e) => e.source !== selectedNodeId && e.target !== selectedNodeId));
+      setSelectedNodeId(null);
+    }
+  };
+
   const addNode = (label: string, type: CustomNodeData['type']) => {
     const newNode: Node<CustomNodeData> = {
       id: `n${Date.now()}`,
@@ -419,35 +439,6 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
     if (flow && confirm('このフローを削除しますか？')) {
       deleteFlow(flow.id);
       onBack();
-    }
-  };
-
-  // 登録済みの技をリストに追加
-  const availableTechniques = techniques.map(t => ({
-    label: t.name,
-    type: t.technique_type === 'submission' ? 'submission' as const : 
-          t.technique_type === 'sweep' ? 'sweep' as const : 
-          'technique' as const,
-  }));
-
-  const defaultTechniques = [
-    { label: 'ポジション', type: 'position' as const },
-    { label: 'アームバー', type: 'submission' as const },
-    { label: 'キムラ', type: 'submission' as const },
-    { label: 'シザースイープ', type: 'sweep' as const },
-    { label: 'ヒップスイープ', type: 'sweep' as const },
-  ];
-
-  const allTechniques = [...availableTechniques, ...defaultTechniques];
-
-  const getNodeStyle = (type: string) => {
-    switch (type) {
-      case 'submission':
-        return { bg: `${theme.primary}30`, border: theme.primary };
-      case 'sweep':
-        return { bg: `${theme.accent}20`, border: theme.accent };
-      default:
-        return { bg: theme.card, border: theme.cardBorder };
     }
   };
 
@@ -484,13 +475,16 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
           <Plus size={14} />
           技を追加
         </button>
-        <button
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm whitespace-nowrap"
-          style={{ background: theme.card, color: 'rgba(255,255,255,0.7)' }}
-        >
-          <Link size={14} />
-          接続モード
-        </button>
+        {selectedNodeId && (
+          <button
+            onClick={deleteSelectedNode}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm whitespace-nowrap text-red-400"
+            style={{ background: 'rgba(239, 68, 68, 0.1)' }}
+          >
+            <Trash2 size={14} />
+            選択中を削除
+          </button>
+        )}
         {flow && (
           <button
             onClick={handleDelete}
@@ -498,7 +492,7 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
             style={{ background: 'rgba(239, 68, 68, 0.1)' }}
           >
             <Trash2 size={14} />
-            削除
+            フロー削除
           </button>
         )}
       </div>
@@ -507,6 +501,7 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
       <div className="px-4 py-2 text-xs text-white/40 flex items-center gap-4">
         <span>• ドラッグで移動</span>
         <span>• 端子をつないで接続</span>
+        {selectedNodeId && <span className="text-yellow-400">• ノード選択中</span>}
       </div>
 
       {/* React Flow キャンバス */}
@@ -517,6 +512,8 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          onNodeClick={onNodeClick}
+          onPaneClick={onPaneClick}
           nodeTypes={nodeTypes}
           fitView
           style={{ background: theme.bg }}
@@ -561,43 +558,155 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
 
       {/* 技追加パネル */}
       {showTechniquePanel && (
-        <div 
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-end z-50 animate-fade-in"
-          onClick={() => setShowTechniquePanel(false)}
-        >
-          <div
-            className="w-full rounded-t-3xl p-5 max-h-[70%] overflow-auto animate-slide-up"
-            style={{ background: theme.bg }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-white font-semibold">技を追加</h3>
-              <button onClick={() => setShowTechniquePanel(false)}>
-                <X size={20} className="text-white/60" />
-              </button>
-            </div>
+        <TechniqueSelectPanel
+          theme={theme}
+          techniques={techniques}
+          onSelect={(label, type) => addNode(label, type)}
+          onClose={() => setShowTechniquePanel(false)}
+        />
+      )}
+    </div>
+  );
+}
 
-            <div className="grid grid-cols-2 gap-2">
-              {allTechniques.map((tech, i) => {
-                const style = getNodeStyle(tech.type);
+// 技選択パネル（カテゴリ→技の2段階選択）
+import { techniqueCategories } from './TechniquesScreen';
+
+interface TechniqueSelectPanelProps {
+  theme: any;
+  techniques: Technique[];
+  onSelect: (label: string, type: 'position' | 'technique' | 'submission' | 'sweep') => void;
+  onClose: () => void;
+}
+
+function TechniqueSelectPanel({ theme, techniques, onSelect, onClose }: TechniqueSelectPanelProps) {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  // カテゴリごとの技を取得
+  const getTechniquesByCategory = (categoryId: string) => {
+    return techniques.filter(t => 
+      t.category === categoryId ||
+      t.tags.some(tag => {
+        const cat = techniqueCategories.find(c => c.id === categoryId);
+        return cat && tag.includes(cat.name);
+      })
+    );
+  };
+
+  const getNodeType = (techType: string): 'position' | 'technique' | 'submission' | 'sweep' => {
+    if (techType === 'submission') return 'submission';
+    if (techType === 'sweep') return 'sweep';
+    if (techType === 'position') return 'position';
+    return 'technique';
+  };
+
+  const getNodeStyle = (type: string) => {
+    switch (type) {
+      case 'submission':
+        return { bg: `${theme.primary}30`, border: theme.primary };
+      case 'sweep':
+        return { bg: `${theme.accent}20`, border: theme.accent };
+      default:
+        return { bg: theme.card, border: theme.cardBorder };
+    }
+  };
+
+  return (
+    <div 
+      className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-end z-50 animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="w-full rounded-t-3xl p-5 max-h-[70%] overflow-auto animate-slide-up"
+        style={{ background: theme.bg }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center gap-2">
+            {selectedCategory && (
+              <button 
+                onClick={() => setSelectedCategory(null)}
+                className="p-1 rounded-lg"
+                style={{ background: theme.card }}
+              >
+                <ChevronLeft size={18} className="text-white/60" />
+              </button>
+            )}
+            <h3 className="text-white font-semibold">
+              {selectedCategory 
+                ? techniqueCategories.find(c => c.id === selectedCategory)?.name 
+                : 'カテゴリを選択'}
+            </h3>
+          </div>
+          <button onClick={onClose}>
+            <X size={20} className="text-white/60" />
+          </button>
+        </div>
+
+        {!selectedCategory ? (
+          // カテゴリ選択
+          <div className="grid grid-cols-3 gap-3">
+            {techniqueCategories.map((cat) => {
+              const count = getTechniquesByCategory(cat.id).length;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className="p-4 rounded-xl text-center transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}
+                >
+                  <span className="text-2xl block">{cat.icon}</span>
+                  <span className="text-white text-xs mt-2 block">{cat.name}</span>
+                  <span className="text-white/40 text-[10px] block">{count}技</span>
+                </button>
+              );
+            })}
+            {/* ポジションノードを追加 */}
+            <button
+              onClick={() => onSelect('ポジション', 'position')}
+              className="p-4 rounded-xl text-center transition-all hover:scale-[1.02] active:scale-[0.98]"
+              style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}
+            >
+              <span className="text-2xl block">📍</span>
+              <span className="text-white text-xs mt-2 block">ポジション</span>
+              <span className="text-white/40 text-[10px] block">ノード追加</span>
+            </button>
+          </div>
+        ) : (
+          // 技選択
+          <div className="space-y-2">
+            {getTechniquesByCategory(selectedCategory).length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-white/40 text-sm">このカテゴリには技が登録されていません</p>
+                <p className="text-white/30 text-xs mt-2">技ライブラリから技を追加してください</p>
+              </div>
+            ) : (
+              getTechniquesByCategory(selectedCategory).map((tech) => {
+                const nodeType = getNodeType(tech.technique_type);
+                const style = getNodeStyle(nodeType);
                 return (
                   <button
-                    key={i}
-                    onClick={() => addNode(tech.label, tech.type)}
-                    className="p-3 rounded-xl text-left transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    key={tech.id}
+                    onClick={() => onSelect(tech.name, nodeType)}
+                    className="w-full p-3 rounded-xl text-left transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center gap-3"
                     style={{ background: style.bg, border: `1px solid ${style.border}` }}
                   >
-                    <span className="text-white text-sm">{tech.label}</span>
-                    <span className="block text-white/40 text-xs mt-1 capitalize">
-                      {tech.type}
+                    <div className="flex-1">
+                      <span className="text-white text-sm block">{tech.name}</span>
+                      {tech.name_en && (
+                        <span className="text-white/40 text-xs">{tech.name_en}</span>
+                      )}
+                    </div>
+                    <span className="text-white/40 text-xs capitalize px-2 py-1 rounded" style={{ background: 'rgba(255,255,255,0.1)' }}>
+                      {tech.technique_type}
                     </span>
                   </button>
                 );
-              })}
-            </div>
+              })
+            )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

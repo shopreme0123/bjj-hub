@@ -38,6 +38,7 @@ export interface Technique {
   name: string;
   name_en?: string;
   category_id?: string;
+  category?: string; // カテゴリID（ローカル用）
   technique_type: TechniqueType;
   description?: string;
   video_url?: string;
@@ -47,7 +48,6 @@ export interface Technique {
   mastery_level: MasteryLevel;
   created_at: string;
   updated_at: string;
-  category?: Category;
 }
 
 // フロー

@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { Bell, Settings, Flame, Check, Clock, ChevronRight, Play, Plus } from 'lucide-react';
+import React, { useState } from 'react';
+import { Bell, Settings, Flame, Check, Clock, ChevronRight, Play, Plus, X } from 'lucide-react';
 import { useApp } from '@/lib/context';
 import { Card } from '@/components/ui/Card';
 import { Header } from '@/components/ui/Header';
@@ -23,6 +23,7 @@ export function HomeScreen({
   onOpenTechniques,
 }: HomeScreenProps) {
   const { theme, stripes, techniques, trainingLogs } = useApp();
+  const [showNotifications, setShowNotifications] = useState(false);
 
   // 今週の練習日を計算
   const today = new Date();
@@ -76,6 +77,7 @@ export function HomeScreen({
             <button
               className="p-2 rounded-full"
               style={{ background: theme.card }}
+              onClick={() => setShowNotifications(true)}
             >
               <Bell size={18} color="white" className="opacity-70" />
             </button>
@@ -272,6 +274,34 @@ export function HomeScreen({
           )}
         </div>
       </div>
+
+      {/* 通知モーダル */}
+      {showNotifications && (
+        <div 
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-start justify-center pt-20 z-50 animate-fade-in"
+          onClick={() => setShowNotifications(false)}
+        >
+          <div
+            className="w-[90%] rounded-2xl p-5 animate-slide-up"
+            style={{ background: theme.bg }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-white font-semibold">通知</h3>
+              <button onClick={() => setShowNotifications(false)}>
+                <X size={20} className="text-white/60" />
+              </button>
+            </div>
+            <div className="text-center py-8">
+              <Bell size={32} className="text-white/20 mx-auto mb-3" />
+              <p className="text-white/40 text-sm">新しい通知はありません</p>
+              <p className="text-white/30 text-xs mt-2">
+                練習リマインダーやグループ通知がここに表示されます
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -50,22 +50,11 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
   return (
     <div className="flex flex-col h-full">
       <div
-        className="absolute top-0 left-0 right-0 h-48 opacity-20"
+        className="absolute top-0 left-0 right-0 h-48 opacity-20 pointer-events-none"
         style={{ background: theme.gradient }}
       />
 
-      <Header
-        title="グループ"
-        rightAction={
-          <button
-            className="p-2 rounded-full"
-            style={{ background: theme.card }}
-            onClick={() => setShowCreateModal(true)}
-          >
-            <Plus size={18} style={{ color: theme.primary }} />
-          </button>
-        }
-      />
+      <Header title="グループ" />
 
       <div className="flex-1 overflow-auto px-5 pb-24 space-y-3 relative z-10">
         {/* グループ一覧 */}

@@ -551,59 +551,6 @@ export function DiaryDetailScreen({ log, onBack, onOpenTechnique, onOpenFlow }: 
           </Card>
         )}
 
-        {/* 技一覧へのリンク */}
-        {techniques.length > 0 && (
-          <div>
-            <h3 className="text-white/50 text-sm font-medium mb-3">登録済みの技</h3>
-            <div className="space-y-2">
-              {techniques.slice(0, 3).map((tech) => (
-                <Card
-                  key={tech.id}
-                  className="flex items-center gap-3"
-                  onClick={() => onOpenTechnique?.(tech)}
-                >
-                  <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center"
-                    style={{ background: `${theme.primary}20` }}
-                  >
-                    <BookOpen size={18} style={{ color: theme.primary }} />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-white text-sm">{tech.name}</p>
-                    <p className="text-white/40 text-xs">{tech.name_en}</p>
-                  </div>
-                  <ChevronRight size={16} className="text-white/20" />
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* フロー一覧へのリンク */}
-        {flows.length > 0 && (
-          <div>
-            <h3 className="text-white/50 text-sm font-medium mb-3">登録済みのフロー</h3>
-            <div className="space-y-2">
-              {flows.slice(0, 3).map((flow) => (
-                <Card
-                  key={flow.id}
-                  className="flex items-center gap-3"
-                  onClick={() => onOpenFlow?.(flow)}
-                >
-                  <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center"
-                    style={{ background: `${theme.primary}20` }}
-                  >
-                    <GitBranch size={18} style={{ color: theme.primary }} />
-                  </div>
-                  <span className="text-white text-sm flex-1">{flow.name}</span>
-                  <ChevronRight size={16} className="text-white/20" />
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* 削除ボタン */}
         <button
           onClick={handleDelete}

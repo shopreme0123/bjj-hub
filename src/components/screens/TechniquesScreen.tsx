@@ -7,13 +7,14 @@ import { Card } from '@/components/ui/Card';
 import { Header } from '@/components/ui/Header';
 import { Technique, TechniqueType, Flow } from '@/types';
 
-// サンプルカテゴリ
-const sampleCategories = [
-  { id: '1', name: 'ガード（ボトム）', icon: '🛡️' },
-  { id: '2', name: 'トップポジション', icon: '⬆️' },
-  { id: '3', name: 'スタンド', icon: '🧍' },
-  { id: '4', name: 'レッグロック', icon: '🦵' },
-  { id: '5', name: 'タートル', icon: '🐢' },
+// カテゴリ定義（エクスポートしてフローエディタでも使用）
+export const techniqueCategories = [
+  { id: 'guard', name: 'ガード（ボトム）', icon: '🛡️' },
+  { id: 'top', name: 'トップポジション', icon: '⬆️' },
+  { id: 'stand', name: 'スタンド', icon: '🧍' },
+  { id: 'leglock', name: 'レッグロック', icon: '🦵' },
+  { id: 'turtle', name: 'タートル', icon: '🐢' },
+  { id: 'back', name: 'バック', icon: '🔙' },
 ];
 
 interface TechniquesScreenProps {
@@ -27,15 +28,32 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredTechniques = techniques.filter(tech => 
-    tech.name.includes(searchQuery) || 
-    tech.name_en?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    tech.tags.some(tag => tag.includes(searchQuery))
-  );
+  // カテゴリでフィルタリング
+  const filteredTechniques = techniques.filter(tech => {
+    const matchesSearch = !searchQuery || 
+      tech.name.includes(searchQuery) || 
+      tech.name_en?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      tech.tags.some(tag => tag.includes(searchQuery));
+    
+    const matchesCategory = !selectedCategory || 
+      tech.category === selectedCategory ||
+      tech.tags.some(tag => {
+        const cat = techniqueCategories.find(c => c.id === selectedCategory);
+        return cat && tag.includes(cat.name);
+      });
+    
+    return matchesSearch && matchesCategory;
+  });
 
   // カテゴリごとの技数をカウント
-  const getCategoryCount = (categoryName: string) => {
-    return techniques.filter(t => t.tags.some(tag => tag.includes(categoryName))).length;
+  const getCategoryCount = (categoryId: string) => {
+    return techniques.filter(t => 
+      t.category === categoryId || 
+      t.tags.some(tag => {
+        const cat = techniqueCategories.find(c => c.id === categoryId);
+        return cat && tag.includes(cat.name);
+      })
+    ).length;
   };
 
   const handleAddTechnique = (data: {
@@ -45,6 +63,7 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
     description?: string;
     video_url?: string;
     tags: string[];
+    category?: string;
   }) => {
     addTechnique({
       name: data.name,
@@ -54,6 +73,7 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
       video_url: data.video_url,
       video_type: 'youtube',
       tags: data.tags,
+      category: data.category,
       mastery_level: 'learning',
     });
     setShowAddModal(false);
@@ -82,7 +102,7 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
         <ChevronRight size={18} className="text-white/20" />
       </Card>
 
-      {sampleCategories.map((cat) => (
+      {techniqueCategories.map((cat) => (
         <Card
           key={cat.id}
           onClick={() => {
@@ -99,7 +119,7 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
           </div>
           <div className="flex-1">
             <p className="text-white font-medium">{cat.name}</p>
-            <p className="text-white/40 text-xs mt-0.5">{getCategoryCount(cat.name)}技</p>
+            <p className="text-white/40 text-xs mt-0.5">{getCategoryCount(cat.id)}技</p>
           </div>
           <ChevronRight size={18} className="text-white/20" />
         </Card>
@@ -245,6 +265,7 @@ interface AddTechniqueModalProps {
     description?: string;
     video_url?: string;
     tags: string[];
+    category?: string;
   }) => void;
 }
 
@@ -252,6 +273,7 @@ function AddTechniqueModal({ theme, onClose, onSave }: AddTechniqueModalProps) {
   const [name, setName] = useState('');
   const [nameEn, setNameEn] = useState('');
   const [type, setType] = useState<TechniqueType>('submission');
+  const [category, setCategory] = useState<string>('');
   const [description, setDescription] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
   const [tagInput, setTagInput] = useState('');
@@ -286,6 +308,7 @@ function AddTechniqueModal({ theme, onClose, onSave }: AddTechniqueModalProps) {
       description: description.trim() || undefined,
       video_url: videoUrl.trim() || undefined,
       tags,
+      category: category || undefined,
     });
   };
 
@@ -307,6 +330,29 @@ function AddTechniqueModal({ theme, onClose, onSave }: AddTechniqueModalProps) {
         </div>
 
         <div className="space-y-4">
+          {/* カテゴリ */}
+          <div>
+            <label className="text-white/50 text-sm mb-2 block">カテゴリ *</label>
+            <div className="grid grid-cols-3 gap-2">
+              {techniqueCategories.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setCategory(cat.id)}
+                  className="p-3 rounded-xl text-center transition-all"
+                  style={{
+                    background: category === cat.id ? theme.gradient : theme.card,
+                    border: `1px solid ${category === cat.id ? 'transparent' : theme.cardBorder}`,
+                  }}
+                >
+                  <span className="text-xl block">{cat.icon}</span>
+                  <span className={`text-xs mt-1 block ${category === cat.id ? 'text-white' : 'text-white/60'}`}>
+                    {cat.name}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* 技名 */}
           <div>
             <label className="text-white/50 text-sm mb-2 block">技名 *</label>
