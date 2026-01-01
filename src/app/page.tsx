@@ -142,47 +142,15 @@ function AppContent() {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center p-4"
-      style={{ background: '#111' }}
+      className="h-screen w-full flex flex-col"
+      style={{ background: theme.bg }}
     >
-      {/* デバイスフレーム */}
-      <div
-        className="w-full max-w-[375px] h-[812px] rounded-[3rem] overflow-hidden shadow-2xl relative"
-        style={{
-          background: theme.bg,
-          boxShadow: `0 25px 80px ${theme.primary}30`,
-        }}
-      >
-        {/* ノッチ */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-7 bg-black rounded-b-2xl z-50" />
-
-        {/* ホームインジケーター */}
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/20 rounded-full z-50" />
-
-        {/* コンテンツ */}
-        <div className="h-full pt-8 flex flex-col relative">
-          {renderScreen()}
-          {!subScreen && (
-            <BottomNav active={activeTab} setActive={handleTabChange} />
-          )}
-        </div>
-      </div>
-
-      {/* 設定ボタン（開発用） */}
-      <div className="mt-6 flex gap-3">
-        <button
-          onClick={navigateTo.settings}
-          className="text-sm text-white/60 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition"
-        >
-          ⚙️ 帯を変更
-        </button>
-        <button
-          onClick={() => navigateTo.flowEditor()}
-          className="text-sm text-white px-4 py-2 rounded-full transition"
-          style={{ background: theme.gradient }}
-        >
-          ✨ フローエディタ
-        </button>
+      {/* コンテンツ */}
+      <div className="flex-1 flex flex-col relative overflow-hidden">
+        {renderScreen()}
+        {!subScreen && (
+          <BottomNav active={activeTab} setActive={handleTabChange} />
+        )}
       </div>
     </div>
   );
