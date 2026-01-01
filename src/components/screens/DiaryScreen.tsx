@@ -354,15 +354,20 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
   const calculateDuration = () => {
     const [startH, startM] = startTime.split(':').map(Number);
     const [endH, endM] = endTime.split(':').map(Number);
-    return (endH * 60 + endM) - (startH * 60 + startM);
+    const duration = (endH * 60 + endM) - (startH * 60 + startM);
+    return Math.max(0, duration); // マイナスにならないようにする
   };
 
+  const duration = calculateDuration();
+  const isValidTime = duration > 0;
+
   const handleSubmit = () => {
+    if (!isValidTime) return;
     onSave({
       training_date: date,
       start_time: startTime,
       end_time: endTime,
-      duration_minutes: calculateDuration(),
+      duration_minutes: duration,
       content: content || undefined,
       notes: notes || undefined,
       condition,
@@ -372,64 +377,73 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
 
   return (
     <div 
-      className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-end z-50 animate-fade-in"
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end z-50 animate-fade-in"
       onClick={onClose}
     >
       <div
-        className="w-full rounded-t-3xl p-5 max-h-[85%] overflow-auto animate-slide-up"
-        style={{ background: theme.bg }}
+        className="w-full rounded-t-3xl p-5 animate-slide-up"
+        style={{ background: theme.bg, maxHeight: '90vh' }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-4">
           <h3 className="text-white font-semibold text-lg">練習を記録</h3>
           <button onClick={onClose}>
             <X size={24} className="text-white/60" />
           </button>
         </div>
 
-        <div className="space-y-4">
+        <div className="overflow-auto space-y-3" style={{ maxHeight: 'calc(90vh - 80px)' }}>
           {/* 日付 */}
           <div>
-            <label className="text-white/50 text-sm mb-2 block">日付 *</label>
+            <label className="text-white/50 text-xs mb-1 block">日付 *</label>
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none border border-white/10 focus:border-white/30"
+              className="w-full bg-white/5 rounded-lg px-3 py-2.5 text-white outline-none border border-white/10 focus:border-white/30 text-sm"
             />
           </div>
 
           {/* 時間 */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-white/50 text-sm mb-2 block">開始時刻</label>
+              <label className="text-white/50 text-xs mb-1 block">開始時刻</label>
               <input
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none border border-white/10 focus:border-white/30"
+                className="w-full bg-white/5 rounded-lg px-3 py-2.5 text-white outline-none border border-white/10 focus:border-white/30 text-sm"
               />
             </div>
             <div>
-              <label className="text-white/50 text-sm mb-2 block">終了時刻</label>
+              <label className="text-white/50 text-xs mb-1 block">終了時刻</label>
               <input
                 type="time"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
-                className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none border border-white/10 focus:border-white/30"
+                className="w-full bg-white/5 rounded-lg px-3 py-2.5 text-white outline-none border border-white/10 focus:border-white/30 text-sm"
               />
             </div>
+          </div>
+          
+          {/* 練習時間表示 */}
+          <div className={`text-center py-2 rounded-lg ${isValidTime ? 'text-white/60' : 'text-red-400 bg-red-400/10'}`}>
+            {isValidTime ? (
+              <span className="text-sm">練習時間: {Math.floor(duration / 60)}時間{duration % 60}分</span>
+            ) : (
+              <span className="text-sm">終了時刻は開始時刻より後にしてください</span>
+            )}
           </div>
 
           {/* コンディション */}
           <div>
-            <label className="text-white/50 text-sm mb-2 block">コンディション</label>
-            <div className="flex gap-2">
+            <label className="text-white/50 text-xs mb-1 block">コンディション</label>
+            <div className="flex gap-1.5">
               {[1, 2, 3, 4, 5].map((n) => (
                 <button
                   key={n}
                   onClick={() => setCondition(n)}
-                  className="flex-1 py-3 rounded-lg transition-all"
+                  className="flex-1 py-2 rounded-lg transition-all"
                   style={{
                     background: n <= condition ? theme.gradient : theme.card,
                   }}
@@ -442,44 +456,46 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
 
           {/* スパーリング本数 */}
           <div>
-            <label className="text-white/50 text-sm mb-2 block">スパーリング本数</label>
+            <label className="text-white/50 text-xs mb-1 block">スパーリング本数</label>
             <input
               type="number"
+              min="0"
               value={sparringRounds}
               onChange={(e) => setSparringRounds(e.target.value)}
               placeholder="例: 5"
-              className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30"
+              className="w-full bg-white/5 rounded-lg px-3 py-2.5 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30 text-sm"
             />
           </div>
 
           {/* 内容 */}
           <div>
-            <label className="text-white/50 text-sm mb-2 block">練習内容</label>
+            <label className="text-white/50 text-xs mb-1 block">練習内容</label>
             <input
               type="text"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="例: テクニック練習、スパーリング"
-              className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30"
+              className="w-full bg-white/5 rounded-lg px-3 py-2.5 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30 text-sm"
             />
           </div>
 
           {/* メモ */}
           <div>
-            <label className="text-white/50 text-sm mb-2 block">気づき・メモ</label>
+            <label className="text-white/50 text-xs mb-1 block">気づき・メモ</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="うまくいったこと、改善点など..."
-              rows={3}
-              className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30 resize-none"
+              rows={2}
+              className="w-full bg-white/5 rounded-lg px-3 py-2.5 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30 resize-none text-sm"
             />
           </div>
 
           {/* 保存ボタン */}
           <button
             onClick={handleSubmit}
-            className="w-full py-4 rounded-xl text-white font-semibold mt-4"
+            disabled={!isValidTime}
+            className="w-full py-3 rounded-xl text-white font-semibold mt-2 disabled:opacity-50"
             style={{ background: theme.gradient }}
           >
             保存

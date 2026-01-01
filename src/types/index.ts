@@ -57,6 +57,7 @@ export interface Flow {
   name: string;
   description?: string;
   tags: string[];
+  flow_data?: Record<string, any>; // ノードとエッジのデータ
   is_favorite: boolean;
   created_at: string;
   updated_at: string;

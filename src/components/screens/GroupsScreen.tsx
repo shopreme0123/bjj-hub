@@ -1,22 +1,18 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Plus, Users, ChevronRight, GitBranch, X, Copy, Check, ChevronLeft } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Plus, Users, ChevronRight, GitBranch, X, Copy, Check, ChevronLeft, Loader2 } from 'lucide-react';
 import { useApp } from '@/lib/context';
 import { useAuth } from '@/lib/auth-context';
 import { useToast } from '@/components/ui/Toast';
+import { supabase } from '@/lib/supabase';
 import { Card } from '@/components/ui/Card';
 import { Header } from '@/components/ui/Header';
 import { Group, Flow } from '@/types';
 
-interface LocalGroup {
-  id: string;
-  name: string;
-  description?: string;
-  invite_code: string;
-  created_by: string;
-  members: string[];
-  created_at: string;
+interface GroupWithMembers extends Group {
+  member_count: number;
+  is_admin: boolean;
 }
 
 interface GroupsScreenProps {
@@ -29,71 +25,168 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
   const { showToast } = useToast();
   const [inviteCode, setInviteCode] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [groups, setGroups] = useState<LocalGroup[]>([]);
+  const [groups, setGroups] = useState<GroupWithMembers[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [joining, setJoining] = useState(false);
 
-  // localStorageからグループを読み込み
-  useEffect(() => {
-    const saved = localStorage.getItem('bjj-hub-groups');
-    if (saved) {
-      setGroups(JSON.parse(saved));
+  // グループを読み込み
+  const loadGroups = useCallback(async () => {
+    if (!user) return;
+    setLoading(true);
+
+    try {
+      // 自分が参加しているグループを取得
+      const { data: memberships, error: memberError } = await supabase
+        .from('group_members')
+        .select('group_id, role')
+        .eq('user_id', user.id);
+
+      if (memberError) throw memberError;
+
+      if (!memberships || memberships.length === 0) {
+        setGroups([]);
+        setLoading(false);
+        return;
+      }
+
+      const groupIds = memberships.map(m => m.group_id);
+
+      // グループ情報を取得
+      const { data: groupsData, error: groupError } = await supabase
+        .from('groups')
+        .select('*')
+        .in('id', groupIds);
+
+      if (groupError) throw groupError;
+
+      // メンバー数を取得
+      const groupsWithCount = await Promise.all(
+        (groupsData || []).map(async (group) => {
+          const { count } = await supabase
+            .from('group_members')
+            .select('*', { count: 'exact', head: true })
+            .eq('group_id', group.id);
+
+          const membership = memberships.find(m => m.group_id === group.id);
+
+          return {
+            ...group,
+            member_count: count || 1,
+            is_admin: membership?.role === 'admin' || group.created_by === user.id,
+          };
+        })
+      );
+
+      setGroups(groupsWithCount);
+    } catch (error) {
+      console.error('Error loading groups:', error);
+      showToast('グループの読み込みに失敗しました', 'error');
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  }, [user, showToast]);
 
-  // グループを保存
-  const saveGroups = (newGroups: LocalGroup[]) => {
-    setGroups(newGroups);
-    localStorage.setItem('bjj-hub-groups', JSON.stringify(newGroups));
-  };
+  useEffect(() => {
+    loadGroups();
+  }, [loadGroups]);
 
   // グループを作成
-  const handleCreateGroup = (data: { name: string; description?: string }) => {
+  const handleCreateGroup = async (data: { name: string; description?: string }) => {
     if (!user) return;
-    
-    const inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-    const newGroup: LocalGroup = {
-      id: `group-${Date.now()}`,
-      name: data.name,
-      description: data.description,
-      invite_code: inviteCode,
-      created_by: user.id,
-      members: [user.id],
-      created_at: new Date().toISOString(),
-    };
-    
-    saveGroups([...groups, newGroup]);
-    setShowCreateModal(false);
-    showToast('グループを作成しました');
+
+    try {
+      const inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+      // グループを作成
+      const { data: newGroup, error: groupError } = await supabase
+        .from('groups')
+        .insert({
+          name: data.name,
+          description: data.description,
+          invite_code: inviteCode,
+          created_by: user.id,
+        })
+        .select()
+        .single();
+
+      if (groupError) throw groupError;
+
+      // 作成者をメンバーとして追加（admin）
+      const { error: memberError } = await supabase
+        .from('group_members')
+        .insert({
+          group_id: newGroup.id,
+          user_id: user.id,
+          role: 'admin',
+        });
+
+      if (memberError) throw memberError;
+
+      setShowCreateModal(false);
+      showToast('グループを作成しました');
+      loadGroups();
+    } catch (error) {
+      console.error('Error creating group:', error);
+      showToast('グループの作成に失敗しました', 'error');
+    }
   };
 
   // 招待コードで参加
-  const handleJoinGroup = () => {
+  const handleJoinGroup = async () => {
     if (!user || !inviteCode.trim()) return;
-    
-    const code = inviteCode.trim().toUpperCase();
-    const group = groups.find(g => g.invite_code === code);
-    
-    if (!group) {
-      showToast('招待コードが見つかりません', 'error');
-      return;
-    }
-    
-    if (group.members.includes(user.id)) {
-      showToast('すでに参加しています', 'info');
-      return;
-    }
-    
-    const updated = groups.map(g => 
-      g.id === group.id 
-        ? { ...g, members: [...g.members, user.id] }
-        : g
-    );
-    saveGroups(updated);
-    setInviteCode('');
-    showToast('グループに参加しました');
-  };
 
-  // ユーザーが参加しているグループのみ表示
-  const myGroups = groups.filter(g => user && g.members.includes(user.id));
+    setJoining(true);
+    try {
+      const code = inviteCode.trim().toUpperCase();
+
+      // 招待コードでグループを検索
+      const { data: group, error: groupError } = await supabase
+        .from('groups')
+        .select('*')
+        .eq('invite_code', code)
+        .single();
+
+      if (groupError || !group) {
+        showToast('招待コードが見つかりません', 'error');
+        setJoining(false);
+        return;
+      }
+
+      // 既に参加しているか確認
+      const { data: existing } = await supabase
+        .from('group_members')
+        .select('id')
+        .eq('group_id', group.id)
+        .eq('user_id', user.id)
+        .single();
+
+      if (existing) {
+        showToast('すでに参加しています', 'info');
+        setJoining(false);
+        return;
+      }
+
+      // メンバーとして追加
+      const { error: memberError } = await supabase
+        .from('group_members')
+        .insert({
+          group_id: group.id,
+          user_id: user.id,
+          role: 'member',
+        });
+
+      if (memberError) throw memberError;
+
+      setInviteCode('');
+      showToast('グループに参加しました');
+      loadGroups();
+    } catch (error) {
+      console.error('Error joining group:', error);
+      showToast('参加に失敗しました', 'error');
+    } finally {
+      setJoining(false);
+    }
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -119,21 +212,25 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
             />
             <button
               onClick={handleJoinGroup}
-              disabled={!inviteCode.trim()}
-              className="px-4 rounded-lg text-white font-medium disabled:opacity-50"
+              disabled={!inviteCode.trim() || joining}
+              className="px-4 rounded-lg text-white font-medium disabled:opacity-50 flex items-center gap-2"
               style={{ background: theme.gradient }}
             >
-              参加
+              {joining ? <Loader2 size={16} className="animate-spin" /> : '参加'}
             </button>
           </div>
         </Card>
 
         {/* グループ一覧 */}
-        {myGroups.length > 0 ? (
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 size={32} className="animate-spin text-white/30" />
+          </div>
+        ) : groups.length > 0 ? (
           <div className="space-y-3">
             <h3 className="text-white/50 text-sm font-medium">参加中のグループ</h3>
-            {myGroups.map((group) => (
-              <Card key={group.id} onClick={() => onSelectGroup(group as any)}>
+            {groups.map((group) => (
+              <Card key={group.id} onClick={() => onSelectGroup(group)}>
                 <div className="flex items-center gap-4">
                   <div
                     className="w-14 h-14 rounded-xl flex items-center justify-center"
@@ -144,7 +241,7 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <p className="text-white font-medium">{group.name}</p>
-                      {user && group.created_by === user.id && (
+                      {group.is_admin && (
                         <span
                           className="text-[10px] px-1.5 py-0.5 rounded"
                           style={{ background: `${theme.accent}20`, color: theme.accent }}
@@ -153,7 +250,7 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
                         </span>
                       )}
                     </div>
-                    <p className="text-white/40 text-sm mt-0.5">{group.members.length}人</p>
+                    <p className="text-white/40 text-sm mt-0.5">{group.member_count}人</p>
                   </div>
                   <ChevronRight size={18} className="text-white/20" />
                 </div>
@@ -203,18 +300,21 @@ interface CreateGroupModalProps {
 function CreateGroupModal({ theme, onClose, onSave }: CreateGroupModalProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [saving, setSaving] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!name.trim()) return;
-    onSave({
+    setSaving(true);
+    await onSave({
       name: name.trim(),
       description: description.trim() || undefined,
     });
+    setSaving(false);
   };
 
   return (
     <div 
-      className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-end z-50 animate-fade-in"
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end z-50 animate-fade-in"
       onClick={onClose}
     >
       <div
@@ -254,11 +354,11 @@ function CreateGroupModal({ theme, onClose, onSave }: CreateGroupModalProps) {
 
           <button
             onClick={handleSubmit}
-            disabled={!name.trim()}
-            className="w-full py-4 rounded-xl text-white font-semibold mt-4 disabled:opacity-50"
+            disabled={!name.trim() || saving}
+            className="w-full py-4 rounded-xl text-white font-semibold mt-4 disabled:opacity-50 flex items-center justify-center gap-2"
             style={{ background: theme.gradient }}
           >
-            作成
+            {saving ? <Loader2 size={18} className="animate-spin" /> : '作成'}
           </button>
         </div>
       </div>
@@ -278,26 +378,57 @@ export function GroupDetailScreen({ group, onBack }: GroupDetailScreenProps) {
   const { user } = useAuth();
   const { showToast } = useToast();
   const [copied, setCopied] = useState(false);
-  const [localGroup, setLocalGroup] = useState<LocalGroup | null>(null);
+  const [memberCount, setMemberCount] = useState(1);
+  const [loading, setLoading] = useState(true);
 
-  // localStorageからグループ情報を取得
+  // グループ情報を取得
   useEffect(() => {
-    const saved = localStorage.getItem('bjj-hub-groups');
-    if (saved) {
-      const groups: LocalGroup[] = JSON.parse(saved);
-      const found = groups.find(g => g.id === group.id);
-      if (found) {
-        setLocalGroup(found);
+    const loadGroupInfo = async () => {
+      try {
+        const { count } = await supabase
+          .from('group_members')
+          .select('*', { count: 'exact', head: true })
+          .eq('group_id', group.id);
+
+        setMemberCount(count || 1);
+      } catch (error) {
+        console.error('Error loading group info:', error);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
+
+    loadGroupInfo();
   }, [group.id]);
 
   const handleCopyCode = () => {
-    if (localGroup?.invite_code) {
-      navigator.clipboard.writeText(localGroup.invite_code);
+    if (group.invite_code) {
+      navigator.clipboard.writeText(group.invite_code);
       setCopied(true);
       showToast('招待コードをコピーしました');
       setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const handleLeaveGroup = async () => {
+    if (!user) return;
+    
+    if (!confirm('このグループから退出しますか？')) return;
+
+    try {
+      const { error } = await supabase
+        .from('group_members')
+        .delete()
+        .eq('group_id', group.id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      showToast('グループから退出しました');
+      onBack();
+    } catch (error) {
+      console.error('Error leaving group:', error);
+      showToast('退出に失敗しました', 'error');
     }
   };
 
@@ -317,7 +448,7 @@ export function GroupDetailScreen({ group, onBack }: GroupDetailScreenProps) {
             </div>
             <div>
               <h2 className="text-white font-semibold text-lg">{group.name}</h2>
-              <p className="text-white/40 text-sm">{localGroup?.members.length || 1}人のメンバー</p>
+              <p className="text-white/40 text-sm">{memberCount}人のメンバー</p>
             </div>
           </div>
           {group.description && (
@@ -326,7 +457,7 @@ export function GroupDetailScreen({ group, onBack }: GroupDetailScreenProps) {
         </Card>
 
         {/* 招待コード */}
-        {localGroup && (
+        {group.invite_code && (
           <Card>
             <p className="text-white/50 text-sm mb-2">招待コード</p>
             <div className="flex items-center gap-3">
@@ -334,7 +465,7 @@ export function GroupDetailScreen({ group, onBack }: GroupDetailScreenProps) {
                 className="flex-1 py-3 px-4 rounded-lg text-center text-2xl font-mono tracking-widest text-white"
                 style={{ background: theme.card }}
               >
-                {localGroup.invite_code}
+                {group.invite_code}
               </div>
               <button
                 onClick={handleCopyCode}
@@ -365,6 +496,15 @@ export function GroupDetailScreen({ group, onBack }: GroupDetailScreenProps) {
             </p>
           </Card>
         </div>
+
+        {/* 退出ボタン */}
+        <button
+          onClick={handleLeaveGroup}
+          className="w-full py-3 rounded-xl text-red-400 flex items-center justify-center gap-2 text-sm"
+          style={{ background: 'rgba(239, 68, 68, 0.1)' }}
+        >
+          グループから退出
+        </button>
       </div>
     </div>
   );

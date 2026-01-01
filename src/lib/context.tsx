@@ -117,6 +117,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setFlows(data.map(f => ({
         ...f,
         tags: f.tags || [],
+        flow_data: f.flow_data || {},
       })));
     }
     setLoadingFlows(false);

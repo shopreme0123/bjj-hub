@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import ReactFlow, {
   Node,
   Edge,
@@ -16,12 +16,13 @@ import ReactFlow, {
   NodeProps,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Plus, GitBranch, Star, X, GripVertical, Trash2, ChevronLeft } from 'lucide-react';
+import { Plus, GitBranch, Star, X, GripVertical, Trash2, ChevronLeft, Save } from 'lucide-react';
 import { useApp } from '@/lib/context';
 import { useToast } from '@/components/ui/Toast';
 import { Card } from '@/components/ui/Card';
 import { Header } from '@/components/ui/Header';
 import { Flow, Technique } from '@/types';
+import { techniqueCategories } from './TechniquesScreen';
 
 interface FlowsScreenProps {
   onOpenEditor: (flow?: Flow) => void;
@@ -122,21 +123,27 @@ export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
                   </div>
                   <div>
                     <p className="text-white font-medium">{flow.name}</p>
-                    <p className="text-white/30 text-xs mt-0.5">
-                      {flow.description || 'タップして編集'}
-                    </p>
+                    {flow.description && (
+                      <p className="text-white/40 text-xs mt-0.5 line-clamp-1">
+                        {flow.description}
+                      </p>
+                    )}
                   </div>
                 </div>
-                <button onClick={(e) => handleToggleFavorite(e, flow)}>
-                  <Star 
-                    size={16} 
-                    style={{ color: flow.is_favorite ? theme.accent : 'rgba(255,255,255,0.3)' }} 
-                    fill={flow.is_favorite ? theme.accent : 'transparent'} 
+                <button
+                  onClick={(e) => handleToggleFavorite(e, flow)}
+                  className="p-1"
+                >
+                  <Star
+                    size={18}
+                    className="text-white/30"
+                    fill={flow.is_favorite ? theme.accent : 'transparent'}
+                    style={{ color: flow.is_favorite ? theme.accent : 'rgba(255,255,255,0.3)' }}
                   />
                 </button>
               </div>
-              {flow.tags.length > 0 && (
-                <div className="flex gap-2">
+              {flow.tags && flow.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
                   {flow.tags.map((tag, j) => (
                     <span
                       key={j}
@@ -191,11 +198,7 @@ function AddFlowModal({ theme, onClose, onSave }: AddFlowModalProps) {
 
   const handleSubmit = () => {
     if (!name.trim()) return;
-    onSave({
-      name: name.trim(),
-      description: description.trim() || undefined,
-      tags,
-    });
+    onSave({ name: name.trim(), description: description.trim() || undefined, tags });
   };
 
   return (
@@ -204,7 +207,7 @@ function AddFlowModal({ theme, onClose, onSave }: AddFlowModalProps) {
       onClick={onClose}
     >
       <div
-        className="w-full rounded-t-3xl p-5 max-h-[80%] overflow-auto animate-slide-up"
+        className="w-full rounded-t-3xl p-5 max-h-[85%] overflow-auto animate-slide-up"
         style={{ background: theme.bg }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -234,7 +237,7 @@ function AddFlowModal({ theme, onClose, onSave }: AddFlowModalProps) {
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="フローの概要..."
+              placeholder="フローの説明..."
               rows={2}
               className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30 resize-none"
             />
@@ -243,7 +246,7 @@ function AddFlowModal({ theme, onClose, onSave }: AddFlowModalProps) {
           {/* タグ */}
           <div>
             <label className="text-white/50 text-sm mb-2 block">タグ</label>
-            <div className="flex gap-2 mb-2">
+            <div className="flex gap-2">
               <input
                 type="text"
                 value={tagInput}
@@ -261,7 +264,7 @@ function AddFlowModal({ theme, onClose, onSave }: AddFlowModalProps) {
               </button>
             </div>
             {tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 mt-2">
                 {tags.map((tag, i) => (
                   <span
                     key={i}
@@ -296,7 +299,7 @@ function AddFlowModal({ theme, onClose, onSave }: AddFlowModalProps) {
   );
 }
 
-// カスタムノードコンポーネント
+// カスタムノードコンポーネント（分岐対応）
 interface CustomNodeData {
   label: string;
   type: 'position' | 'technique' | 'submission' | 'sweep';
@@ -325,23 +328,47 @@ function TechniqueNode({ data, selected }: NodeProps<CustomNodeData>) {
         background: style.bg,
         border: `2px solid ${style.border}`,
         boxShadow: selected ? `0 8px 30px ${theme.primary}40` : 'none',
+        minWidth: '120px',
       }}
     >
+      {/* 上部ハンドル（入力） */}
       <Handle
         type="target"
         position={Position.Top}
         className="!bg-blue-500 !w-3 !h-3 !border-2 !border-white"
       />
+      
       <div className="flex items-center gap-2">
         <GripVertical size={14} className="text-white/30" />
         <span className="text-white text-sm font-medium whitespace-nowrap">
           {data.label}
         </span>
       </div>
+      
+      {/* 下部ハンドル（出力・メイン） */}
       <Handle
         type="source"
         position={Position.Bottom}
+        id="main"
         className="!bg-blue-500 !w-3 !h-3 !border-2 !border-white"
+      />
+      
+      {/* 左側ハンドル（分岐1） */}
+      <Handle
+        type="source"
+        position={Position.Left}
+        id="branch-left"
+        className="!bg-green-500 !w-2.5 !h-2.5 !border-2 !border-white"
+        style={{ top: '50%' }}
+      />
+      
+      {/* 右側ハンドル（分岐2） */}
+      <Handle
+        type="source"
+        position={Position.Right}
+        id="branch-right"
+        className="!bg-orange-500 !w-2.5 !h-2.5 !border-2 !border-white"
+        style={{ top: '50%' }}
       />
     </div>
   );
@@ -359,32 +386,66 @@ interface FlowEditorProps {
 
 export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
   const { theme, techniques, updateFlow, deleteFlow } = useApp();
+  const { showToast } = useToast();
   const [flowName, setFlowName] = useState(flow?.name || '新しいフロー');
   const [showTechniquePanel, setShowTechniquePanel] = useState(false);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [hasChanges, setHasChanges] = useState(false);
 
-  const initialNodes: Node<CustomNodeData>[] = [
-    {
-      id: '1',
-      type: 'technique',
-      position: { x: 150, y: 50 },
-      data: { label: 'スタート', type: 'position' },
-    },
-  ];
+  // 初期ノード（保存データがあれば復元）
+  const getInitialNodes = (): Node<CustomNodeData>[] => {
+    if (flow?.flow_data && typeof flow.flow_data === 'object') {
+      const data = flow.flow_data as any;
+      if (data.nodes && Array.isArray(data.nodes)) {
+        return data.nodes;
+      }
+    }
+    return [
+      {
+        id: '1',
+        type: 'technique',
+        position: { x: 150, y: 50 },
+        data: { label: 'スタート', type: 'position' },
+      },
+    ];
+  };
 
-  const initialEdges: Edge[] = [];
+  // 初期エッジ（保存データがあれば復元）
+  const getInitialEdges = (): Edge[] => {
+    if (flow?.flow_data && typeof flow.flow_data === 'object') {
+      const data = flow.flow_data as any;
+      if (data.edges && Array.isArray(data.edges)) {
+        return data.edges;
+      }
+    }
+    return [];
+  };
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState(getInitialNodes());
+  const [edges, setEdges, onEdgesChange] = useEdgesState(getInitialEdges());
+
+  // 変更を追跡
+  useEffect(() => {
+    setHasChanges(true);
+  }, [nodes, edges]);
 
   const onConnect = useCallback(
-    (params: Connection) =>
+    (params: Connection) => {
+      // エッジの色をハンドルIDに基づいて設定
+      let strokeColor = theme.primary;
+      if (params.sourceHandle === 'branch-left') {
+        strokeColor = '#22c55e'; // green
+      } else if (params.sourceHandle === 'branch-right') {
+        strokeColor = '#f97316'; // orange
+      }
+      
       setEdges((eds) =>
         addEdge(
-          { ...params, animated: true, style: { stroke: theme.primary } },
+          { ...params, animated: true, style: { stroke: strokeColor, strokeWidth: 2 } },
           eds
         )
-      ),
+      );
+    },
     [setEdges, theme.primary]
   );
 
@@ -418,16 +479,23 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
     setShowTechniquePanel(false);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (flow) {
-      updateFlow(flow.id, { name: flowName });
+      // ノードとエッジをflow_dataに保存
+      await updateFlow(flow.id, { 
+        name: flowName,
+        flow_data: { nodes, edges }
+      });
+      showToast('フローを保存しました');
+      setHasChanges(false);
     }
     onBack();
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (flow && confirm('このフローを削除しますか？')) {
-      deleteFlow(flow.id);
+      await deleteFlow(flow.id);
+      showToast('フローを削除しました');
       onBack();
     }
   };
@@ -437,30 +505,37 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
       {/* ヘッダー */}
       <div
         className="px-4 py-3 flex items-center justify-between border-b"
-        style={{ borderColor: theme.cardBorder }}
+        style={{ borderColor: theme.cardBorder, background: theme.bg }}
       >
         <button onClick={onBack} className="p-1">
-          <X size={22} className="text-white/60" />
+          <ChevronLeft size={22} className="text-white/60" />
         </button>
-        <span className="text-white font-medium">フローエディタ</span>
+        <input
+          type="text"
+          value={flowName}
+          onChange={(e) => setFlowName(e.target.value)}
+          className="text-white font-medium bg-transparent text-center outline-none flex-1 mx-4"
+          placeholder="フロー名"
+        />
         <button
           onClick={handleSave}
-          className="px-4 py-1.5 rounded-full text-sm font-medium text-white"
+          className="px-4 py-1.5 rounded-full text-sm font-medium text-white flex items-center gap-1"
           style={{ background: theme.gradient }}
         >
+          <Save size={14} />
           保存
         </button>
       </div>
 
       {/* ツールバー */}
       <div
-        className="flex gap-2 px-4 py-3 border-b overflow-x-auto"
-        style={{ borderColor: theme.cardBorder }}
+        className="px-4 py-2 flex items-center gap-2 border-b"
+        style={{ borderColor: theme.cardBorder, background: theme.bg }}
       >
         <button
           onClick={() => setShowTechniquePanel(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm whitespace-nowrap"
-          style={{ background: theme.gradient, color: 'white' }}
+          className="px-3 py-1.5 rounded-lg text-xs flex items-center gap-1"
+          style={{ background: theme.card, color: 'white' }}
         >
           <Plus size={14} />
           技を追加
@@ -468,33 +543,18 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
         {selectedNodeId && (
           <button
             onClick={deleteSelectedNode}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm whitespace-nowrap text-red-400"
-            style={{ background: 'rgba(239, 68, 68, 0.1)' }}
+            className="px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 bg-red-500/20 text-red-400"
           >
             <Trash2 size={14} />
             選択中を削除
           </button>
         )}
-        {flow && (
-          <button
-            onClick={handleDelete}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm whitespace-nowrap text-red-400"
-            style={{ background: 'rgba(239, 68, 68, 0.1)' }}
-          >
-            <Trash2 size={14} />
-            フロー削除
-          </button>
-        )}
+        <div className="ml-auto text-white/30 text-xs">
+          青=メイン / 緑=分岐1 / 橙=分岐2
+        </div>
       </div>
 
-      {/* 操作ヒント */}
-      <div className="px-4 py-2 text-xs text-white/40 flex items-center gap-4">
-        <span>• ドラッグで移動</span>
-        <span>• 端子をつないで接続</span>
-        {selectedNodeId && <span className="text-yellow-400">• ノード選択中</span>}
-      </div>
-
-      {/* React Flow キャンバス */}
+      {/* React Flow エディタ */}
       <div className="flex-1">
         <ReactFlow
           nodes={nodes}
@@ -508,50 +568,38 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
           fitView
           style={{ background: theme.bg }}
         >
+          <Controls
+            style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}
+          />
           <Background
             variant={BackgroundVariant.Dots}
             gap={20}
             size={1}
-            color={`${theme.primary}30`}
-          />
-          <Controls
-            style={{
-              background: theme.card,
-              border: `1px solid ${theme.cardBorder}`,
-              borderRadius: '12px',
-            }}
+            color={theme.cardBorder}
           />
         </ReactFlow>
       </div>
 
-      {/* フロー情報 */}
-      <div
-        className="px-4 py-4 border-t"
-        style={{ borderColor: theme.cardBorder }}
-      >
-        <input
-          type="text"
-          value={flowName}
-          onChange={(e) => setFlowName(e.target.value)}
-          className="text-white font-medium bg-transparent outline-none w-full"
-          placeholder="フロー名を入力"
-        />
-        <div className="flex gap-2 mt-2">
-          {flow?.tags.map((tag, i) => (
-            <span key={i} className="text-xs" style={{ color: theme.accent }}>
-              #{tag}
-            </span>
-          ))}
-          <button className="text-xs text-white/30">+ タグ</button>
+      {/* 削除ボタン */}
+      {flow && (
+        <div className="px-4 py-3 border-t" style={{ borderColor: theme.cardBorder, background: theme.bg }}>
+          <button
+            onClick={handleDelete}
+            className="w-full py-3 rounded-xl text-red-400 flex items-center justify-center gap-2 text-sm"
+            style={{ background: 'rgba(239, 68, 68, 0.1)' }}
+          >
+            <Trash2 size={16} />
+            このフローを削除
+          </button>
         </div>
-      </div>
+      )}
 
-      {/* 技追加パネル */}
+      {/* 技選択パネル */}
       {showTechniquePanel && (
         <TechniqueSelectPanel
           theme={theme}
           techniques={techniques}
-          onSelect={(label, type) => addNode(label, type)}
+          onSelect={addNode}
           onClose={() => setShowTechniquePanel(false)}
         />
       )}
@@ -560,49 +608,29 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
 }
 
 // 技選択パネル（カテゴリ→技の2段階選択）
-import { techniqueCategories } from './TechniquesScreen';
-
 interface TechniqueSelectPanelProps {
   theme: any;
   techniques: Technique[];
-  onSelect: (label: string, type: 'position' | 'technique' | 'submission' | 'sweep') => void;
+  onSelect: (label: string, type: CustomNodeData['type']) => void;
   onClose: () => void;
 }
 
 function TechniqueSelectPanel({ theme, techniques, onSelect, onClose }: TechniqueSelectPanelProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [customLabel, setCustomLabel] = useState('');
 
-  // カテゴリごとの技を取得
-  const getTechniquesByCategory = (categoryId: string) => {
-    return techniques.filter(t => 
-      t.category === categoryId ||
-      t.tags.some(tag => {
-        const cat = techniqueCategories.find(c => c.id === categoryId);
-        return cat && tag.includes(cat.name);
-      })
-    );
-  };
+  const filteredTechniques = selectedCategory
+    ? techniques.filter(t => t.category === selectedCategory)
+    : [];
 
-  const getNodeType = (techType: string): 'position' | 'technique' | 'submission' | 'sweep' => {
-    if (techType === 'submission') return 'submission';
-    if (techType === 'sweep') return 'sweep';
-    if (techType === 'position') return 'position';
+  const getTypeFromTechnique = (tech: Technique): CustomNodeData['type'] => {
+    if (tech.technique_type === 'submission') return 'submission';
+    if (tech.technique_type === 'sweep') return 'sweep';
     return 'technique';
   };
 
-  const getNodeStyle = (type: string) => {
-    switch (type) {
-      case 'submission':
-        return { bg: `${theme.primary}30`, border: theme.primary };
-      case 'sweep':
-        return { bg: `${theme.accent}20`, border: theme.accent };
-      default:
-        return { bg: theme.card, border: theme.cardBorder };
-    }
-  };
-
   return (
-    <div 
+    <div
       className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-end z-50 animate-fade-in"
       onClick={onClose}
     >
@@ -612,89 +640,87 @@ function TechniqueSelectPanel({ theme, techniques, onSelect, onClose }: Techniqu
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-2">
-            {selectedCategory && (
-              <button 
-                onClick={() => setSelectedCategory(null)}
-                className="p-1 rounded-lg"
-                style={{ background: theme.card }}
-              >
-                <ChevronLeft size={18} className="text-white/60" />
-              </button>
-            )}
-            <h3 className="text-white font-semibold">
-              {selectedCategory 
-                ? techniqueCategories.find(c => c.id === selectedCategory)?.name 
-                : 'カテゴリを選択'}
-            </h3>
-          </div>
+          <h3 className="text-white font-semibold text-lg">
+            {selectedCategory ? '技を選択' : 'カテゴリを選択'}
+          </h3>
           <button onClick={onClose}>
-            <X size={20} className="text-white/60" />
+            <X size={24} className="text-white/60" />
           </button>
         </div>
 
         {!selectedCategory ? (
-          // カテゴリ選択
-          <div className="grid grid-cols-3 gap-3">
-            {techniqueCategories.map((cat) => {
-              const count = getTechniquesByCategory(cat.id).length;
-              return (
+          <>
+            {/* カスタムラベル入力 */}
+            <div className="mb-4">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={customLabel}
+                  onChange={(e) => setCustomLabel(e.target.value)}
+                  placeholder="カスタム名を入力..."
+                  className="flex-1 bg-white/5 rounded-lg px-4 py-2.5 text-white outline-none placeholder:text-white/30 border border-white/10"
+                />
+                <button
+                  onClick={() => {
+                    if (customLabel.trim()) {
+                      onSelect(customLabel.trim(), 'position');
+                      setCustomLabel('');
+                    }
+                  }}
+                  disabled={!customLabel.trim()}
+                  className="px-4 rounded-lg text-white disabled:opacity-50"
+                  style={{ background: theme.gradient }}
+                >
+                  追加
+                </button>
+              </div>
+            </div>
+
+            {/* カテゴリ一覧 */}
+            <div className="grid grid-cols-2 gap-2">
+              {techniqueCategories.map((cat) => (
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className="p-4 rounded-xl text-center transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  className="p-4 rounded-xl text-left flex items-center gap-3"
                   style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}
                 >
-                  <span className="text-2xl block">{cat.icon}</span>
-                  <span className="text-white text-xs mt-2 block">{cat.name}</span>
-                  <span className="text-white/40 text-[10px] block">{count}技</span>
+                  <span className="text-2xl">{cat.icon}</span>
+                  <span className="text-white text-sm">{cat.name}</span>
                 </button>
-              );
-            })}
-            {/* ポジションノードを追加 */}
-            <button
-              onClick={() => onSelect('ポジション', 'position')}
-              className="p-4 rounded-xl text-center transition-all hover:scale-[1.02] active:scale-[0.98]"
-              style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}
-            >
-              <span className="text-2xl block">📍</span>
-              <span className="text-white text-xs mt-2 block">ポジション</span>
-              <span className="text-white/40 text-[10px] block">ノード追加</span>
-            </button>
-          </div>
+              ))}
+            </div>
+          </>
         ) : (
-          // 技選択
-          <div className="space-y-2">
-            {getTechniquesByCategory(selectedCategory).length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-white/40 text-sm">このカテゴリには技が登録されていません</p>
-                <p className="text-white/30 text-xs mt-2">技ライブラリから技を追加してください</p>
-              </div>
+          <>
+            <button
+              onClick={() => setSelectedCategory(null)}
+              className="text-white/50 text-sm mb-4 flex items-center gap-1"
+            >
+              <ChevronLeft size={16} />
+              カテゴリに戻る
+            </button>
+
+            {filteredTechniques.length === 0 ? (
+              <p className="text-white/40 text-center py-8">
+                このカテゴリに技がありません
+              </p>
             ) : (
-              getTechniquesByCategory(selectedCategory).map((tech) => {
-                const nodeType = getNodeType(tech.technique_type);
-                const style = getNodeStyle(nodeType);
-                return (
+              <div className="space-y-2">
+                {filteredTechniques.map((tech) => (
                   <button
                     key={tech.id}
-                    onClick={() => onSelect(tech.name, nodeType)}
-                    className="w-full p-3 rounded-xl text-left transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center gap-3"
-                    style={{ background: style.bg, border: `1px solid ${style.border}` }}
+                    onClick={() => onSelect(tech.name, getTypeFromTechnique(tech))}
+                    className="w-full p-3 rounded-lg text-left flex items-center gap-3"
+                    style={{ background: theme.card }}
                   >
-                    <div className="flex-1">
-                      <span className="text-white text-sm block">{tech.name}</span>
-                      {tech.name_en && (
-                        <span className="text-white/40 text-xs">{tech.name_en}</span>
-                      )}
-                    </div>
-                    <span className="text-white/40 text-xs capitalize px-2 py-1 rounded" style={{ background: 'rgba(255,255,255,0.1)' }}>
-                      {tech.technique_type}
-                    </span>
+                    <span className="text-white">{tech.name}</span>
+                    <span className="text-white/40 text-xs ml-auto">{tech.technique_type}</span>
                   </button>
-                );
-              })
+                ))}
+              </div>
             )}
-          </div>
+          </>
         )}
       </div>
     </div>

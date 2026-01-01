@@ -572,21 +572,45 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
     f.tags.some(tag => technique.name.includes(tag) || technique.tags.includes(tag))
   );
 
+  // YouTubeのURLからIDを抽出
+  const getYouTubeId = (url: string): string | null => {
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+      /youtube\.com\/shorts\/([^&\n?#]+)/,
+    ];
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match) return match[1];
+    }
+    return null;
+  };
+
+  const youtubeId = technique.video_url ? getYouTubeId(technique.video_url) : null;
+
   return (
     <div className="flex flex-col h-full">
       {/* 動画エリア */}
       <div className="relative">
-        <div
-          className="aspect-video flex items-center justify-center"
-          style={{ background: theme.gradient }}
-        >
-          <button
-            className="w-16 h-16 rounded-full flex items-center justify-center backdrop-blur-sm"
-            style={{ background: 'rgba(255,255,255,0.2)' }}
+        {youtubeId ? (
+          <div className="aspect-video w-full">
+            <iframe
+              src={`https://www.youtube.com/embed/${youtubeId}`}
+              className="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        ) : (
+          <div
+            className="aspect-video flex items-center justify-center"
+            style={{ background: theme.gradient }}
           >
-            <Play size={28} className="text-white ml-1" fill="white" />
-          </button>
-        </div>
+            <div className="text-center">
+              <Play size={40} className="text-white/40 mx-auto mb-2" />
+              <p className="text-white/40 text-sm">動画未登録</p>
+            </div>
+          </div>
+        )}
         <button
           onClick={onBack}
           className="absolute top-4 left-4 p-2 rounded-full backdrop-blur-sm"

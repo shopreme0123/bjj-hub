@@ -107,7 +107,7 @@ function AppContent() {
       })();
       
       return (
-        <div key={subScreen.type} className="h-full animate-slide-in-right">
+        <div key={subScreen.type} className="h-full animate-slide-in-right" style={{ background: theme.bg }}>
           {content}
         </div>
       );
@@ -156,7 +156,7 @@ function AppContent() {
     })();
     
     return (
-      <div key={activeTab} className="h-full animate-fade-in">
+      <div key={activeTab} className="h-full animate-fade-in" style={{ background: theme.bg }}>
         {mainContent}
       </div>
     );
