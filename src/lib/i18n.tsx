@@ -1,0 +1,686 @@
+'use client';
+
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+
+export type Language = 'ja' | 'en' | 'pt';
+
+interface I18nContextType {
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  t: (key: string, params?: Record<string, string | number>) => string;
+}
+
+const I18nContext = createContext<I18nContextType | undefined>(undefined);
+
+// 翻訳データ
+const translations: Record<Language, Record<string, string>> = {
+  ja: {
+    // 共通
+    'common.save': '保存',
+    'common.cancel': 'キャンセル',
+    'common.delete': '削除',
+    'common.edit': '編集',
+    'common.add': '追加',
+    'common.close': '閉じる',
+    'common.search': '検索',
+    'common.loading': '読み込み中...',
+    'common.error': 'エラーが発生しました',
+    'common.success': '成功しました',
+    'common.confirm': '確認',
+    'common.back': '戻る',
+    'common.next': '次へ',
+    'common.all': 'すべて',
+
+    // ナビゲーション
+    'nav.home': 'ホーム',
+    'nav.techniques': '技',
+    'nav.flows': 'フロー',
+    'nav.diary': '日記',
+    'nav.groups': 'グループ',
+
+    // 帯
+    'belt.white': '白帯',
+    'belt.blue': '青帯',
+    'belt.purple': '紫帯',
+    'belt.brown': '茶帯',
+    'belt.black': '黒帯',
+    'belt.stripes': '{count}本',
+
+    // ホーム画面
+    'home.welcome': 'おかえりなさい',
+    'home.stats.techniques': '登録技',
+    'home.stats.flows': 'フロー',
+    'home.stats.training_days': '練習日数',
+    'home.this_week': '今週の練習',
+    'home.times': '{count}回',
+    'home.recent_techniques': '最近追加した技',
+    'home.recent_flows': '最近のフロー',
+    'home.recent_training': '最近の練習',
+    'home.see_all': 'すべて見る',
+    'home.bjj_experience': '柔術歴 {years}年{months}ヶ月',
+    'home.no_techniques': 'まだ技が登録されていません',
+    'home.add_first_technique': '最初の技を追加',
+
+    // 技画面
+    'techniques.title': '技ライブラリ',
+    'techniques.all': 'すべての技',
+    'techniques.add': '技を追加',
+    'techniques.add_category': 'カテゴリを追加',
+    'techniques.edit_category': 'カテゴリを編集',
+    'techniques.delete_category': 'このカテゴリを削除',
+    'techniques.name': '技名',
+    'techniques.name_en': '英語名',
+    'techniques.type': 'タイプ',
+    'techniques.category': 'カテゴリ',
+    'techniques.video_url': 'YouTube URL',
+    'techniques.description': '説明',
+    'techniques.tags': 'タグ',
+    'techniques.mastery': '習得レベル',
+    'techniques.mastery.learning': '学習中',
+    'techniques.mastery.learned': '習得',
+    'techniques.mastery.favorite': '得意技',
+    'techniques.type.submission': 'サブミッション',
+    'techniques.type.sweep': 'スイープ',
+    'techniques.type.pass': 'パスガード',
+    'techniques.type.takedown': 'テイクダウン',
+    'techniques.type.escape': 'エスケープ',
+    'techniques.type.position': 'ポジション',
+    'techniques.type.other': 'その他',
+    'techniques.edit': 'この技を編集',
+    'techniques.delete': 'この技を削除',
+    'techniques.delete_confirm': 'この技を削除しますか？',
+    'techniques.no_video': '動画未登録',
+    'techniques.related_flows': '関連フロー',
+    'techniques.count': '{count}技',
+    'techniques.search_placeholder': '技を検索...',
+
+    // カテゴリ
+    'category.guard_bottom': 'ガード（ボトム）',
+    'category.top_position': 'トップポジション',
+    'category.leg_locks': 'レッグロック',
+    'category.submissions': 'サブミッション',
+    'category.sweeps': 'スイープ',
+    'category.escapes': 'エスケープ',
+    'category.icon': 'アイコン',
+    'category.name': 'カテゴリ名',
+
+    // フロー画面
+    'flows.title': 'フローチャート',
+    'flows.add': 'フローを作成',
+    'flows.edit': 'フローを編集',
+    'flows.delete': 'このフローを削除',
+    'flows.delete_confirm': 'このフローを削除しますか？',
+    'flows.name': 'フロー名',
+    'flows.description': '説明',
+    'flows.nodes': '{count}ノード',
+    'flows.add_node': 'ノードを追加',
+    'flows.node_label': 'ラベル',
+    'flows.edge_label': '分岐ラベル',
+    'flows.edge_label_placeholder': '例: 相手が起き上がる',
+    'flows.no_flows': 'フローがありません',
+    'flows.create_first': '最初のフローを作成',
+    'flows.presets.opponent_stands': '相手が起き上がる',
+    'flows.presets.pressure': '圧をかけてきた',
+    'flows.presets.arm_grabbed': '腕を取られた',
+    'flows.presets.leg_grabbed': '足を取られた',
+    'flows.presets.posture_broken': '姿勢を崩した',
+    'flows.presets.space_created': 'スペースができた',
+    'flows.presets.back_exposed': 'バックを見せた',
+    'flows.presets.defense': '防御された',
+
+    // 日記画面
+    'diary.title': '練習日記',
+    'diary.add': '練習を記録',
+    'diary.edit': 'この記録を編集',
+    'diary.delete': 'この記録を削除',
+    'diary.delete_confirm': 'この練習記録を削除しますか？',
+    'diary.date': '日付',
+    'diary.start_time': '開始',
+    'diary.end_time': '終了',
+    'diary.duration': '練習時間',
+    'diary.duration_format': '{hours}時間{minutes}分',
+    'diary.content': '練習内容',
+    'diary.notes': '気づき・メモ',
+    'diary.condition': 'コンディション',
+    'diary.sparring': 'スパーリング',
+    'diary.sparring_rounds': '{count}本',
+    'diary.no_logs': 'この日の練習記録はありません',
+    'diary.time_error': '終了時刻は開始時刻より後に',
+    'diary.today': '今日',
+
+    // グループ画面
+    'groups.title': 'グループ',
+    'groups.create': 'グループを作成',
+    'groups.join': 'グループに参加',
+    'groups.edit': 'グループを編集',
+    'groups.delete': 'グループを削除',
+    'groups.delete_confirm': 'このグループを削除しますか？メンバー全員がグループから退出されます。',
+    'groups.leave': 'グループから退出',
+    'groups.leave_confirm': 'このグループから退出しますか？',
+    'groups.name': 'グループ名',
+    'groups.description': '説明',
+    'groups.invite_code': '招待コード',
+    'groups.copy_code': 'コードをコピー',
+    'groups.code_copied': '招待コードをコピーしました',
+    'groups.share_code': 'このコードを共有してメンバーを招待',
+    'groups.members': '{count}人のメンバー',
+    'groups.shared_flows': '共有フロー',
+    'groups.no_shared_flows': '共有フローはまだありません',
+    'groups.coming_soon': '今後のアップデートで追加予定',
+    'groups.no_groups': '参加しているグループがありません',
+    'groups.enter_code': '招待コードを入力',
+
+    // 設定画面
+    'settings.title': '設定',
+    'settings.profile': 'プロフィール',
+    'settings.profile_edit': 'プロフィール編集',
+    'settings.display_name': '表示名',
+    'settings.bjj_start_date': '柔術開始日',
+    'settings.bio': '自己紹介',
+    'settings.bio_placeholder': '柔術を始めた理由や目標など...',
+    'settings.belt': '帯',
+    'settings.belt_settings': '帯設定',
+    'settings.belt_color': '帯色',
+    'settings.stripes': 'ストライプ',
+    'settings.notifications': '通知',
+    'settings.notification_settings': '通知設定',
+    'settings.training_reminder': '練習リマインダー',
+    'settings.weekly_summary': '週間サマリー',
+    'settings.group_updates': 'グループの更新',
+    'settings.privacy': 'プライバシー',
+    'settings.privacy_settings': 'プライバシー設定',
+    'settings.profile_public': 'プロフィールを公開',
+    'settings.training_public': '練習記録を公開',
+    'settings.language': '言語',
+    'settings.language_settings': '言語設定',
+    'settings.data': 'データ',
+    'settings.export_data': 'データをエクスポート',
+    'settings.export_description': 'すべてのデータをJSON形式でエクスポート',
+    'settings.logout': 'ログアウト',
+    'settings.version': 'バージョン',
+
+    // 認証
+    'auth.login': 'ログイン',
+    'auth.signup': '新規登録',
+    'auth.logout': 'ログアウト',
+    'auth.email': 'メールアドレス',
+    'auth.password': 'パスワード',
+    'auth.confirm_password': 'パスワード確認',
+    'auth.forgot_password': 'パスワードを忘れた方',
+    'auth.no_account': 'アカウントをお持ちでない方',
+    'auth.have_account': 'すでにアカウントをお持ちの方',
+    'auth.welcome': 'BJJ Hubへようこそ',
+    'auth.welcome_back': 'おかえりなさい',
+
+    // トースト
+    'toast.saved': '保存しました',
+    'toast.deleted': '削除しました',
+    'toast.updated': '更新しました',
+    'toast.error': 'エラーが発生しました',
+    'toast.copied': 'コピーしました',
+    'toast.uploaded': 'アップロードしました',
+  },
+
+  en: {
+    // Common
+    'common.save': 'Save',
+    'common.cancel': 'Cancel',
+    'common.delete': 'Delete',
+    'common.edit': 'Edit',
+    'common.add': 'Add',
+    'common.close': 'Close',
+    'common.search': 'Search',
+    'common.loading': 'Loading...',
+    'common.error': 'An error occurred',
+    'common.success': 'Success',
+    'common.confirm': 'Confirm',
+    'common.back': 'Back',
+    'common.next': 'Next',
+    'common.all': 'All',
+
+    // Navigation
+    'nav.home': 'Home',
+    'nav.techniques': 'Techniques',
+    'nav.flows': 'Flows',
+    'nav.diary': 'Diary',
+    'nav.groups': 'Groups',
+
+    // Belt
+    'belt.white': 'White Belt',
+    'belt.blue': 'Blue Belt',
+    'belt.purple': 'Purple Belt',
+    'belt.brown': 'Brown Belt',
+    'belt.black': 'Black Belt',
+    'belt.stripes': '{count} stripe(s)',
+
+    // Home Screen
+    'home.welcome': 'Welcome back',
+    'home.stats.techniques': 'Techniques',
+    'home.stats.flows': 'Flows',
+    'home.stats.training_days': 'Training Days',
+    'home.this_week': 'This Week',
+    'home.times': '{count} times',
+    'home.recent_techniques': 'Recent Techniques',
+    'home.recent_flows': 'Recent Flows',
+    'home.recent_training': 'Recent Training',
+    'home.see_all': 'See all',
+    'home.bjj_experience': '{years} years {months} months in BJJ',
+    'home.no_techniques': 'No techniques registered yet',
+    'home.add_first_technique': 'Add your first technique',
+
+    // Techniques Screen
+    'techniques.title': 'Technique Library',
+    'techniques.all': 'All Techniques',
+    'techniques.add': 'Add Technique',
+    'techniques.add_category': 'Add Category',
+    'techniques.edit_category': 'Edit Category',
+    'techniques.delete_category': 'Delete this category',
+    'techniques.name': 'Name',
+    'techniques.name_en': 'English Name',
+    'techniques.type': 'Type',
+    'techniques.category': 'Category',
+    'techniques.video_url': 'YouTube URL',
+    'techniques.description': 'Description',
+    'techniques.tags': 'Tags',
+    'techniques.mastery': 'Mastery Level',
+    'techniques.mastery.learning': 'Learning',
+    'techniques.mastery.learned': 'Learned',
+    'techniques.mastery.favorite': 'Favorite',
+    'techniques.type.submission': 'Submission',
+    'techniques.type.sweep': 'Sweep',
+    'techniques.type.pass': 'Guard Pass',
+    'techniques.type.takedown': 'Takedown',
+    'techniques.type.escape': 'Escape',
+    'techniques.type.position': 'Position',
+    'techniques.type.other': 'Other',
+    'techniques.edit': 'Edit this technique',
+    'techniques.delete': 'Delete this technique',
+    'techniques.delete_confirm': 'Delete this technique?',
+    'techniques.no_video': 'No video',
+    'techniques.related_flows': 'Related Flows',
+    'techniques.count': '{count} techniques',
+    'techniques.search_placeholder': 'Search techniques...',
+
+    // Categories
+    'category.guard_bottom': 'Guard (Bottom)',
+    'category.top_position': 'Top Position',
+    'category.leg_locks': 'Leg Locks',
+    'category.submissions': 'Submissions',
+    'category.sweeps': 'Sweeps',
+    'category.escapes': 'Escapes',
+    'category.icon': 'Icon',
+    'category.name': 'Category Name',
+
+    // Flows Screen
+    'flows.title': 'Flow Charts',
+    'flows.add': 'Create Flow',
+    'flows.edit': 'Edit Flow',
+    'flows.delete': 'Delete this flow',
+    'flows.delete_confirm': 'Delete this flow?',
+    'flows.name': 'Flow Name',
+    'flows.description': 'Description',
+    'flows.nodes': '{count} nodes',
+    'flows.add_node': 'Add Node',
+    'flows.node_label': 'Label',
+    'flows.edge_label': 'Branch Label',
+    'flows.edge_label_placeholder': 'e.g. Opponent stands up',
+    'flows.no_flows': 'No flows yet',
+    'flows.create_first': 'Create your first flow',
+    'flows.presets.opponent_stands': 'Opponent stands up',
+    'flows.presets.pressure': 'Applies pressure',
+    'flows.presets.arm_grabbed': 'Arm grabbed',
+    'flows.presets.leg_grabbed': 'Leg grabbed',
+    'flows.presets.posture_broken': 'Posture broken',
+    'flows.presets.space_created': 'Space created',
+    'flows.presets.back_exposed': 'Back exposed',
+    'flows.presets.defense': 'Defended',
+
+    // Diary Screen
+    'diary.title': 'Training Diary',
+    'diary.add': 'Log Training',
+    'diary.edit': 'Edit this log',
+    'diary.delete': 'Delete this log',
+    'diary.delete_confirm': 'Delete this training log?',
+    'diary.date': 'Date',
+    'diary.start_time': 'Start',
+    'diary.end_time': 'End',
+    'diary.duration': 'Duration',
+    'diary.duration_format': '{hours}h {minutes}m',
+    'diary.content': 'Training Content',
+    'diary.notes': 'Notes',
+    'diary.condition': 'Condition',
+    'diary.sparring': 'Sparring',
+    'diary.sparring_rounds': '{count} rounds',
+    'diary.no_logs': 'No training logs for this day',
+    'diary.time_error': 'End time must be after start time',
+    'diary.today': 'Today',
+
+    // Groups Screen
+    'groups.title': 'Groups',
+    'groups.create': 'Create Group',
+    'groups.join': 'Join Group',
+    'groups.edit': 'Edit Group',
+    'groups.delete': 'Delete Group',
+    'groups.delete_confirm': 'Delete this group? All members will be removed.',
+    'groups.leave': 'Leave Group',
+    'groups.leave_confirm': 'Leave this group?',
+    'groups.name': 'Group Name',
+    'groups.description': 'Description',
+    'groups.invite_code': 'Invite Code',
+    'groups.copy_code': 'Copy Code',
+    'groups.code_copied': 'Invite code copied',
+    'groups.share_code': 'Share this code to invite members',
+    'groups.members': '{count} members',
+    'groups.shared_flows': 'Shared Flows',
+    'groups.no_shared_flows': 'No shared flows yet',
+    'groups.coming_soon': 'Coming in future updates',
+    'groups.no_groups': 'Not in any groups',
+    'groups.enter_code': 'Enter invite code',
+
+    // Settings Screen
+    'settings.title': 'Settings',
+    'settings.profile': 'Profile',
+    'settings.profile_edit': 'Edit Profile',
+    'settings.display_name': 'Display Name',
+    'settings.bjj_start_date': 'BJJ Start Date',
+    'settings.bio': 'Bio',
+    'settings.bio_placeholder': 'Your BJJ journey, goals, etc...',
+    'settings.belt': 'Belt',
+    'settings.belt_settings': 'Belt Settings',
+    'settings.belt_color': 'Belt Color',
+    'settings.stripes': 'Stripes',
+    'settings.notifications': 'Notifications',
+    'settings.notification_settings': 'Notification Settings',
+    'settings.training_reminder': 'Training Reminder',
+    'settings.weekly_summary': 'Weekly Summary',
+    'settings.group_updates': 'Group Updates',
+    'settings.privacy': 'Privacy',
+    'settings.privacy_settings': 'Privacy Settings',
+    'settings.profile_public': 'Public Profile',
+    'settings.training_public': 'Public Training Logs',
+    'settings.language': 'Language',
+    'settings.language_settings': 'Language Settings',
+    'settings.data': 'Data',
+    'settings.export_data': 'Export Data',
+    'settings.export_description': 'Export all data as JSON',
+    'settings.logout': 'Log Out',
+    'settings.version': 'Version',
+
+    // Auth
+    'auth.login': 'Log In',
+    'auth.signup': 'Sign Up',
+    'auth.logout': 'Log Out',
+    'auth.email': 'Email',
+    'auth.password': 'Password',
+    'auth.confirm_password': 'Confirm Password',
+    'auth.forgot_password': 'Forgot password?',
+    'auth.no_account': "Don't have an account?",
+    'auth.have_account': 'Already have an account?',
+    'auth.welcome': 'Welcome to BJJ Hub',
+    'auth.welcome_back': 'Welcome back',
+
+    // Toast
+    'toast.saved': 'Saved',
+    'toast.deleted': 'Deleted',
+    'toast.updated': 'Updated',
+    'toast.error': 'Error occurred',
+    'toast.copied': 'Copied',
+    'toast.uploaded': 'Uploaded',
+  },
+
+  pt: {
+    // Comum
+    'common.save': 'Salvar',
+    'common.cancel': 'Cancelar',
+    'common.delete': 'Excluir',
+    'common.edit': 'Editar',
+    'common.add': 'Adicionar',
+    'common.close': 'Fechar',
+    'common.search': 'Buscar',
+    'common.loading': 'Carregando...',
+    'common.error': 'Ocorreu um erro',
+    'common.success': 'Sucesso',
+    'common.confirm': 'Confirmar',
+    'common.back': 'Voltar',
+    'common.next': 'Próximo',
+    'common.all': 'Todos',
+
+    // Navegação
+    'nav.home': 'Início',
+    'nav.techniques': 'Técnicas',
+    'nav.flows': 'Fluxos',
+    'nav.diary': 'Diário',
+    'nav.groups': 'Grupos',
+
+    // Faixa
+    'belt.white': 'Faixa Branca',
+    'belt.blue': 'Faixa Azul',
+    'belt.purple': 'Faixa Roxa',
+    'belt.brown': 'Faixa Marrom',
+    'belt.black': 'Faixa Preta',
+    'belt.stripes': '{count} grau(s)',
+
+    // Tela Inicial
+    'home.welcome': 'Bem-vindo de volta',
+    'home.stats.techniques': 'Técnicas',
+    'home.stats.flows': 'Fluxos',
+    'home.stats.training_days': 'Dias de Treino',
+    'home.this_week': 'Esta Semana',
+    'home.times': '{count} vezes',
+    'home.recent_techniques': 'Técnicas Recentes',
+    'home.recent_flows': 'Fluxos Recentes',
+    'home.recent_training': 'Treinos Recentes',
+    'home.see_all': 'Ver todos',
+    'home.bjj_experience': '{years} anos e {months} meses no BJJ',
+    'home.no_techniques': 'Nenhuma técnica registrada',
+    'home.add_first_technique': 'Adicione sua primeira técnica',
+
+    // Tela de Técnicas
+    'techniques.title': 'Biblioteca de Técnicas',
+    'techniques.all': 'Todas as Técnicas',
+    'techniques.add': 'Adicionar Técnica',
+    'techniques.add_category': 'Adicionar Categoria',
+    'techniques.edit_category': 'Editar Categoria',
+    'techniques.delete_category': 'Excluir esta categoria',
+    'techniques.name': 'Nome',
+    'techniques.name_en': 'Nome em Inglês',
+    'techniques.type': 'Tipo',
+    'techniques.category': 'Categoria',
+    'techniques.video_url': 'URL do YouTube',
+    'techniques.description': 'Descrição',
+    'techniques.tags': 'Tags',
+    'techniques.mastery': 'Nível de Domínio',
+    'techniques.mastery.learning': 'Aprendendo',
+    'techniques.mastery.learned': 'Aprendido',
+    'techniques.mastery.favorite': 'Favorito',
+    'techniques.type.submission': 'Finalização',
+    'techniques.type.sweep': 'Raspagem',
+    'techniques.type.pass': 'Passagem de Guarda',
+    'techniques.type.takedown': 'Queda',
+    'techniques.type.escape': 'Escape',
+    'techniques.type.position': 'Posição',
+    'techniques.type.other': 'Outro',
+    'techniques.edit': 'Editar esta técnica',
+    'techniques.delete': 'Excluir esta técnica',
+    'techniques.delete_confirm': 'Excluir esta técnica?',
+    'techniques.no_video': 'Sem vídeo',
+    'techniques.related_flows': 'Fluxos Relacionados',
+    'techniques.count': '{count} técnicas',
+    'techniques.search_placeholder': 'Buscar técnicas...',
+
+    // Categorias
+    'category.guard_bottom': 'Guarda (Baixo)',
+    'category.top_position': 'Posição Superior',
+    'category.leg_locks': 'Leg Locks',
+    'category.submissions': 'Finalizações',
+    'category.sweeps': 'Raspagens',
+    'category.escapes': 'Escapes',
+    'category.icon': 'Ícone',
+    'category.name': 'Nome da Categoria',
+
+    // Tela de Fluxos
+    'flows.title': 'Fluxogramas',
+    'flows.add': 'Criar Fluxo',
+    'flows.edit': 'Editar Fluxo',
+    'flows.delete': 'Excluir este fluxo',
+    'flows.delete_confirm': 'Excluir este fluxo?',
+    'flows.name': 'Nome do Fluxo',
+    'flows.description': 'Descrição',
+    'flows.nodes': '{count} nós',
+    'flows.add_node': 'Adicionar Nó',
+    'flows.node_label': 'Rótulo',
+    'flows.edge_label': 'Rótulo da Ramificação',
+    'flows.edge_label_placeholder': 'ex: Oponente levanta',
+    'flows.no_flows': 'Nenhum fluxo ainda',
+    'flows.create_first': 'Crie seu primeiro fluxo',
+    'flows.presets.opponent_stands': 'Oponente levanta',
+    'flows.presets.pressure': 'Aplica pressão',
+    'flows.presets.arm_grabbed': 'Braço agarrado',
+    'flows.presets.leg_grabbed': 'Perna agarrada',
+    'flows.presets.posture_broken': 'Postura quebrada',
+    'flows.presets.space_created': 'Espaço criado',
+    'flows.presets.back_exposed': 'Costas expostas',
+    'flows.presets.defense': 'Defendeu',
+
+    // Tela de Diário
+    'diary.title': 'Diário de Treino',
+    'diary.add': 'Registrar Treino',
+    'diary.edit': 'Editar este registro',
+    'diary.delete': 'Excluir este registro',
+    'diary.delete_confirm': 'Excluir este registro de treino?',
+    'diary.date': 'Data',
+    'diary.start_time': 'Início',
+    'diary.end_time': 'Fim',
+    'diary.duration': 'Duração',
+    'diary.duration_format': '{hours}h {minutes}min',
+    'diary.content': 'Conteúdo do Treino',
+    'diary.notes': 'Anotações',
+    'diary.condition': 'Condição',
+    'diary.sparring': 'Sparring',
+    'diary.sparring_rounds': '{count} rounds',
+    'diary.no_logs': 'Nenhum registro de treino para este dia',
+    'diary.time_error': 'Horário de fim deve ser após o início',
+    'diary.today': 'Hoje',
+
+    // Tela de Grupos
+    'groups.title': 'Grupos',
+    'groups.create': 'Criar Grupo',
+    'groups.join': 'Entrar no Grupo',
+    'groups.edit': 'Editar Grupo',
+    'groups.delete': 'Excluir Grupo',
+    'groups.delete_confirm': 'Excluir este grupo? Todos os membros serão removidos.',
+    'groups.leave': 'Sair do Grupo',
+    'groups.leave_confirm': 'Sair deste grupo?',
+    'groups.name': 'Nome do Grupo',
+    'groups.description': 'Descrição',
+    'groups.invite_code': 'Código de Convite',
+    'groups.copy_code': 'Copiar Código',
+    'groups.code_copied': 'Código de convite copiado',
+    'groups.share_code': 'Compartilhe este código para convidar membros',
+    'groups.members': '{count} membros',
+    'groups.shared_flows': 'Fluxos Compartilhados',
+    'groups.no_shared_flows': 'Nenhum fluxo compartilhado ainda',
+    'groups.coming_soon': 'Em breve nas atualizações',
+    'groups.no_groups': 'Não está em nenhum grupo',
+    'groups.enter_code': 'Digite o código de convite',
+
+    // Tela de Configurações
+    'settings.title': 'Configurações',
+    'settings.profile': 'Perfil',
+    'settings.profile_edit': 'Editar Perfil',
+    'settings.display_name': 'Nome de Exibição',
+    'settings.bjj_start_date': 'Data de Início no BJJ',
+    'settings.bio': 'Bio',
+    'settings.bio_placeholder': 'Sua jornada no BJJ, objetivos, etc...',
+    'settings.belt': 'Faixa',
+    'settings.belt_settings': 'Configurações de Faixa',
+    'settings.belt_color': 'Cor da Faixa',
+    'settings.stripes': 'Graus',
+    'settings.notifications': 'Notificações',
+    'settings.notification_settings': 'Configurações de Notificação',
+    'settings.training_reminder': 'Lembrete de Treino',
+    'settings.weekly_summary': 'Resumo Semanal',
+    'settings.group_updates': 'Atualizações do Grupo',
+    'settings.privacy': 'Privacidade',
+    'settings.privacy_settings': 'Configurações de Privacidade',
+    'settings.profile_public': 'Perfil Público',
+    'settings.training_public': 'Registros de Treino Públicos',
+    'settings.language': 'Idioma',
+    'settings.language_settings': 'Configurações de Idioma',
+    'settings.data': 'Dados',
+    'settings.export_data': 'Exportar Dados',
+    'settings.export_description': 'Exportar todos os dados como JSON',
+    'settings.logout': 'Sair',
+    'settings.version': 'Versão',
+
+    // Autenticação
+    'auth.login': 'Entrar',
+    'auth.signup': 'Cadastrar',
+    'auth.logout': 'Sair',
+    'auth.email': 'Email',
+    'auth.password': 'Senha',
+    'auth.confirm_password': 'Confirmar Senha',
+    'auth.forgot_password': 'Esqueceu a senha?',
+    'auth.no_account': 'Não tem uma conta?',
+    'auth.have_account': 'Já tem uma conta?',
+    'auth.welcome': 'Bem-vindo ao BJJ Hub',
+    'auth.welcome_back': 'Bem-vindo de volta',
+
+    // Toast
+    'toast.saved': 'Salvo',
+    'toast.deleted': 'Excluído',
+    'toast.updated': 'Atualizado',
+    'toast.error': 'Erro',
+    'toast.copied': 'Copiado',
+    'toast.uploaded': 'Enviado',
+  },
+};
+
+export function I18nProvider({ children }: { children: React.ReactNode }) {
+  const [language, setLanguageState] = useState<Language>('ja');
+
+  useEffect(() => {
+    const saved = localStorage.getItem('bjj-hub-language') as Language;
+    if (saved && ['ja', 'en', 'pt'].includes(saved)) {
+      setLanguageState(saved);
+    }
+  }, []);
+
+  const setLanguage = useCallback((lang: Language) => {
+    setLanguageState(lang);
+    localStorage.setItem('bjj-hub-language', lang);
+  }, []);
+
+  const t = useCallback((key: string, params?: Record<string, string | number>): string => {
+    let text = translations[language][key] || translations['en'][key] || key;
+    
+    if (params) {
+      Object.entries(params).forEach(([k, v]) => {
+        text = text.replace(`{${k}}`, String(v));
+      });
+    }
+    
+    return text;
+  }, [language]);
+
+  return (
+    <I18nContext.Provider value={{ language, setLanguage, t }}>
+      {children}
+    </I18nContext.Provider>
+  );
+}
+
+export function useI18n() {
+  const context = useContext(I18nContext);
+  if (context === undefined) {
+    throw new Error('useI18n must be used within an I18nProvider');
+  }
+  return context;
+}
+
+// 言語名を取得するヘルパー
+export const languageNames: Record<Language, string> = {
+  ja: '日本語',
+  en: 'English',
+  pt: 'Português',
+};

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from '@/lib/auth-context';
 import { AppProvider, useApp } from '@/lib/context';
+import { I18nProvider } from '@/lib/i18n';
 import { ToastProvider } from '@/components/ui/Toast';
 import { BottomNav, TabId } from '@/components/ui/BottomNav';
 import { HomeScreen } from '@/components/screens/HomeScreen';
@@ -187,7 +188,7 @@ function AuthenticatedApp() {
     return (
       <div
         className="h-screen w-full flex items-center justify-center"
-        style={{ background: '#030712' }}
+        style={{ background: '#f8fafc' }}
       >
         <Loader2 className="animate-spin text-blue-500" size={40} />
       </div>
@@ -203,12 +204,14 @@ function AuthenticatedApp() {
 
 export default function Home() {
   return (
-    <AuthProvider>
-      <AppProvider>
-        <ToastProvider>
-          <AuthenticatedApp />
-        </ToastProvider>
-      </AppProvider>
-    </AuthProvider>
+    <I18nProvider>
+      <AuthProvider>
+        <AppProvider>
+          <ToastProvider>
+            <AuthenticatedApp />
+          </ToastProvider>
+        </AppProvider>
+      </AuthProvider>
+    </I18nProvider>
   );
 }

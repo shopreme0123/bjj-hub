@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 3, 7, 18;
-  --background-end-rgb: 3, 7, 18;
+  --foreground-rgb: 30, 41, 59;
+  --background-start-rgb: 248, 250, 252;
+  --background-end-rgb: 248, 250, 252;
 }
 
 /* PWA全画面対応 */
@@ -46,7 +46,7 @@ body {
   stroke-width: 2;
 }
 
-/* スクロールバーカスタマイズ */
+/* スクロールバーカスタマイズ（ライトテーマ） */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -57,12 +57,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 /* アニメーション */
@@ -139,4 +139,15 @@ body {
 
 .animate-slide-in-left {
   animation: slideInLeft 0.25s ease-out;
+}
+
+/* カードシャドウ */
+.card-shadow {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* select のスタイル（ライトテーマ用） */
+select option {
+  background: white;
+  color: #1e293b;
 }
