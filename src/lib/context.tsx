@@ -25,6 +25,9 @@ interface AppContextType {
   setStripes: (stripes: number) => void;
   updateProfile: (updates: Partial<Profile>) => Promise<void>;
   
+  // 初期ロード状態
+  initialLoading: boolean;
+  
   // 技
   techniques: Technique[];
   loadingTechniques: boolean;
@@ -53,7 +56,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [beltColor, setBeltColorState] = useState<BeltColor>('blue');
+  const [beltColor, setBeltColorState] = useState<BeltColor>('white');
   const [stripes, setStripesState] = useState(0);
   const [techniques, setTechniques] = useState<Technique[]>([]);
   const [flows, setFlows] = useState<Flow[]>([]);
@@ -61,6 +64,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [loadingTechniques, setLoadingTechniques] = useState(true);
   const [loadingFlows, setLoadingFlows] = useState(true);
   const [loadingLogs, setLoadingLogs] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   const theme = beltThemes[beltColor];
 
@@ -142,17 +146,26 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // ユーザーログイン時にデータ読み込み
   useEffect(() => {
-    if (user) {
-      loadProfile();
-      loadTechniques();
-      loadFlows();
-      loadTrainingLogs();
-    } else {
-      setProfile(null);
-      setTechniques([]);
-      setFlows([]);
-      setTrainingLogs([]);
-    }
+    const loadAllData = async () => {
+      if (user) {
+        setInitialLoading(true);
+        await Promise.all([
+          loadProfile(),
+          loadTechniques(),
+          loadFlows(),
+          loadTrainingLogs(),
+        ]);
+        // 少し遅延を入れてスプラッシュを表示
+        setTimeout(() => setInitialLoading(false), 500);
+      } else {
+        setProfile(null);
+        setTechniques([]);
+        setFlows([]);
+        setTrainingLogs([]);
+        setInitialLoading(false);
+      }
+    };
+    loadAllData();
   }, [user, loadProfile, loadTechniques, loadFlows, loadTrainingLogs]);
 
   // 帯色変更
@@ -393,6 +406,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         stripes,
         setStripes,
         updateProfile,
+        initialLoading,
         techniques,
         loadingTechniques,
         addTechnique,

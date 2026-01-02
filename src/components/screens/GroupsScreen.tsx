@@ -201,16 +201,16 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
 
       <div className="flex-1 overflow-auto px-5 pb-24 space-y-4 relative z-10">
         {/* 招待コードで参加 */}
-        <Card>
-          <p className="text-sm mb-3" style={{ color: theme.textSecondary }}>{t('groups.enter_code')}</p>
-          <div className="flex gap-2">
+        <Card className="!py-3">
+          <p className="text-sm mb-2" style={{ color: theme.textSecondary }}>{t('groups.enter_code')}</p>
+          <div className="flex gap-2 items-center">
             <input
               type="text"
               value={inviteCode}
               onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
               placeholder={t('groups.invite_code')}
               maxLength={6}
-              className="flex-1 rounded-lg px-4 py-2.5 outline-none border text-center tracking-widest font-mono"
+              className="w-32 rounded-lg px-3 py-2 outline-none border text-center tracking-widest font-mono text-sm"
               style={{ 
                 background: theme.card, 
                 color: theme.text, 
@@ -220,7 +220,7 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
             <button
               onClick={handleJoinGroup}
               disabled={!inviteCode.trim() || joining}
-              className="px-4 rounded-lg text-white font-medium disabled:opacity-50 flex items-center gap-2"
+              className="px-4 py-2 rounded-lg text-white font-medium text-sm disabled:opacity-50 flex items-center gap-2"
               style={{ background: theme.gradient }}
             >
               {joining ? <Loader2 size={16} className="animate-spin" /> : t('groups.join')}

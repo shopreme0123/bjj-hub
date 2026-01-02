@@ -14,7 +14,24 @@ import { GroupsScreen, GroupDetailScreen } from '@/components/screens/GroupsScre
 import { SettingsScreen } from '@/components/screens/SettingsScreen';
 import { AuthScreen } from '@/components/screens/AuthScreen';
 import { Technique, Flow, Group, TrainingLog } from '@/types';
-import { Loader2 } from 'lucide-react';
+
+// スプラッシュスクリーン
+function SplashScreen() {
+  return (
+    <div className="h-screen w-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="relative mb-8">
+        {/* ロゴアニメーション */}
+        <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-2xl animate-pulse">
+          <span className="text-4xl font-bold text-white">柔</span>
+        </div>
+        {/* ローディングリング */}
+        <div className="absolute -inset-4 border-4 border-transparent border-t-blue-500 rounded-full animate-spin" />
+      </div>
+      <h1 className="text-2xl font-bold text-white mb-2">BJJ Hub</h1>
+      <p className="text-slate-400 text-sm">Loading...</p>
+    </div>
+  );
+}
 
 type SubScreen =
   | { type: 'technique-detail'; technique: Technique }
@@ -25,9 +42,14 @@ type SubScreen =
   | null;
 
 function AppContent() {
-  const { theme } = useApp();
+  const { theme, initialLoading } = useApp();
   const [activeTab, setActiveTab] = useState<TabId>('home');
   const [subScreen, setSubScreen] = useState<SubScreen>(null);
+
+  // 初期ロード中はスプラッシュを表示
+  if (initialLoading) {
+    return <SplashScreen />;
+  }
 
   const handleBack = () => setSubScreen(null);
 
@@ -182,17 +204,9 @@ function AppContent() {
 // 認証チェックコンポーネント
 function AuthenticatedApp() {
   const { user, loading } = useAuth();
-  const { theme } = useApp();
 
   if (loading) {
-    return (
-      <div
-        className="h-screen w-full flex items-center justify-center"
-        style={{ background: '#f8fafc' }}
-      >
-        <Loader2 className="animate-spin text-blue-500" size={40} />
-      </div>
-    );
+    return <SplashScreen />;
   }
 
   if (!user) {

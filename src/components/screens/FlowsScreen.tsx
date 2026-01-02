@@ -631,22 +631,22 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
       >
         <button
           onClick={() => setShowTechniquePanel(true)}
-          className="px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 text-white"
+          className="px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 text-white whitespace-nowrap"
           style={{ background: theme.gradient }}
         >
           <Plus size={14} />
-          技を追加
+          追加
         </button>
         {selectedNodeId && (
           <button
             onClick={deleteSelectedNode}
-            className="px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 bg-red-500/20 text-red-500"
+            className="px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 bg-red-500/20 text-red-500 whitespace-nowrap"
           >
             <Trash2 size={14} />
-            選択中を削除
+            削除
           </button>
         )}
-        <div className="ml-auto text-xs" style={{ color: theme.textMuted }}>
+        <div className="ml-auto text-xs whitespace-nowrap" style={{ color: theme.textMuted }}>
           ハンドルをドラッグして接続
         </div>
       </div>

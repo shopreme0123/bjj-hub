@@ -387,7 +387,7 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
       onClick={onClose}
     >
       <div
-        className="w-full rounded-t-3xl p-4 animate-slide-up"
+        className="w-full rounded-t-3xl px-4 py-4 animate-slide-up"
         style={{ background: theme.bg, maxHeight: '85vh' }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -398,7 +398,7 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
           </button>
         </div>
 
-        <div className="overflow-auto space-y-2.5" style={{ maxHeight: 'calc(85vh - 60px)' }}>
+        <div className="overflow-y-auto overflow-x-hidden space-y-2.5" style={{ maxHeight: 'calc(85vh - 60px)' }}>
           {/* 日付 */}
           <div>
             <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>日付 *</label>
@@ -406,30 +406,30 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm"
+              className="w-full rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm box-border"
               style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
             />
           </div>
 
           {/* 時間 */}
           <div className="grid grid-cols-2 gap-2">
-            <div>
+            <div className="min-w-0">
               <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>開始</label>
               <input
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                className="w-full rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm"
+                className="w-full rounded-lg px-2 py-2 outline-none border focus:border-blue-500 text-sm box-border"
                 style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
               />
             </div>
-            <div>
+            <div className="min-w-0">
               <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>終了</label>
               <input
                 type="time"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
-                className="w-full rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm"
+                className="w-full rounded-lg px-2 py-2 outline-none border focus:border-blue-500 text-sm box-border"
                 style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
               />
             </div>
@@ -694,7 +694,7 @@ function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps) {
       onClick={onClose}
     >
       <div
-        className="w-full rounded-t-3xl p-4 animate-slide-up"
+        className="w-full rounded-t-3xl px-4 py-4 animate-slide-up"
         style={{ background: theme.bg, maxHeight: '85vh' }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -705,7 +705,7 @@ function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps) {
           </button>
         </div>
 
-        <div className="overflow-auto space-y-2.5" style={{ maxHeight: 'calc(85vh - 60px)' }}>
+        <div className="overflow-y-auto overflow-x-hidden space-y-2.5" style={{ maxHeight: 'calc(85vh - 60px)' }}>
           {/* 日付 */}
           <div>
             <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>日付 *</label>
@@ -713,30 +713,30 @@ function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps) {
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm"
+              className="w-full rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm box-border"
               style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
             />
           </div>
 
           {/* 時間 */}
           <div className="grid grid-cols-2 gap-2">
-            <div>
+            <div className="min-w-0">
               <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>開始</label>
               <input
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                className="w-full rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm"
+                className="w-full rounded-lg px-2 py-2 outline-none border focus:border-blue-500 text-sm box-border"
                 style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
               />
             </div>
-            <div>
+            <div className="min-w-0">
               <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>終了</label>
               <input
                 type="time"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
-                className="w-full rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm"
+                className="w-full rounded-lg px-2 py-2 outline-none border focus:border-blue-500 text-sm box-border"
                 style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
               />
             </div>
