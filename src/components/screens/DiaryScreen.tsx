@@ -381,18 +381,18 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
       onClick={onClose}
     >
       <div
-        className="w-full rounded-t-3xl p-5 animate-slide-up"
-        style={{ background: theme.bg, maxHeight: '90vh' }}
+        className="w-full rounded-t-3xl p-4 animate-slide-up"
+        style={{ background: theme.bg, maxHeight: '85vh' }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-white font-semibold text-lg">練習を記録</h3>
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="text-white font-semibold">練習を記録</h3>
           <button onClick={onClose}>
-            <X size={24} className="text-white/60" />
+            <X size={22} className="text-white/60" />
           </button>
         </div>
 
-        <div className="overflow-auto space-y-3" style={{ maxHeight: 'calc(90vh - 80px)' }}>
+        <div className="overflow-auto space-y-2.5" style={{ maxHeight: 'calc(85vh - 60px)' }}>
           {/* 日付 */}
           <div>
             <label className="text-white/50 text-xs mb-1 block">日付 *</label>
@@ -400,71 +400,71 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full bg-white/5 rounded-lg px-3 py-2.5 text-white outline-none border border-white/10 focus:border-white/30 text-sm"
+              className="w-full bg-white/5 rounded-lg px-3 py-2 text-white outline-none border border-white/10 focus:border-white/30 text-sm"
             />
           </div>
 
           {/* 時間 */}
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-white/50 text-xs mb-1 block">開始時刻</label>
+              <label className="text-white/50 text-xs mb-1 block">開始</label>
               <input
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                className="w-full bg-white/5 rounded-lg px-3 py-2.5 text-white outline-none border border-white/10 focus:border-white/30 text-sm"
+                className="w-full bg-white/5 rounded-lg px-3 py-2 text-white outline-none border border-white/10 focus:border-white/30 text-sm"
               />
             </div>
             <div>
-              <label className="text-white/50 text-xs mb-1 block">終了時刻</label>
+              <label className="text-white/50 text-xs mb-1 block">終了</label>
               <input
                 type="time"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
-                className="w-full bg-white/5 rounded-lg px-3 py-2.5 text-white outline-none border border-white/10 focus:border-white/30 text-sm"
+                className="w-full bg-white/5 rounded-lg px-3 py-2 text-white outline-none border border-white/10 focus:border-white/30 text-sm"
               />
             </div>
           </div>
           
           {/* 練習時間表示 */}
-          <div className={`text-center py-2 rounded-lg ${isValidTime ? 'text-white/60' : 'text-red-400 bg-red-400/10'}`}>
+          <div className={`text-center py-1.5 rounded-lg text-sm ${isValidTime ? 'text-white/60' : 'text-red-400 bg-red-400/10'}`}>
             {isValidTime ? (
-              <span className="text-sm">練習時間: {Math.floor(duration / 60)}時間{duration % 60}分</span>
+              <span>練習時間: {Math.floor(duration / 60)}時間{duration % 60}分</span>
             ) : (
-              <span className="text-sm">終了時刻は開始時刻より後にしてください</span>
+              <span>終了時刻は開始時刻より後に</span>
             )}
           </div>
 
-          {/* コンディション */}
-          <div>
-            <label className="text-white/50 text-xs mb-1 block">コンディション</label>
-            <div className="flex gap-1.5">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <button
-                  key={n}
-                  onClick={() => setCondition(n)}
-                  className="flex-1 py-2 rounded-lg transition-all"
-                  style={{
-                    background: n <= condition ? theme.gradient : theme.card,
-                  }}
-                >
-                  <span className="text-white text-sm">{n}</span>
-                </button>
-              ))}
+          {/* コンディション + スパー */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-white/50 text-xs mb-1 block">コンディション</label>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <button
+                    key={n}
+                    onClick={() => setCondition(n)}
+                    className="flex-1 py-1.5 rounded-lg transition-all"
+                    style={{
+                      background: n <= condition ? theme.gradient : theme.card,
+                    }}
+                  >
+                    <span className="text-white text-sm">{n}</span>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-
-          {/* スパーリング本数 */}
-          <div>
-            <label className="text-white/50 text-xs mb-1 block">スパーリング本数</label>
-            <input
-              type="number"
-              min="0"
-              value={sparringRounds}
-              onChange={(e) => setSparringRounds(e.target.value)}
-              placeholder="例: 5"
-              className="w-full bg-white/5 rounded-lg px-3 py-2.5 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30 text-sm"
-            />
+            <div>
+              <label className="text-white/50 text-xs mb-1 block">スパー本数</label>
+              <input
+                type="number"
+                min="0"
+                value={sparringRounds}
+                onChange={(e) => setSparringRounds(e.target.value)}
+                placeholder="例: 5"
+                className="w-full bg-white/5 rounded-lg px-3 py-1.5 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30 text-sm"
+              />
+            </div>
           </div>
 
           {/* 内容 */}
@@ -475,7 +475,7 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="例: テクニック練習、スパーリング"
-              className="w-full bg-white/5 rounded-lg px-3 py-2.5 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30 text-sm"
+              className="w-full bg-white/5 rounded-lg px-3 py-2 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30 text-sm"
             />
           </div>
 
@@ -487,7 +487,7 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
               onChange={(e) => setNotes(e.target.value)}
               placeholder="うまくいったこと、改善点など..."
               rows={2}
-              className="w-full bg-white/5 rounded-lg px-3 py-2.5 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30 resize-none text-sm"
+              className="w-full bg-white/5 rounded-lg px-3 py-2 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30 resize-none text-sm"
             />
           </div>
 
@@ -495,7 +495,7 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
           <button
             onClick={handleSubmit}
             disabled={!isValidTime}
-            className="w-full py-3 rounded-xl text-white font-semibold mt-2 disabled:opacity-50"
+            className="w-full py-3 rounded-xl text-white font-semibold disabled:opacity-50"
             style={{ background: theme.gradient }}
           >
             保存

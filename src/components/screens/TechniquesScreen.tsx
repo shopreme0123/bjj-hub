@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Plus, Search, Filter, ChevronRight, Star, Play, ChevronLeft, X, GitBranch, Trash2 } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Plus, Search, Filter, ChevronRight, Star, Play, ChevronLeft, X, GitBranch, Trash2, Loader2 } from 'lucide-react';
 import { useApp } from '@/lib/context';
+import { useAuth } from '@/lib/auth-context';
 import { useToast } from '@/components/ui/Toast';
+import { supabase } from '@/lib/supabase';
 import { Card } from '@/components/ui/Card';
 import { Header } from '@/components/ui/Header';
 import { Technique, TechniqueType, Flow } from '@/types';
@@ -34,6 +36,7 @@ interface TechniquesScreenProps {
 
 export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
   const { theme, techniques, addTechnique } = useApp();
+  const { user } = useAuth();
   const { showToast } = useToast();
   const [view, setView] = useState<'categories' | 'list'>('categories');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -41,25 +44,117 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [customCategories, setCustomCategories] = useState<TechniqueCategory[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
 
-  // カスタムカテゴリをlocalStorageから読み込み
-  useEffect(() => {
-    const saved = localStorage.getItem('bjj-hub-custom-categories');
-    if (saved) {
-      setCustomCategories(JSON.parse(saved));
+  // Supabaseからカスタムカテゴリを読み込み
+  const loadCustomCategories = useCallback(async () => {
+    if (!user) {
+      // ログインしていない場合はlocalStorageから読み込み
+      const saved = localStorage.getItem('bjj-hub-custom-categories');
+      if (saved) {
+        setCustomCategories(JSON.parse(saved));
+      }
+      setLoadingCategories(false);
+      return;
     }
-  }, []);
+
+    try {
+      const { data, error } = await supabase
+        .from('custom_categories')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+
+      const categories = (data || []).map(cat => ({
+        id: cat.id,
+        name: cat.name,
+        icon: cat.icon,
+      }));
+      setCustomCategories(categories);
+    } catch (error) {
+      console.error('Error loading categories:', error);
+      // フォールバック: localStorageから読み込み
+      const saved = localStorage.getItem('bjj-hub-custom-categories');
+      if (saved) {
+        setCustomCategories(JSON.parse(saved));
+      }
+    } finally {
+      setLoadingCategories(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    loadCustomCategories();
+  }, [loadCustomCategories]);
 
   // 全カテゴリ（デフォルト + カスタム）
   const allCategories = [...defaultCategories, ...customCategories];
 
-  // カスタムカテゴリを保存
-  const saveCustomCategory = (category: TechniqueCategory) => {
-    const updated = [...customCategories, category];
-    setCustomCategories(updated);
-    localStorage.setItem('bjj-hub-custom-categories', JSON.stringify(updated));
-    showToast('カテゴリを追加しました');
-    setShowCategoryModal(false);
+  // カスタムカテゴリを保存（Supabase + localStorage両方）
+  const saveCustomCategory = async (category: TechniqueCategory) => {
+    if (!user) {
+      // ログインしていない場合はlocalStorageのみ
+      const updated = [...customCategories, category];
+      setCustomCategories(updated);
+      localStorage.setItem('bjj-hub-custom-categories', JSON.stringify(updated));
+      showToast('カテゴリを追加しました');
+      setShowCategoryModal(false);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('custom_categories')
+        .insert({
+          user_id: user.id,
+          name: category.name,
+          icon: category.icon,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const newCategory = {
+        id: data.id,
+        name: data.name,
+        icon: data.icon,
+      };
+      setCustomCategories([...customCategories, newCategory]);
+      showToast('カテゴリを追加しました');
+      setShowCategoryModal(false);
+    } catch (error) {
+      console.error('Error saving category:', error);
+      showToast('カテゴリの追加に失敗しました', 'error');
+    }
+  };
+
+  // カテゴリを削除
+  const deleteCustomCategory = async (categoryId: string) => {
+    if (!user) {
+      const updated = customCategories.filter(c => c.id !== categoryId);
+      setCustomCategories(updated);
+      localStorage.setItem('bjj-hub-custom-categories', JSON.stringify(updated));
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('custom_categories')
+        .delete()
+        .eq('id', categoryId)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      setCustomCategories(customCategories.filter(c => c.id !== categoryId));
+      showToast('カテゴリを削除しました');
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      showToast('カテゴリの削除に失敗しました', 'error');
+    }
   };
 
   // カテゴリでフィルタリング
@@ -589,10 +684,10 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
 
   return (
     <div className="flex flex-col h-full">
-      {/* 動画エリア */}
-      <div className="relative">
+      {/* 動画エリア（PC対応: 最大高さを制限） */}
+      <div className="relative shrink-0">
         {youtubeId ? (
-          <div className="aspect-video w-full">
+          <div className="aspect-video w-full max-h-[40vh]">
             <iframe
               src={`https://www.youtube.com/embed/${youtubeId}`}
               className="w-full h-full"

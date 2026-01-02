@@ -14,9 +14,12 @@ import ReactFlow, {
   Handle,
   Position,
   NodeProps,
+  EdgeProps,
+  getBezierPath,
+  EdgeLabelRenderer,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Plus, GitBranch, Star, X, GripVertical, Trash2, ChevronLeft, Save } from 'lucide-react';
+import { Plus, GitBranch, Star, X, GripVertical, Trash2, ChevronLeft, Save, Tag } from 'lucide-react';
 import { useApp } from '@/lib/context';
 import { useToast } from '@/components/ui/Toast';
 import { Card } from '@/components/ui/Card';
@@ -378,6 +381,69 @@ const nodeTypes = {
   technique: TechniqueNode,
 };
 
+// カスタムエッジ（ラベル付き）
+interface CustomEdgeData {
+  label?: string;
+}
+
+function LabeledEdge({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  sourcePosition,
+  targetPosition,
+  style = {},
+  data,
+}: EdgeProps<CustomEdgeData>) {
+  const { theme } = useApp();
+  const [edgePath, labelX, labelY] = getBezierPath({
+    sourceX,
+    sourceY,
+    sourcePosition,
+    targetX,
+    targetY,
+    targetPosition,
+  });
+
+  return (
+    <>
+      <path
+        id={id}
+        style={style}
+        className="react-flow__edge-path"
+        d={edgePath}
+        markerEnd="url(#arrowhead)"
+      />
+      {data?.label && (
+        <EdgeLabelRenderer>
+          <div
+            style={{
+              position: 'absolute',
+              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+              pointerEvents: 'all',
+            }}
+            className="px-2 py-1 rounded text-xs text-white/90 max-w-[120px] text-center"
+            contentEditable={false}
+          >
+            <span
+              className="px-2 py-0.5 rounded"
+              style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}
+            >
+              {data.label}
+            </span>
+          </div>
+        </EdgeLabelRenderer>
+      )}
+    </>
+  );
+}
+
+const edgeTypes = {
+  labeled: LabeledEdge,
+};
+
 // フローエディタ
 interface FlowEditorProps {
   flow?: Flow;
@@ -391,6 +457,8 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
   const [showTechniquePanel, setShowTechniquePanel] = useState(false);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
+  const [pendingConnection, setPendingConnection] = useState<Connection | null>(null);
+  const [showLabelModal, setShowLabelModal] = useState(false);
 
   // 初期ノード（保存データがあれば復元）
   const getInitialNodes = (): Node<CustomNodeData>[] => {
@@ -431,22 +499,42 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
 
   const onConnect = useCallback(
     (params: Connection) => {
+      // 接続情報を保存してラベルモーダルを表示
+      setPendingConnection(params);
+      setShowLabelModal(true);
+    },
+    []
+  );
+
+  // ラベル付きでエッジを追加
+  const addEdgeWithLabel = useCallback(
+    (label?: string) => {
+      if (!pendingConnection) return;
+      
       // エッジの色をハンドルIDに基づいて設定
       let strokeColor = theme.primary;
-      if (params.sourceHandle === 'branch-left') {
+      if (pendingConnection.sourceHandle === 'branch-left') {
         strokeColor = '#22c55e'; // green
-      } else if (params.sourceHandle === 'branch-right') {
+      } else if (pendingConnection.sourceHandle === 'branch-right') {
         strokeColor = '#f97316'; // orange
       }
       
       setEdges((eds) =>
         addEdge(
-          { ...params, animated: true, style: { stroke: strokeColor, strokeWidth: 2 } },
+          { 
+            ...pendingConnection, 
+            type: 'labeled',
+            animated: true, 
+            style: { stroke: strokeColor, strokeWidth: 2 },
+            data: { label: label || undefined },
+          },
           eds
         )
       );
+      setPendingConnection(null);
+      setShowLabelModal(false);
     },
-    [setEdges, theme.primary]
+    [pendingConnection, setEdges, theme.primary]
   );
 
   // ノード選択時の処理
@@ -550,7 +638,7 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
           </button>
         )}
         <div className="ml-auto text-white/30 text-xs">
-          青=メイン / 緑=分岐1 / 橙=分岐2
+          ハンドルをドラッグして接続
         </div>
       </div>
 
@@ -565,6 +653,7 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
           onNodeClick={onNodeClick}
           onPaneClick={onPaneClick}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
           fitView
           style={{ background: theme.bg }}
         >
@@ -577,6 +666,24 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
             size={1}
             color={theme.cardBorder}
           />
+          {/* 矢印マーカー定義 */}
+          <svg>
+            <defs>
+              <marker
+                id="arrowhead"
+                markerWidth="10"
+                markerHeight="7"
+                refX="9"
+                refY="3.5"
+                orient="auto"
+              >
+                <polygon
+                  points="0 0, 10 3.5, 0 7"
+                  fill={theme.primary}
+                />
+              </marker>
+            </defs>
+          </svg>
         </ReactFlow>
       </div>
 
@@ -603,6 +710,18 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
           onClose={() => setShowTechniquePanel(false)}
         />
       )}
+
+      {/* ラベル入力モーダル */}
+      {showLabelModal && (
+        <EdgeLabelModal
+          theme={theme}
+          onClose={() => {
+            setPendingConnection(null);
+            setShowLabelModal(false);
+          }}
+          onSave={addEdgeWithLabel}
+        />
+      )}
     </div>
   );
 }
@@ -613,6 +732,100 @@ interface TechniqueSelectPanelProps {
   techniques: Technique[];
   onSelect: (label: string, type: CustomNodeData['type']) => void;
   onClose: () => void;
+}
+
+// エッジラベル入力モーダル
+interface EdgeLabelModalProps {
+  theme: any;
+  onClose: () => void;
+  onSave: (label?: string) => void;
+}
+
+function EdgeLabelModal({ theme, onClose, onSave }: EdgeLabelModalProps) {
+  const [label, setLabel] = useState('');
+  const presetLabels = [
+    '相手が起き上がる',
+    '相手が潰してくる',
+    '腕を取られた',
+    'スペースができた',
+    '圧をかけてきた',
+    '足を抜かれた',
+    'バランスを崩した',
+    '防がれた',
+  ];
+
+  return (
+    <div 
+      className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-end z-50 animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="w-full rounded-t-3xl p-5 max-h-[70%] overflow-auto animate-slide-up"
+        style={{ background: theme.bg }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-white font-semibold text-lg flex items-center gap-2">
+            <Tag size={18} />
+            分岐条件を追加
+          </h3>
+          <button onClick={onClose}>
+            <X size={24} className="text-white/60" />
+          </button>
+        </div>
+
+        {/* カスタムラベル入力 */}
+        <div className="mb-4">
+          <input
+            type="text"
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+            placeholder="条件を入力..."
+            className="w-full bg-white/5 rounded-lg px-4 py-3 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30"
+            autoFocus
+          />
+        </div>
+
+        {/* プリセットラベル */}
+        <div className="mb-4">
+          <p className="text-white/50 text-xs mb-2">よく使う条件</p>
+          <div className="flex flex-wrap gap-2">
+            {presetLabels.map((preset) => (
+              <button
+                key={preset}
+                onClick={() => setLabel(preset)}
+                className="px-3 py-1.5 rounded-lg text-xs transition-all"
+                style={{
+                  background: label === preset ? theme.gradient : theme.card,
+                  color: label === preset ? 'white' : 'rgba(255,255,255,0.6)',
+                }}
+              >
+                {preset}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ボタン */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => onSave(undefined)}
+            className="flex-1 py-3 rounded-xl text-white/60"
+            style={{ background: theme.card }}
+          >
+            ラベルなしで接続
+          </button>
+          <button
+            onClick={() => onSave(label || undefined)}
+            className="flex-1 py-3 rounded-xl text-white font-medium"
+            style={{ background: theme.gradient }}
+          >
+            {label ? '追加' : 'OK'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function TechniqueSelectPanel({ theme, techniques, onSelect, onClose }: TechniqueSelectPanelProps) {

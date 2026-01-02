@@ -24,12 +24,12 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
   const displayName = profile?.display_name || user?.email?.split('@')[0] || 'ユーザー';
   const initial = displayName.charAt(0).toUpperCase();
 
-  const beltOptions: { value: BeltColor; label: string; emoji: string }[] = [
-    { value: 'white', label: '白帯', emoji: '⬜' },
-    { value: 'blue', label: '青帯', emoji: '🟦' },
-    { value: 'purple', label: '紫帯', emoji: '🟪' },
-    { value: 'brown', label: '茶帯', emoji: '🟫' },
-    { value: 'black', label: '黒帯', emoji: '⬛' },
+  const beltOptions: { value: BeltColor; label: string }[] = [
+    { value: 'white', label: '白帯' },
+    { value: 'blue', label: '青帯' },
+    { value: 'purple', label: '紫帯' },
+    { value: 'brown', label: '茶帯' },
+    { value: 'black', label: '黒帯' },
   ];
 
   const handleExport = () => {
@@ -101,8 +101,7 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
                       background: beltThemes[belt.value].gradient,
                     }}
                   >
-                    <span className="text-lg">{belt.emoji}</span>
-                    <p className="text-white text-xs mt-1">{belt.label}</p>
+                    <p className="text-white text-xs font-medium">{belt.label}</p>
                   </button>
                 ))}
               </div>
