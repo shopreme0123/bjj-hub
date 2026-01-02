@@ -62,6 +62,7 @@ export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
 
   return (
     <div className="flex flex-col h-full" style={{ background: theme.bg }}>
+      {/* グラデーション背景 - 固定 */}
       <div
         className="absolute top-0 left-0 right-0 h-48 rounded-b-3xl"
         style={{ background: theme.gradient }}
@@ -102,7 +103,12 @@ export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
         ))}
       </div>
 
-      <div className="flex-1 overflow-auto px-5 pb-24 space-y-3 relative z-10">
+      {/* スクロール可能なコンテンツ - 背景色で覆う */}
+      <div className="flex-1 overflow-auto relative z-10">
+        <div 
+          className="min-h-full px-5 pb-24 space-y-3 pt-4"
+          style={{ background: theme.bg, borderTopLeftRadius: '24px', borderTopRightRadius: '24px' }}
+        >
         {filteredFlows.length === 0 ? (
           <div className="text-center py-12">
             <GitBranch size={48} className="mx-auto mb-4" style={{ color: theme.textMuted }} />
@@ -160,6 +166,7 @@ export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
             </Card>
           ))
         )}
+        </div>
       </div>
 
       {/* フロー作成モーダル */}

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Mail, Lock, User, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { useI18n } from '@/lib/i18n';
@@ -69,10 +70,17 @@ export function AuthScreen({ onSuccess }: AuthScreenProps) {
       {/* ロゴ */}
       <div className="mb-8 text-center">
         <div
-          className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4"
-          style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%)' }}
+          className="w-24 h-24 rounded-2xl flex items-center justify-center mx-auto mb-4 overflow-hidden"
+          style={{ background: '#000' }}
         >
-          <span className="text-3xl font-bold text-white">BJJ</span>
+          <div className="w-20 h-20 relative">
+            <Image
+              src="/bjj-logo.png"
+              alt="BJJ Hub"
+              fill
+              className="object-contain"
+            />
+          </div>
         </div>
         <h1 className="text-2xl font-bold text-slate-800">BJJ Hub</h1>
         <p className="text-slate-500 text-sm mt-1">{t('auth.welcome')}</p>

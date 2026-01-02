@@ -11,6 +11,13 @@ import { Card } from '@/components/ui/Card';
 import { Header } from '@/components/ui/Header';
 import { TrainingLog, Technique, Flow } from '@/types';
 
+// 時間を「HH:mm」形式に変換（秒を除去）
+const formatTime = (time: string | null | undefined): string => {
+  if (!time) return '';
+  // "HH:mm:ss" or "HH:mm" format
+  return time.substring(0, 5);
+};
+
 interface DiaryScreenProps {
   onOpenDetail?: (log: TrainingLog) => void;
 }
@@ -207,7 +214,7 @@ export function DiaryScreen({ onOpenDetail }: DiaryScreenProps) {
                             <div className="flex items-center gap-2 mb-2">
                               <Clock size={14} style={{ color: theme.accent }} />
                               <span className="text-sm" style={{ color: theme.text }}>
-                                {log.start_time} - {log.end_time}（{log.duration_minutes}分）
+                                {formatTime(log.start_time)} - {formatTime(log.end_time)}（{log.duration_minutes}分）
                               </span>
                             </div>
                             <p className="text-sm leading-relaxed mb-2" style={{ color: theme.text }}>
@@ -387,8 +394,8 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
       onClick={onClose}
     >
       <div
-        className="w-full rounded-t-3xl px-4 py-4 animate-slide-up"
-        style={{ background: theme.bg, maxHeight: '85vh' }}
+        className="w-full rounded-t-3xl px-4 pt-4 pb-8 animate-slide-up"
+        style={{ background: theme.bg, maxHeight: '80vh' }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-3">
@@ -398,7 +405,7 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
           </button>
         </div>
 
-        <div className="overflow-y-auto overflow-x-hidden space-y-2.5" style={{ maxHeight: 'calc(85vh - 60px)' }}>
+        <div className="overflow-y-auto overflow-x-hidden space-y-2.5 px-1" style={{ maxHeight: 'calc(80vh - 80px)' }}>
           {/* 日付 */}
           <div>
             <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>日付 *</label>
@@ -561,7 +568,7 @@ export function DiaryDetailScreen({ log, onBack, onOpenTechnique, onOpenFlow }: 
             <div className="flex items-center justify-between">
               <span className="text-sm" style={{ color: theme.textSecondary }}>時間</span>
               <span style={{ color: theme.text }}>
-                {currentLog.start_time} - {currentLog.end_time}（{currentLog.duration_minutes}分）
+                {formatTime(currentLog.start_time)} - {formatTime(currentLog.end_time)}（{currentLog.duration_minutes}分）
               </span>
             </div>
             {currentLog.sparring_rounds && (
@@ -694,8 +701,8 @@ function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps) {
       onClick={onClose}
     >
       <div
-        className="w-full rounded-t-3xl px-4 py-4 animate-slide-up"
-        style={{ background: theme.bg, maxHeight: '85vh' }}
+        className="w-full rounded-t-3xl px-4 pt-4 pb-8 animate-slide-up"
+        style={{ background: theme.bg, maxHeight: '80vh' }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-3">
@@ -705,7 +712,7 @@ function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps) {
           </button>
         </div>
 
-        <div className="overflow-y-auto overflow-x-hidden space-y-2.5" style={{ maxHeight: 'calc(85vh - 60px)' }}>
+        <div className="overflow-y-auto overflow-x-hidden space-y-2.5 px-1" style={{ maxHeight: 'calc(80vh - 80px)' }}>
           {/* 日付 */}
           <div>
             <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>日付 *</label>

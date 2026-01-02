@@ -192,6 +192,7 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
 
   return (
     <div className="flex flex-col h-full" style={{ background: theme.bg }}>
+      {/* グラデーション背景 - 固定 */}
       <div
         className="absolute top-0 left-0 right-0 h-48 rounded-b-3xl"
         style={{ background: theme.gradient }}
@@ -199,7 +200,12 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
 
       <Header title={t('groups.title')} />
 
-      <div className="flex-1 overflow-auto px-5 pb-24 space-y-4 relative z-10">
+      {/* スクロール可能なコンテンツ - 背景色で覆う */}
+      <div className="flex-1 overflow-auto relative z-10">
+        <div 
+          className="min-h-full px-5 pb-24 space-y-4 pt-4"
+          style={{ background: theme.bg, marginTop: '60px', borderTopLeftRadius: '24px', borderTopRightRadius: '24px' }}
+        >
         {/* 招待コードで参加 */}
         <Card className="!py-3">
           <p className="text-sm mb-2" style={{ color: theme.textSecondary }}>{t('groups.enter_code')}</p>
@@ -283,6 +289,7 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
           <Plus size={18} />
           <span className="text-sm">新しいグループを作成</span>
         </button>
+        </div>
       </div>
 
       {/* グループ作成モーダル */}

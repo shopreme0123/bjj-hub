@@ -326,6 +326,7 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
 
   return (
     <div className="flex flex-col h-full" style={{ background: theme.bg }}>
+      {/* グラデーション背景 - 固定 */}
       <div
         className="absolute top-0 left-0 right-0 h-48 rounded-b-3xl"
         style={{ background: theme.gradient }}
@@ -380,8 +381,14 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto px-5 pb-24 relative z-10">
-        {view === 'categories' && !searchQuery ? renderCategoryList() : renderTechniqueList()}
+      {/* スクロール可能なコンテンツ - 背景色で覆う */}
+      <div className="flex-1 overflow-auto relative z-10">
+        <div 
+          className="min-h-full px-5 pb-24 pt-4"
+          style={{ background: theme.bg, borderTopLeftRadius: '24px', borderTopRightRadius: '24px' }}
+        >
+          {view === 'categories' && !searchQuery ? renderCategoryList() : renderTechniqueList()}
+        </div>
       </div>
 
       {/* 技追加モーダル */}

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { AuthProvider, useAuth } from '@/lib/auth-context';
 import { AppProvider, useApp } from '@/lib/context';
 import { I18nProvider } from '@/lib/i18n';
@@ -18,17 +19,23 @@ import { Technique, Flow, Group, TrainingLog } from '@/types';
 // スプラッシュスクリーン
 function SplashScreen() {
   return (
-    <div className="h-screen w-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      <div className="relative mb-8">
-        {/* ロゴアニメーション */}
-        <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-2xl animate-pulse">
-          <span className="text-4xl font-bold text-white">柔</span>
+    <div className="h-screen w-full flex flex-col items-center justify-center bg-black">
+      <div className="relative mb-6">
+        {/* 柔術シルエットロゴ */}
+        <div className="w-28 h-28 relative animate-pulse">
+          <Image
+            src="/bjj-logo.png"
+            alt="BJJ Hub"
+            fill
+            className="object-contain"
+            priority
+          />
         </div>
         {/* ローディングリング */}
-        <div className="absolute -inset-4 border-4 border-transparent border-t-blue-500 rounded-full animate-spin" />
+        <div className="absolute -inset-4 border-4 border-transparent border-t-white/50 rounded-full animate-spin" />
       </div>
       <h1 className="text-2xl font-bold text-white mb-2">BJJ Hub</h1>
-      <p className="text-slate-400 text-sm">Loading...</p>
+      <p className="text-white/50 text-sm">Loading...</p>
     </div>
   );
 }
