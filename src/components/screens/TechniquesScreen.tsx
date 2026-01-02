@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Plus, Search, Filter, ChevronRight, Star, Play, ChevronLeft, X, GitBranch, Trash2, Loader2 } from 'lucide-react';
 import { useApp } from '@/lib/context';
 import { useAuth } from '@/lib/auth-context';
+import { useI18n } from '@/lib/i18n';
 import { useToast } from '@/components/ui/Toast';
 import { supabase } from '@/lib/supabase';
 import { Card } from '@/components/ui/Card';
@@ -37,6 +38,7 @@ interface TechniquesScreenProps {
 export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
   const { theme, techniques, addTechnique } = useApp();
   const { user } = useAuth();
+  const { t } = useI18n();
   const { showToast } = useToast();
   const [view, setView] = useState<'categories' | 'list'>('categories');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -226,10 +228,10 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
           📚
         </div>
         <div className="flex-1">
-          <p className="text-white font-medium">すべての技</p>
-          <p className="text-white/40 text-xs mt-0.5">{techniques.length}技</p>
+          <p className="font-medium" style={{ color: theme.text }}>{t('techniques.all')}</p>
+          <p className="text-xs mt-0.5" style={{ color: theme.textSecondary }}>{techniques.length}{t('techniques.count_suffix')}</p>
         </div>
-        <ChevronRight size={18} className="text-white/20" />
+        <ChevronRight size={18} style={{ color: theme.textMuted }} />
       </Card>
 
       {allCategories.map((cat) => (
@@ -248,10 +250,10 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
             {cat.icon}
           </div>
           <div className="flex-1">
-            <p className="text-white font-medium">{cat.name}</p>
-            <p className="text-white/40 text-xs mt-0.5">{getCategoryCount(cat.id)}技</p>
+            <p className="font-medium" style={{ color: theme.text }}>{cat.name}</p>
+            <p className="text-xs mt-0.5" style={{ color: theme.textSecondary }}>{getCategoryCount(cat.id)}{t('techniques.count_suffix')}</p>
           </div>
-          <ChevronRight size={18} className="text-white/20" />
+          <ChevronRight size={18} style={{ color: theme.textMuted }} />
         </Card>
       ))}
 
@@ -259,10 +261,10 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
       <button
         onClick={() => setShowCategoryModal(true)}
         className="w-full rounded-xl py-4 border-2 border-dashed flex items-center justify-center gap-2 transition-all hover:border-solid"
-        style={{ borderColor: theme.cardBorder, color: 'rgba(255,255,255,0.4)' }}
+        style={{ borderColor: theme.cardBorder, color: theme.textSecondary }}
       >
         <Plus size={18} />
-        <span className="text-sm">カテゴリを追加</span>
+        <span className="text-sm">{t('techniques.add_category')}</span>
       </button>
     </div>
   );
@@ -271,13 +273,13 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
     <div className="space-y-3">
       {filteredTechniques.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-white/40 mb-4">技が登録されていません</p>
+          <p className="mb-4" style={{ color: theme.textSecondary }}>{t('techniques.no_techniques')}</p>
           <button
             onClick={() => setShowAddModal(true)}
             className="px-4 py-2 rounded-lg text-sm"
             style={{ background: theme.gradient, color: 'white' }}
           >
-            技を追加
+            {t('techniques.add')}
           </button>
         </div>
       ) : (
@@ -297,12 +299,12 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <p className="text-white font-medium truncate">{tech.name}</p>
+                <p className="font-medium truncate" style={{ color: theme.text }}>{tech.name}</p>
                 {tech.mastery_level === 'favorite' && (
                   <Star size={14} style={{ color: theme.accent }} fill={theme.accent} />
                 )}
               </div>
-              <p className="text-white/40 text-xs mt-0.5">{tech.name_en}</p>
+              <p className="text-xs mt-0.5" style={{ color: theme.textSecondary }}>{tech.name_en}</p>
               <div className="flex gap-1 mt-1">
                 {tech.tags.slice(0, 2).map((tag, i) => (
                   <span
@@ -315,7 +317,7 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
                 ))}
               </div>
             </div>
-            <ChevronRight size={18} className="text-white/20" />
+            <ChevronRight size={18} style={{ color: theme.textMuted }} />
           </Card>
         ))
       )}
@@ -323,14 +325,14 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
   );
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" style={{ background: theme.bg }}>
       <div
-        className="absolute top-0 left-0 right-0 h-48 opacity-20 pointer-events-none"
+        className="absolute top-0 left-0 right-0 h-48 rounded-b-3xl"
         style={{ background: theme.gradient }}
       />
 
       <Header
-        title={view === 'list' ? '技一覧' : '技ライブラリ'}
+        title={view === 'list' ? t('techniques.all') : t('techniques.title')}
         showBack={view === 'list'}
         onBack={() => {
           setView('categories');
@@ -339,14 +341,13 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
         }}
         rightAction={
           <button
-            className="p-2 rounded-full relative z-10"
-            style={{ background: theme.card }}
+            className="p-2 rounded-full relative z-10 bg-white/20"
             onClick={(e) => {
               e.stopPropagation();
               setShowAddModal(true);
             }}
           >
-            <Plus size={18} style={{ color: theme.primary }} />
+            <Plus size={18} className="text-white" />
           </button>
         }
       />
@@ -354,13 +355,13 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
       {/* 検索バー */}
       <div className="px-5 pb-4 relative z-10">
         <div
-          className="flex items-center gap-3 rounded-xl px-4 py-3"
+          className="flex items-center gap-3 rounded-xl px-4 py-3 shadow-sm"
           style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}
         >
-          <Search size={18} className="text-white/30" />
+          <Search size={18} style={{ color: theme.textMuted }} />
           <input
             type="text"
-            placeholder="技を検索..."
+            placeholder={t('techniques.search_placeholder')}
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
@@ -368,11 +369,12 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
                 setView('list');
               }
             }}
-            className="bg-transparent flex-1 outline-none text-white text-sm placeholder:text-white/30"
+            className="bg-transparent flex-1 outline-none text-sm"
+            style={{ color: theme.text }}
           />
           {searchQuery && (
             <button onClick={() => setSearchQuery('')}>
-              <X size={16} className="text-white/30" />
+              <X size={16} style={{ color: theme.textMuted }} />
             </button>
           )}
         </div>
@@ -465,7 +467,7 @@ function AddTechniqueModal({ theme, categories, onClose, onSave }: AddTechniqueM
 
   return (
     <div 
-      className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-end z-50 animate-fade-in"
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-end z-50 animate-fade-in"
       onClick={onClose}
     >
       <div
@@ -474,16 +476,16 @@ function AddTechniqueModal({ theme, categories, onClose, onSave }: AddTechniqueM
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-white font-semibold text-lg">技を追加</h3>
+          <h3 className="font-semibold text-lg" style={{ color: theme.text }}>技を追加</h3>
           <button onClick={onClose}>
-            <X size={24} className="text-white/60" />
+            <X size={24} style={{ color: theme.textSecondary }} />
           </button>
         </div>
 
         <div className="space-y-4">
           {/* カテゴリ */}
           <div>
-            <label className="text-white/50 text-sm mb-2 block">カテゴリ *</label>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>カテゴリ *</label>
             <div className="grid grid-cols-3 gap-2 max-h-48 overflow-auto">
               {categories.map((cat) => (
                 <button
@@ -496,7 +498,10 @@ function AddTechniqueModal({ theme, categories, onClose, onSave }: AddTechniqueM
                   }}
                 >
                   <span className="text-xl block">{cat.icon}</span>
-                  <span className={`text-xs mt-1 block ${category === cat.id ? 'text-white' : 'text-white/60'}`}>
+                  <span 
+                    className="text-xs mt-1 block"
+                    style={{ color: category === cat.id ? 'white' : theme.textSecondary }}
+                  >
                     {cat.name}
                   </span>
                 </button>
@@ -506,31 +511,33 @@ function AddTechniqueModal({ theme, categories, onClose, onSave }: AddTechniqueM
 
           {/* 技名 */}
           <div>
-            <label className="text-white/50 text-sm mb-2 block">技名 *</label>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>技名 *</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 三角絞め"
-              className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30"
+              className="w-full rounded-xl px-4 py-3 outline-none border focus:border-blue-500"
+              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
             />
           </div>
 
           {/* 英語名 */}
           <div>
-            <label className="text-white/50 text-sm mb-2 block">英語名</label>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>英語名</label>
             <input
               type="text"
               value={nameEn}
               onChange={(e) => setNameEn(e.target.value)}
               placeholder="例: Triangle Choke"
-              className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30"
+              className="w-full rounded-xl px-4 py-3 outline-none border focus:border-blue-500"
+              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
             />
           </div>
 
           {/* 種類 */}
           <div>
-            <label className="text-white/50 text-sm mb-2 block">種類 *</label>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>種類 *</label>
             <div className="flex flex-wrap gap-2">
               {techniqueTypes.map((t) => (
                 <button
@@ -539,7 +546,7 @@ function AddTechniqueModal({ theme, categories, onClose, onSave }: AddTechniqueM
                   className="px-3 py-2 rounded-lg text-sm transition-all"
                   style={{
                     background: type === t.value ? theme.gradient : theme.card,
-                    color: type === t.value ? 'white' : 'rgba(255,255,255,0.6)',
+                    color: type === t.value ? 'white' : theme.textSecondary,
                     border: `1px solid ${type === t.value ? 'transparent' : theme.cardBorder}`,
                   }}
                 >
@@ -551,7 +558,7 @@ function AddTechniqueModal({ theme, categories, onClose, onSave }: AddTechniqueM
 
           {/* タグ */}
           <div>
-            <label className="text-white/50 text-sm mb-2 block">タグ</label>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>タグ</label>
             <div className="flex gap-2 mb-2">
               <input
                 type="text"
@@ -559,12 +566,13 @@ function AddTechniqueModal({ theme, categories, onClose, onSave }: AddTechniqueM
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
                 placeholder="タグを入力..."
-                className="flex-1 bg-white/5 rounded-xl px-4 py-3 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30"
+                className="flex-1 rounded-xl px-4 py-3 outline-none border focus:border-blue-500"
+                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
               />
               <button
                 onClick={addTag}
                 className="px-4 rounded-xl"
-                style={{ background: theme.card }}
+                style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}
               >
                 <Plus size={18} style={{ color: theme.primary }} />
               </button>
@@ -592,25 +600,27 @@ function AddTechniqueModal({ theme, categories, onClose, onSave }: AddTechniqueM
 
           {/* 説明 */}
           <div>
-            <label className="text-white/50 text-sm mb-2 block">説明・メモ</label>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>説明・メモ</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="ポイントや注意点を記入..."
               rows={3}
-              className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30 resize-none"
+              className="w-full rounded-xl px-4 py-3 outline-none border focus:border-blue-500 resize-none"
+              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
             />
           </div>
 
           {/* YouTube URL */}
           <div>
-            <label className="text-white/50 text-sm mb-2 block">YouTube動画URL</label>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>YouTube動画URL</label>
             <input
               type="text"
               value={videoUrl}
               onChange={(e) => setVideoUrl(e.target.value)}
               placeholder="https://youtube.com/watch?v=..."
-              className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30"
+              className="w-full rounded-xl px-4 py-3 outline-none border focus:border-blue-500"
+              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
             />
           </div>
 
@@ -683,7 +693,7 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
   const youtubeId = technique.video_url ? getYouTubeId(technique.video_url) : null;
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" style={{ background: theme.bg }}>
       {/* 動画エリア（PC対応: 最大高さを制限） */}
       <div className="relative shrink-0">
         {youtubeId ? (
@@ -741,16 +751,16 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
               {technique.technique_type}
             </span>
           </div>
-          <h1 className="text-2xl font-bold text-white">{technique.name}</h1>
+          <h1 className="text-2xl font-bold" style={{ color: theme.text }}>{technique.name}</h1>
           {technique.name_en && (
-            <p className="text-white/40 text-sm mt-1">{technique.name_en}</p>
+            <p className="text-sm mt-1" style={{ color: theme.textSecondary }}>{technique.name_en}</p>
           )}
         </div>
 
         {/* 説明 */}
         {technique.description && (
           <Card>
-            <p className="text-white/70 text-sm leading-relaxed">
+            <p className="text-sm leading-relaxed" style={{ color: theme.text }}>
               {technique.description}
             </p>
           </Card>
@@ -766,7 +776,7 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
                 style={{
                   background: theme.card,
                   border: `1px solid ${theme.cardBorder}`,
-                  color: 'rgba(255,255,255,0.6)',
+                  color: theme.textSecondary,
                 }}
               >
                 #{tag}
@@ -778,7 +788,7 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
         {/* 関連フロー */}
         {relatedFlows.length > 0 && (
           <div>
-            <h3 className="text-white/50 text-sm font-medium mb-3">使用フロー</h3>
+            <h3 className="text-sm font-medium mb-3" style={{ color: theme.textSecondary }}>使用フロー</h3>
             {relatedFlows.map((flow) => (
               <Card 
                 key={flow.id} 
@@ -791,8 +801,8 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
                 >
                   <GitBranch size={18} style={{ color: theme.primary }} />
                 </div>
-                <span className="text-white text-sm flex-1">{flow.name}</span>
-                <ChevronRight size={16} className="text-white/20" />
+                <span className="text-sm flex-1" style={{ color: theme.text }}>{flow.name}</span>
+                <ChevronRight size={16} style={{ color: theme.textMuted }} />
               </Card>
             ))}
           </div>
@@ -800,7 +810,7 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
 
         {/* 習得状況 */}
         <div>
-          <h3 className="text-white/50 text-sm font-medium mb-3">習得状況</h3>
+          <h3 className="text-sm font-medium mb-3" style={{ color: theme.textSecondary }}>習得状況</h3>
           <div className="flex gap-2">
             {[
               { value: 'learning' as const, label: '学習中' },
@@ -813,7 +823,7 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
                 className="flex-1 py-3 rounded-xl text-sm transition-all"
                 style={{
                   background: masteryLevel === level.value ? theme.gradient : theme.card,
-                  color: masteryLevel === level.value ? 'white' : 'rgba(255,255,255,0.5)',
+                  color: masteryLevel === level.value ? 'white' : theme.textSecondary,
                   border: `1px solid ${masteryLevel === level.value ? 'transparent' : theme.cardBorder}`,
                 }}
               >
@@ -826,7 +836,7 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
         {/* 削除ボタン */}
         <button
           onClick={handleDelete}
-          className="w-full py-3 rounded-xl text-red-400 flex items-center justify-center gap-2"
+          className="w-full py-3 rounded-xl text-red-500 flex items-center justify-center gap-2"
           style={{ background: 'rgba(239, 68, 68, 0.1)' }}
         >
           <Trash2 size={18} />
@@ -861,7 +871,7 @@ function AddCategoryModal({ theme, onClose, onSave }: AddCategoryModalProps) {
 
   return (
     <div 
-      className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-end z-50 animate-fade-in"
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-end z-50 animate-fade-in"
       onClick={onClose}
     >
       <div
@@ -870,16 +880,16 @@ function AddCategoryModal({ theme, onClose, onSave }: AddCategoryModalProps) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-white font-semibold text-lg">カテゴリを追加</h3>
+          <h3 className="font-semibold text-lg" style={{ color: theme.text }}>カテゴリを追加</h3>
           <button onClick={onClose}>
-            <X size={24} className="text-white/60" />
+            <X size={24} style={{ color: theme.textSecondary }} />
           </button>
         </div>
 
         <div className="space-y-4">
           {/* アイコン選択 */}
           <div>
-            <label className="text-white/50 text-sm mb-2 block">アイコン</label>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>アイコン</label>
             <div className="flex flex-wrap gap-2">
               {emojiOptions.map((emoji) => (
                 <button
@@ -899,13 +909,14 @@ function AddCategoryModal({ theme, onClose, onSave }: AddCategoryModalProps) {
 
           {/* カテゴリ名 */}
           <div>
-            <label className="text-white/50 text-sm mb-2 block">カテゴリ名 *</label>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>カテゴリ名 *</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: ハーフガード"
-              className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30"
+              className="w-full rounded-xl px-4 py-3 outline-none border focus:border-blue-500"
+              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
             />
           </div>
 

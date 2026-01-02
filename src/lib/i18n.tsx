@@ -44,7 +44,7 @@ const translations: Record<Language, Record<string, string>> = {
     'belt.purple': '紫帯',
     'belt.brown': '茶帯',
     'belt.black': '黒帯',
-    'belt.stripes': '{count}本',
+    'belt.stripes': 'ストライプ{count}',
 
     // ホーム画面
     'home.welcome': 'おかえりなさい',
@@ -251,7 +251,7 @@ const translations: Record<Language, Record<string, string>> = {
     'belt.purple': 'Purple Belt',
     'belt.brown': 'Brown Belt',
     'belt.black': 'Black Belt',
-    'belt.stripes': '{count} stripe(s)',
+    'belt.stripes': 'Stripe {count}',
 
     // Home Screen
     'home.welcome': 'Welcome back',
@@ -458,7 +458,7 @@ const translations: Record<Language, Record<string, string>> = {
     'belt.purple': 'Faixa Roxa',
     'belt.brown': 'Faixa Marrom',
     'belt.black': 'Faixa Preta',
-    'belt.stripes': '{count} grau(s)',
+    'belt.stripes': 'Grau {count}',
 
     // Tela Inicial
     'home.welcome': 'Bem-vindo de volta',

@@ -8,6 +8,26 @@ import { useI18n } from '@/lib/i18n';
 import { Card } from '@/components/ui/Card';
 import { Technique, TrainingLog } from '@/types';
 
+// YouTubeのURLからサムネイルURLを取得
+function getYouTubeThumbnail(url?: string): string | null {
+  if (!url) return null;
+  
+  // YouTube URL patterns
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\s?]+)/,
+    /youtube\.com\/shorts\/([^&\s?]+)/,
+  ];
+  
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      return `https://img.youtube.com/vi/${match[1]}/mqdefault.jpg`;
+    }
+  }
+  
+  return null;
+}
+
 interface HomeScreenProps {
   onOpenSettings?: () => void;
   onOpenDiary?: () => void;
@@ -213,18 +233,36 @@ export function HomeScreen({
             </Card>
           ) : (
             <div className="flex gap-3 overflow-x-auto pb-2 -mx-5 px-5">
-              {displayTechniques.map((tech) => (
-                <Card key={tech.id} className="flex-shrink-0 w-44" onClick={() => onOpenTechnique?.(tech)}>
-                  <div
-                    className="aspect-video rounded-lg mb-3 flex items-center justify-center"
-                    style={{ background: `${theme.primary}15` }}
-                  >
-                    <Play size={24} style={{ color: theme.primary }} />
-                  </div>
-                  <p className="text-sm font-medium truncate" style={{ color: theme.text }}>{tech.name}</p>
-                  <p className="text-xs mt-0.5 truncate" style={{ color: theme.textMuted }}>{tech.name_en}</p>
-                </Card>
-              ))}
+              {displayTechniques.map((tech) => {
+                const thumbnailUrl = getYouTubeThumbnail(tech.video_url);
+                return (
+                  <Card key={tech.id} className="flex-shrink-0 w-44" onClick={() => onOpenTechnique?.(tech)}>
+                    <div
+                      className="aspect-video rounded-lg mb-3 flex items-center justify-center overflow-hidden relative"
+                      style={{ background: `${theme.primary}15` }}
+                    >
+                      {thumbnailUrl ? (
+                        <>
+                          <img 
+                            src={thumbnailUrl} 
+                            alt={tech.name}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                            <div className="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center">
+                              <Play size={16} fill={theme.primary} style={{ color: theme.primary, marginLeft: 2 }} />
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <Play size={24} style={{ color: theme.primary }} />
+                      )}
+                    </div>
+                    <p className="text-sm font-medium truncate" style={{ color: theme.text }}>{tech.name}</p>
+                    <p className="text-xs mt-0.5 truncate" style={{ color: theme.textMuted }}>{tech.name_en}</p>
+                  </Card>
+                );
+              })}
               <div
                 className="flex-shrink-0 w-44 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer"
                 style={{ borderColor: theme.cardBorder, minHeight: '140px' }}

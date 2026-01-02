@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Mail, Lock, User, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
+import { useI18n } from '@/lib/i18n';
 
 interface AuthScreenProps {
   onSuccess?: () => void;
@@ -61,8 +62,10 @@ export function AuthScreen({ onSuccess }: AuthScreenProps) {
     }
   };
 
+  const { t } = useI18n();
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6" style={{ background: '#030712' }}>
+    <div className="min-h-screen flex flex-col items-center justify-center p-6" style={{ background: '#f8fafc' }}>
       {/* ロゴ */}
       <div className="mb-8 text-center">
         <div
@@ -71,8 +74,8 @@ export function AuthScreen({ onSuccess }: AuthScreenProps) {
         >
           <span className="text-3xl font-bold text-white">BJJ</span>
         </div>
-        <h1 className="text-2xl font-bold text-white">BJJ Hub</h1>
-        <p className="text-white/40 text-sm mt-1">柔術テクニック管理アプリ</p>
+        <h1 className="text-2xl font-bold text-slate-800">BJJ Hub</h1>
+        <p className="text-slate-500 text-sm mt-1">{t('auth.welcome')}</p>
       </div>
 
       {/* フォーム */}
@@ -80,77 +83,77 @@ export function AuthScreen({ onSuccess }: AuthScreenProps) {
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === 'signup' && (
             <div className="relative">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" size={20} />
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
               <input
                 type="text"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="表示名"
-                className="w-full bg-white/5 rounded-xl pl-12 pr-4 py-4 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-blue-500/50 transition"
+                placeholder={t('settings.display_name')}
+                className="w-full bg-white rounded-xl pl-12 pr-4 py-4 text-slate-800 outline-none placeholder:text-slate-400 border border-slate-200 focus:border-blue-500 transition shadow-sm"
               />
             </div>
           )}
 
           <div className="relative">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" size={20} />
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="メールアドレス"
+              placeholder={t('auth.email')}
               required
-              className="w-full bg-white/5 rounded-xl pl-12 pr-4 py-4 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-blue-500/50 transition"
+              className="w-full bg-white rounded-xl pl-12 pr-4 py-4 text-slate-800 outline-none placeholder:text-slate-400 border border-slate-200 focus:border-blue-500 transition shadow-sm"
             />
           </div>
 
           <div className="relative">
-            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" size={20} />
+            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
             <input
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="パスワード"
+              placeholder={t('auth.password')}
               required
               minLength={6}
-              className="w-full bg-white/5 rounded-xl pl-12 pr-12 py-4 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-blue-500/50 transition"
+              className="w-full bg-white rounded-xl pl-12 pr-12 py-4 text-slate-800 outline-none placeholder:text-slate-400 border border-slate-200 focus:border-blue-500 transition shadow-sm"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
 
           {error && (
-            <p className="text-red-400 text-sm text-center">{error}</p>
+            <p className="text-red-500 text-sm text-center">{error}</p>
           )}
 
           {message && (
-            <p className="text-green-400 text-sm text-center">{message}</p>
+            <p className="text-green-500 text-sm text-center">{message}</p>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 rounded-xl text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full py-4 rounded-xl text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg"
             style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%)' }}
           >
             {loading ? (
               <Loader2 className="animate-spin" size={20} />
             ) : mode === 'signin' ? (
-              'ログイン'
+              t('auth.login')
             ) : (
-              'アカウント作成'
+              t('auth.signup')
             )}
           </button>
         </form>
 
         {/* 切り替え */}
         <div className="mt-6 text-center">
-          <p className="text-white/40 text-sm">
-            {mode === 'signin' ? 'アカウントをお持ちでない方は' : '既にアカウントをお持ちの方は'}
+          <p className="text-slate-500 text-sm">
+            {mode === 'signin' ? t('auth.no_account') : t('auth.have_account')}
           </p>
           <button
             onClick={() => {
@@ -158,9 +161,9 @@ export function AuthScreen({ onSuccess }: AuthScreenProps) {
               setError('');
               setMessage('');
             }}
-            className="text-blue-400 text-sm font-medium mt-1"
+            className="text-blue-600 text-sm font-medium mt-1"
           >
-            {mode === 'signin' ? '新規登録' : 'ログイン'}
+            {mode === 'signin' ? t('auth.signup') : t('auth.login')}
           </button>
         </div>
       </div>

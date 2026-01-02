@@ -21,6 +21,7 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import { Plus, GitBranch, Star, X, GripVertical, Trash2, ChevronLeft, Save, Tag } from 'lucide-react';
 import { useApp } from '@/lib/context';
+import { useI18n } from '@/lib/i18n';
 import { useToast } from '@/components/ui/Toast';
 import { Card } from '@/components/ui/Card';
 import { Header } from '@/components/ui/Header';
@@ -33,6 +34,7 @@ interface FlowsScreenProps {
 
 export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
   const { theme, flows, addFlow, updateFlow, deleteFlow } = useApp();
+  const { t } = useI18n();
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'all' | 'favorite'>('all');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -59,24 +61,23 @@ export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" style={{ background: theme.bg }}>
       <div
-        className="absolute top-0 left-0 right-0 h-48 opacity-20 pointer-events-none"
+        className="absolute top-0 left-0 right-0 h-48 rounded-b-3xl"
         style={{ background: theme.gradient }}
       />
 
       <Header
-        title="コンビネーション"
+        title={t('flows.title')}
         rightAction={
           <button
-            className="p-2 rounded-full relative z-10"
-            style={{ background: theme.card }}
+            className="p-2 rounded-full relative z-10 bg-white/20"
             onClick={(e) => {
               e.stopPropagation();
               setShowAddModal(true);
             }}
           >
-            <Plus size={18} style={{ color: theme.primary }} />
+            <Plus size={18} className="text-white" />
           </button>
         }
       />
@@ -84,17 +85,16 @@ export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
       {/* タブ */}
       <div className="flex gap-2 px-5 pb-4 relative z-10">
         {[
-          { id: 'all', label: 'すべて' },
-          { id: 'favorite', label: 'お気に入り' },
+          { id: 'all', label: t('common.all') },
+          { id: 'favorite', label: t('techniques.mastery.favorite') },
         ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
             className="px-4 py-2 rounded-full text-sm transition-all"
             style={{
-              background: activeTab === tab.id ? theme.gradient : 'transparent',
-              color: activeTab === tab.id ? 'white' : 'rgba(255,255,255,0.4)',
-              border: activeTab === tab.id ? 'none' : `1px solid ${theme.cardBorder}`,
+              background: activeTab === tab.id ? 'white' : 'rgba(255,255,255,0.2)',
+              color: activeTab === tab.id ? theme.primary : 'white',
             }}
           >
             {tab.label}
@@ -105,12 +105,12 @@ export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
       <div className="flex-1 overflow-auto px-5 pb-24 space-y-3 relative z-10">
         {filteredFlows.length === 0 ? (
           <div className="text-center py-12">
-            <GitBranch size={48} className="mx-auto mb-4 text-white/20" />
-            <p className="text-white/40 mb-2">
-              {activeTab === 'favorite' ? 'お気に入りのフローがありません' : 'フローが登録されていません'}
+            <GitBranch size={48} className="mx-auto mb-4" style={{ color: theme.textMuted }} />
+            <p className="mb-2" style={{ color: theme.textSecondary }}>
+              {activeTab === 'favorite' ? t('flows.no_flows') : t('flows.no_flows')}
             </p>
-            <p className="text-white/30 text-sm">
-              右上の＋ボタンから作成できます
+            <p className="text-sm" style={{ color: theme.textMuted }}>
+              {t('flows.create_first')}
             </p>
           </div>
         ) : (
@@ -125,9 +125,9 @@ export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
                     <GitBranch size={18} className="text-white" />
                   </div>
                   <div>
-                    <p className="text-white font-medium">{flow.name}</p>
+                    <p className="font-medium" style={{ color: theme.text }}>{flow.name}</p>
                     {flow.description && (
-                      <p className="text-white/40 text-xs mt-0.5 line-clamp-1">
+                      <p className="text-xs mt-0.5 line-clamp-1" style={{ color: theme.textSecondary }}>
                         {flow.description}
                       </p>
                     )}
@@ -139,9 +139,8 @@ export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
                 >
                   <Star
                     size={18}
-                    className="text-white/30"
                     fill={flow.is_favorite ? theme.accent : 'transparent'}
-                    style={{ color: flow.is_favorite ? theme.accent : 'rgba(255,255,255,0.3)' }}
+                    style={{ color: flow.is_favorite ? theme.accent : theme.textMuted }}
                   />
                 </button>
               </div>
@@ -206,7 +205,7 @@ function AddFlowModal({ theme, onClose, onSave }: AddFlowModalProps) {
 
   return (
     <div 
-      className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-end z-50 animate-fade-in"
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-end z-50 animate-fade-in"
       onClick={onClose}
     >
       <div
@@ -215,40 +214,42 @@ function AddFlowModal({ theme, onClose, onSave }: AddFlowModalProps) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-white font-semibold text-lg">フローを作成</h3>
+          <h3 className="font-semibold text-lg" style={{ color: theme.text }}>フローを作成</h3>
           <button onClick={onClose}>
-            <X size={24} className="text-white/60" />
+            <X size={24} style={{ color: theme.textSecondary }} />
           </button>
         </div>
 
         <div className="space-y-4">
           {/* フロー名 */}
           <div>
-            <label className="text-white/50 text-sm mb-2 block">フロー名 *</label>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>フロー名 *</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 三角絞めからの派生"
-              className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30"
+              className="w-full rounded-xl px-4 py-3 outline-none border focus:border-blue-500"
+              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
             />
           </div>
 
           {/* 説明 */}
           <div>
-            <label className="text-white/50 text-sm mb-2 block">説明</label>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>説明</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="フローの説明..."
               rows={2}
-              className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30 resize-none"
+              className="w-full rounded-xl px-4 py-3 outline-none border focus:border-blue-500 resize-none"
+              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
             />
           </div>
 
           {/* タグ */}
           <div>
-            <label className="text-white/50 text-sm mb-2 block">タグ</label>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>タグ</label>
             <div className="flex gap-2">
               <input
                 type="text"
@@ -256,12 +257,13 @@ function AddFlowModal({ theme, onClose, onSave }: AddFlowModalProps) {
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
                 placeholder="タグを入力..."
-                className="flex-1 bg-white/5 rounded-xl px-4 py-3 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30"
+                className="flex-1 rounded-xl px-4 py-3 outline-none border focus:border-blue-500"
+                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
               />
               <button
                 onClick={addTag}
                 className="px-4 rounded-xl"
-                style={{ background: theme.card }}
+                style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}
               >
                 <Plus size={18} style={{ color: theme.primary }} />
               </button>
@@ -424,12 +426,18 @@ function LabeledEdge({
               transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
               pointerEvents: 'all',
             }}
-            className="px-2 py-1 rounded text-xs text-white/90 max-w-[120px] text-center"
+            className="text-center"
             contentEditable={false}
           >
             <span
-              className="px-2 py-0.5 rounded"
-              style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}
+              className="px-2 py-1 rounded text-xs inline-block"
+              style={{ 
+                background: theme.card, 
+                border: `1px solid ${theme.cardBorder}`,
+                color: theme.text,
+                whiteSpace: 'nowrap',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+              }}
             >
               {data.label}
             </span>
@@ -596,13 +604,14 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
         style={{ borderColor: theme.cardBorder, background: theme.bg }}
       >
         <button onClick={onBack} className="p-1">
-          <ChevronLeft size={22} className="text-white/60" />
+          <ChevronLeft size={22} style={{ color: theme.textSecondary }} />
         </button>
         <input
           type="text"
           value={flowName}
           onChange={(e) => setFlowName(e.target.value)}
-          className="text-white font-medium bg-transparent text-center outline-none flex-1 mx-4"
+          className="font-medium bg-transparent text-center outline-none flex-1 mx-4"
+          style={{ color: theme.text }}
           placeholder="フロー名"
         />
         <button
@@ -622,8 +631,8 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
       >
         <button
           onClick={() => setShowTechniquePanel(true)}
-          className="px-3 py-1.5 rounded-lg text-xs flex items-center gap-1"
-          style={{ background: theme.card, color: 'white' }}
+          className="px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 text-white"
+          style={{ background: theme.gradient }}
         >
           <Plus size={14} />
           技を追加
@@ -631,13 +640,13 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
         {selectedNodeId && (
           <button
             onClick={deleteSelectedNode}
-            className="px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 bg-red-500/20 text-red-400"
+            className="px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 bg-red-500/20 text-red-500"
           >
             <Trash2 size={14} />
             選択中を削除
           </button>
         )}
-        <div className="ml-auto text-white/30 text-xs">
+        <div className="ml-auto text-xs" style={{ color: theme.textMuted }}>
           ハンドルをドラッグして接続
         </div>
       </div>
@@ -756,7 +765,7 @@ function EdgeLabelModal({ theme, onClose, onSave }: EdgeLabelModalProps) {
 
   return (
     <div 
-      className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-end z-50 animate-fade-in"
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-end z-50 animate-fade-in"
       onClick={onClose}
     >
       <div
@@ -765,12 +774,12 @@ function EdgeLabelModal({ theme, onClose, onSave }: EdgeLabelModalProps) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-white font-semibold text-lg flex items-center gap-2">
+          <h3 className="font-semibold text-lg flex items-center gap-2" style={{ color: theme.text }}>
             <Tag size={18} />
             分岐条件を追加
           </h3>
           <button onClick={onClose}>
-            <X size={24} className="text-white/60" />
+            <X size={24} style={{ color: theme.textSecondary }} />
           </button>
         </div>
 
@@ -781,14 +790,15 @@ function EdgeLabelModal({ theme, onClose, onSave }: EdgeLabelModalProps) {
             value={label}
             onChange={(e) => setLabel(e.target.value)}
             placeholder="条件を入力..."
-            className="w-full bg-white/5 rounded-lg px-4 py-3 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30"
+            className="w-full rounded-lg px-4 py-3 outline-none border focus:border-blue-500"
+            style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
             autoFocus
           />
         </div>
 
         {/* プリセットラベル */}
         <div className="mb-4">
-          <p className="text-white/50 text-xs mb-2">よく使う条件</p>
+          <p className="text-xs mb-2" style={{ color: theme.textSecondary }}>よく使う条件</p>
           <div className="flex flex-wrap gap-2">
             {presetLabels.map((preset) => (
               <button
@@ -797,7 +807,8 @@ function EdgeLabelModal({ theme, onClose, onSave }: EdgeLabelModalProps) {
                 className="px-3 py-1.5 rounded-lg text-xs transition-all"
                 style={{
                   background: label === preset ? theme.gradient : theme.card,
-                  color: label === preset ? 'white' : 'rgba(255,255,255,0.6)',
+                  color: label === preset ? 'white' : theme.textSecondary,
+                  border: `1px solid ${label === preset ? 'transparent' : theme.cardBorder}`,
                 }}
               >
                 {preset}
@@ -810,8 +821,8 @@ function EdgeLabelModal({ theme, onClose, onSave }: EdgeLabelModalProps) {
         <div className="flex gap-2">
           <button
             onClick={() => onSave(undefined)}
-            className="flex-1 py-3 rounded-xl text-white/60"
-            style={{ background: theme.card }}
+            className="flex-1 py-3 rounded-xl"
+            style={{ background: theme.card, color: theme.textSecondary, border: `1px solid ${theme.cardBorder}` }}
           >
             ラベルなしで接続
           </button>
@@ -844,7 +855,7 @@ function TechniqueSelectPanel({ theme, techniques, onSelect, onClose }: Techniqu
 
   return (
     <div
-      className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-end z-50 animate-fade-in"
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-end z-50 animate-fade-in"
       onClick={onClose}
     >
       <div
@@ -853,11 +864,11 @@ function TechniqueSelectPanel({ theme, techniques, onSelect, onClose }: Techniqu
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-white font-semibold text-lg">
+          <h3 className="font-semibold text-lg" style={{ color: theme.text }}>
             {selectedCategory ? '技を選択' : 'カテゴリを選択'}
           </h3>
           <button onClick={onClose}>
-            <X size={24} className="text-white/60" />
+            <X size={24} style={{ color: theme.textSecondary }} />
           </button>
         </div>
 
@@ -871,7 +882,8 @@ function TechniqueSelectPanel({ theme, techniques, onSelect, onClose }: Techniqu
                   value={customLabel}
                   onChange={(e) => setCustomLabel(e.target.value)}
                   placeholder="カスタム名を入力..."
-                  className="flex-1 bg-white/5 rounded-lg px-4 py-2.5 text-white outline-none placeholder:text-white/30 border border-white/10"
+                  className="flex-1 rounded-lg px-4 py-2.5 outline-none border focus:border-blue-500"
+                  style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
                 />
                 <button
                   onClick={() => {
@@ -899,7 +911,7 @@ function TechniqueSelectPanel({ theme, techniques, onSelect, onClose }: Techniqu
                   style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}
                 >
                   <span className="text-2xl">{cat.icon}</span>
-                  <span className="text-white text-sm">{cat.name}</span>
+                  <span className="text-sm" style={{ color: theme.text }}>{cat.name}</span>
                 </button>
               ))}
             </div>
@@ -908,14 +920,15 @@ function TechniqueSelectPanel({ theme, techniques, onSelect, onClose }: Techniqu
           <>
             <button
               onClick={() => setSelectedCategory(null)}
-              className="text-white/50 text-sm mb-4 flex items-center gap-1"
+              className="text-sm mb-4 flex items-center gap-1"
+              style={{ color: theme.textSecondary }}
             >
               <ChevronLeft size={16} />
               カテゴリに戻る
             </button>
 
             {filteredTechniques.length === 0 ? (
-              <p className="text-white/40 text-center py-8">
+              <p className="text-center py-8" style={{ color: theme.textSecondary }}>
                 このカテゴリに技がありません
               </p>
             ) : (
@@ -925,10 +938,10 @@ function TechniqueSelectPanel({ theme, techniques, onSelect, onClose }: Techniqu
                     key={tech.id}
                     onClick={() => onSelect(tech.name, getTypeFromTechnique(tech))}
                     className="w-full p-3 rounded-lg text-left flex items-center gap-3"
-                    style={{ background: theme.card }}
+                    style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}
                   >
-                    <span className="text-white">{tech.name}</span>
-                    <span className="text-white/40 text-xs ml-auto">{tech.technique_type}</span>
+                    <span style={{ color: theme.text }}>{tech.name}</span>
+                    <span className="text-xs ml-auto" style={{ color: theme.textSecondary }}>{tech.technique_type}</span>
                   </button>
                 ))}
               </div>
