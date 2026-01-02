@@ -92,6 +92,8 @@ const translations: Record<Language, Record<string, string>> = {
     'techniques.no_video': '動画未登録',
     'techniques.related_flows': '関連フロー',
     'techniques.count': '{count}技',
+    'techniques.count_suffix': '技',
+    'techniques.no_techniques': '技が登録されていません',
     'techniques.search_placeholder': '技を検索...',
 
     // カテゴリ
@@ -299,6 +301,8 @@ const translations: Record<Language, Record<string, string>> = {
     'techniques.no_video': 'No video',
     'techniques.related_flows': 'Related Flows',
     'techniques.count': '{count} techniques',
+    'techniques.count_suffix': '',
+    'techniques.no_techniques': 'No techniques registered',
     'techniques.search_placeholder': 'Search techniques...',
 
     // Categories
@@ -506,6 +510,8 @@ const translations: Record<Language, Record<string, string>> = {
     'techniques.no_video': 'Sem vídeo',
     'techniques.related_flows': 'Fluxos Relacionados',
     'techniques.count': '{count} técnicas',
+    'techniques.count_suffix': '',
+    'techniques.no_techniques': 'Nenhuma técnica registrada',
     'techniques.search_placeholder': 'Buscar técnicas...',
 
     // Categorias

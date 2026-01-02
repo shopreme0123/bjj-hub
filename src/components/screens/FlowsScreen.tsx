@@ -332,7 +332,7 @@ function TechniqueNode({ data, selected }: NodeProps<CustomNodeData>) {
       style={{
         background: style.bg,
         border: `2px solid ${style.border}`,
-        boxShadow: selected ? `0 8px 30px ${theme.primary}40` : 'none',
+        boxShadow: selected ? `0 8px 30px ${theme.primary}40` : '0 2px 8px rgba(0,0,0,0.1)',
         minWidth: '120px',
       }}
     >
@@ -344,8 +344,8 @@ function TechniqueNode({ data, selected }: NodeProps<CustomNodeData>) {
       />
       
       <div className="flex items-center gap-2">
-        <GripVertical size={14} className="text-white/30" />
-        <span className="text-white text-sm font-medium whitespace-nowrap">
+        <GripVertical size={14} style={{ color: theme.textMuted }} />
+        <span className="text-sm font-medium whitespace-nowrap" style={{ color: theme.text }}>
           {data.label}
         </span>
       </div>

@@ -559,27 +559,27 @@ export function DiaryDetailScreen({ log, onBack, onOpenTechnique, onOpenFlow }: 
         <Card>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-white/50 text-sm">時間</span>
-              <span className="text-white">
+              <span className="text-sm" style={{ color: theme.textSecondary }}>時間</span>
+              <span style={{ color: theme.text }}>
                 {currentLog.start_time} - {currentLog.end_time}（{currentLog.duration_minutes}分）
               </span>
             </div>
             {currentLog.sparring_rounds && (
               <div className="flex items-center justify-between">
-                <span className="text-white/50 text-sm">スパーリング</span>
-                <span className="text-white">{currentLog.sparring_rounds}本</span>
+                <span className="text-sm" style={{ color: theme.textSecondary }}>スパーリング</span>
+                <span style={{ color: theme.text }}>{currentLog.sparring_rounds}本</span>
               </div>
             )}
             {currentLog.condition && (
               <div className="flex items-center justify-between">
-                <span className="text-white/50 text-sm">コンディション</span>
+                <span className="text-sm" style={{ color: theme.textSecondary }}>コンディション</span>
                 <div className="flex gap-1">
                   {[1, 2, 3, 4, 5].map((n) => (
                     <div
                       key={n}
                       className="w-4 h-4 rounded-full"
                       style={{
-                        background: n <= currentLog.condition! ? theme.gradient : 'rgba(255,255,255,0.1)',
+                        background: n <= currentLog.condition! ? theme.gradient : theme.cardBorder,
                       }}
                     />
                   ))}
@@ -592,24 +592,24 @@ export function DiaryDetailScreen({ log, onBack, onOpenTechnique, onOpenFlow }: 
         {/* 内容 */}
         {currentLog.content && (
           <Card>
-            <h3 className="text-white/50 text-sm mb-2">練習内容</h3>
-            <p className="text-white">{currentLog.content}</p>
+            <h3 className="text-sm mb-2" style={{ color: theme.textSecondary }}>練習内容</h3>
+            <p style={{ color: theme.text }}>{currentLog.content}</p>
           </Card>
         )}
 
         {/* メモ */}
         {currentLog.notes && (
           <Card>
-            <h3 className="text-white/50 text-sm mb-2">気づき・メモ</h3>
-            <p className="text-white leading-relaxed">{currentLog.notes}</p>
+            <h3 className="text-sm mb-2" style={{ color: theme.textSecondary }}>気づき・メモ</h3>
+            <p className="leading-relaxed" style={{ color: theme.text }}>{currentLog.notes}</p>
           </Card>
         )}
 
         {/* 編集ボタン */}
         <button
           onClick={() => setShowEditModal(true)}
-          className="w-full py-3 rounded-xl text-white flex items-center justify-center gap-2"
-          style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}
+          className="w-full py-3 rounded-xl flex items-center justify-center gap-2"
+          style={{ background: theme.card, border: `1px solid ${theme.cardBorder}`, color: theme.text }}
         >
           <Pencil size={16} />
           この記録を編集
@@ -690,7 +690,7 @@ function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps) {
 
   return (
     <div 
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end z-50 animate-fade-in"
+      className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-end z-50 animate-fade-in"
       onClick={onClose}
     >
       <div
@@ -699,48 +699,57 @@ function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-3">
-          <h3 className="text-white font-semibold">記録を編集</h3>
+          <h3 className="font-semibold" style={{ color: theme.text }}>記録を編集</h3>
           <button onClick={onClose}>
-            <X size={22} className="text-white/60" />
+            <X size={22} style={{ color: theme.textSecondary }} />
           </button>
         </div>
 
         <div className="overflow-auto space-y-2.5" style={{ maxHeight: 'calc(85vh - 60px)' }}>
           {/* 日付 */}
           <div>
-            <label className="text-white/50 text-xs mb-1 block">日付 *</label>
+            <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>日付 *</label>
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full bg-white/5 rounded-lg px-3 py-2 text-white outline-none border border-white/10 focus:border-white/30 text-sm"
+              className="w-full rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm"
+              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
             />
           </div>
 
           {/* 時間 */}
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-white/50 text-xs mb-1 block">開始</label>
+              <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>開始</label>
               <input
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                className="w-full bg-white/5 rounded-lg px-3 py-2 text-white outline-none border border-white/10 focus:border-white/30 text-sm"
+                className="w-full rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm"
+                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
               />
             </div>
             <div>
-              <label className="text-white/50 text-xs mb-1 block">終了</label>
+              <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>終了</label>
               <input
                 type="time"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
-                className="w-full bg-white/5 rounded-lg px-3 py-2 text-white outline-none border border-white/10 focus:border-white/30 text-sm"
+                className="w-full rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm"
+                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
               />
             </div>
           </div>
           
           {/* 練習時間表示 */}
-          <div className={`text-center py-1.5 rounded-lg text-sm ${isValidTime ? 'text-white/60' : 'text-red-400 bg-red-400/10'}`}>
+          <div 
+            className="text-center py-1.5 rounded-lg text-sm"
+            style={{ 
+              color: isValidTime ? theme.textSecondary : '#ef4444',
+              background: isValidTime ? 'transparent' : 'rgba(239, 68, 68, 0.1)',
+            }}
+          >
             {isValidTime ? (
               <span>練習時間: {Math.floor(duration / 60)}時間{duration % 60}分</span>
             ) : (
@@ -751,7 +760,7 @@ function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps) {
           {/* コンディション + スパー */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-white/50 text-xs mb-1 block">コンディション</label>
+              <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>コンディション</label>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((n) => (
                   <button
@@ -760,47 +769,51 @@ function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps) {
                     className="flex-1 py-1.5 rounded-lg transition-all"
                     style={{
                       background: n <= condition ? theme.gradient : theme.card,
+                      border: n <= condition ? 'none' : `1px solid ${theme.cardBorder}`,
                     }}
                   >
-                    <span className="text-white text-sm">{n}</span>
+                    <span className="text-sm" style={{ color: n <= condition ? 'white' : theme.text }}>{n}</span>
                   </button>
                 ))}
               </div>
             </div>
             <div>
-              <label className="text-white/50 text-xs mb-1 block">スパー本数</label>
+              <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>スパー本数</label>
               <input
                 type="number"
                 min="0"
                 value={sparringRounds}
                 onChange={(e) => setSparringRounds(e.target.value)}
                 placeholder="例: 5"
-                className="w-full bg-white/5 rounded-lg px-3 py-1.5 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30 text-sm"
+                className="w-full rounded-lg px-3 py-1.5 outline-none border focus:border-blue-500 text-sm"
+                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
               />
             </div>
           </div>
 
           {/* 内容 */}
           <div>
-            <label className="text-white/50 text-xs mb-1 block">練習内容</label>
+            <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>練習内容</label>
             <input
               type="text"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="例: テクニック練習、スパーリング"
-              className="w-full bg-white/5 rounded-lg px-3 py-2 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30 text-sm"
+              className="w-full rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm"
+              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
             />
           </div>
 
           {/* メモ */}
           <div>
-            <label className="text-white/50 text-xs mb-1 block">気づき・メモ</label>
+            <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>気づき・メモ</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="うまくいったこと、改善点など..."
               rows={2}
-              className="w-full bg-white/5 rounded-lg px-3 py-2 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30 resize-none text-sm"
+              className="w-full rounded-lg px-3 py-2 outline-none border focus:border-blue-500 resize-none text-sm"
+              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
             />
           </div>
 

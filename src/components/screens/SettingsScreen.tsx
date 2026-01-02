@@ -68,7 +68,7 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
       <div className="flex-1 overflow-auto px-5 pb-24 space-y-6 relative z-10">
         {/* プロフィール */}
         <div>
-          <h3 className="text-white/70 text-sm font-medium mb-3">{t('settings.profile')}</h3>
+          <h3 className="text-sm font-medium mb-3" style={{ color: theme.textSecondary }}>{t('settings.profile')}</h3>
           <Card onClick={() => setShowProfileModal(true)}>
             <div className="flex items-center gap-4">
               <div
@@ -344,22 +344,22 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
           onClose={() => setShowExportModal(false)}
         >
           <div className="space-y-4">
-            <p className="text-white/70 text-sm">
+            <p className="text-sm" style={{ color: theme.text }}>
               すべてのデータをJSONファイルとしてエクスポートします。
             </p>
             <Card>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-white/50">技</span>
-                  <span className="text-white">{techniques.length}件</span>
+                  <span style={{ color: theme.textSecondary }}>技</span>
+                  <span style={{ color: theme.text }}>{techniques.length}件</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-white/50">フロー</span>
-                  <span className="text-white">{flows.length}件</span>
+                  <span style={{ color: theme.textSecondary }}>フロー</span>
+                  <span style={{ color: theme.text }}>{flows.length}件</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-white/50">練習記録</span>
-                  <span className="text-white">{trainingLogs.length}件</span>
+                  <span style={{ color: theme.textSecondary }}>練習記録</span>
+                  <span style={{ color: theme.text }}>{trainingLogs.length}件</span>
                 </div>
               </div>
             </Card>
@@ -517,7 +517,7 @@ function ProfileEditModal({ theme, profile, user, onClose, onSave }: ProfileEdit
 
   return (
     <div 
-      className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-end z-50 animate-fade-in"
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-end z-50 animate-fade-in"
       onClick={onClose}
     >
       <div
@@ -526,9 +526,9 @@ function ProfileEditModal({ theme, profile, user, onClose, onSave }: ProfileEdit
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-white font-semibold text-lg">プロフィール編集</h3>
+          <h3 className="font-semibold text-lg" style={{ color: theme.text }}>プロフィール編集</h3>
           <button onClick={onClose}>
-            <X size={24} className="text-white/60" />
+            <X size={24} style={{ color: theme.textSecondary }} />
           </button>
         </div>
 
@@ -570,36 +570,39 @@ function ProfileEditModal({ theme, profile, user, onClose, onSave }: ProfileEdit
 
           {/* 表示名 */}
           <div>
-            <label className="text-white/50 text-sm mb-2 block">表示名</label>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>表示名</label>
             <input
               type="text"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="表示名を入力"
-              className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none border border-white/10 focus:border-white/30"
+              className="w-full rounded-xl px-4 py-3 outline-none border focus:border-blue-500"
+              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
             />
           </div>
 
           {/* 柔術開始日 */}
           <div>
-            <label className="text-white/50 text-sm mb-2 block">柔術開始日</label>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>柔術開始日</label>
             <input
               type="date"
               value={bjjStartDate}
               onChange={(e) => setBjjStartDate(e.target.value)}
-              className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none border border-white/10 focus:border-white/30"
+              className="w-full rounded-xl px-4 py-3 outline-none border focus:border-blue-500"
+              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
             />
           </div>
 
           {/* 自己紹介 */}
           <div>
-            <label className="text-white/50 text-sm mb-2 block">自己紹介</label>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>自己紹介</label>
             <textarea
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="柔術を始めた理由や目標など..."
               rows={3}
-              className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30 resize-none"
+              className="w-full rounded-xl px-4 py-3 outline-none border focus:border-blue-500 resize-none"
+              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
             />
           </div>
 

@@ -510,48 +510,48 @@ export function GroupDetailScreen({ group, onBack }: GroupDetailScreenProps) {
               <Users size={28} className="text-white" />
             </div>
             <div className="flex-1">
-              <h2 className="text-white font-semibold text-lg">{currentGroup.name}</h2>
-              <p className="text-white/40 text-sm">{memberCount}人のメンバー</p>
+              <h2 className="font-semibold text-lg" style={{ color: theme.text }}>{currentGroup.name}</h2>
+              <p className="text-sm" style={{ color: theme.textSecondary }}>{memberCount}人のメンバー</p>
             </div>
             {isAdmin && (
               <button
                 onClick={() => setShowEditModal(true)}
                 className="p-2 rounded-lg"
-                style={{ background: theme.card }}
+                style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}
               >
-                <Pencil size={16} className="text-white/50" />
+                <Pencil size={16} style={{ color: theme.textSecondary }} />
               </button>
             )}
           </div>
           {currentGroup.description && (
-            <p className="text-white/60 text-sm">{currentGroup.description}</p>
+            <p className="text-sm" style={{ color: theme.text }}>{currentGroup.description}</p>
           )}
         </Card>
 
         {/* 招待コード */}
         {currentGroup.invite_code && (
           <Card>
-            <p className="text-white/50 text-sm mb-2">招待コード</p>
+            <p className="text-sm mb-2" style={{ color: theme.textSecondary }}>招待コード</p>
             <div className="flex items-center gap-3">
               <div
-                className="flex-1 py-3 px-4 rounded-lg text-center text-2xl font-mono tracking-widest text-white"
-                style={{ background: theme.card }}
+                className="flex-1 py-3 px-4 rounded-lg text-center text-2xl font-mono tracking-widest"
+                style={{ background: theme.card, color: theme.text, border: `1px solid ${theme.cardBorder}` }}
               >
                 {currentGroup.invite_code}
               </div>
               <button
                 onClick={handleCopyCode}
                 className="p-3 rounded-lg"
-                style={{ background: theme.card }}
+                style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}
               >
                 {copied ? (
-                  <Check size={20} className="text-green-400" />
+                  <Check size={20} className="text-green-500" />
                 ) : (
-                  <Copy size={20} className="text-white/60" />
+                  <Copy size={20} style={{ color: theme.textSecondary }} />
                 )}
               </button>
             </div>
-            <p className="text-white/30 text-xs mt-2 text-center">
+            <p className="text-xs mt-2 text-center" style={{ color: theme.textMuted }}>
               このコードを共有してメンバーを招待
             </p>
           </Card>
@@ -559,11 +559,11 @@ export function GroupDetailScreen({ group, onBack }: GroupDetailScreenProps) {
 
         {/* 共有フロー（今後実装） */}
         <div>
-          <h3 className="text-white/50 text-sm font-medium mb-3">共有フロー</h3>
+          <h3 className="text-sm font-medium mb-3" style={{ color: theme.textSecondary }}>共有フロー</h3>
           <Card className="text-center py-8">
-            <GitBranch size={32} className="mx-auto mb-3 text-white/20" />
-            <p className="text-white/40 text-sm">共有フローはまだありません</p>
-            <p className="text-white/30 text-xs mt-2">
+            <GitBranch size={32} className="mx-auto mb-3" style={{ color: theme.textMuted }} />
+            <p className="text-sm" style={{ color: theme.textSecondary }}>共有フローはまだありません</p>
+            <p className="text-xs mt-2" style={{ color: theme.textMuted }}>
               今後のアップデートで追加予定
             </p>
           </Card>
@@ -573,7 +573,7 @@ export function GroupDetailScreen({ group, onBack }: GroupDetailScreenProps) {
         {isAdmin && (
           <button
             onClick={handleDeleteGroup}
-            className="w-full py-3 rounded-xl text-red-400 flex items-center justify-center gap-2 text-sm"
+            className="w-full py-3 rounded-xl text-red-500 flex items-center justify-center gap-2 text-sm"
             style={{ background: 'rgba(239, 68, 68, 0.1)' }}
           >
             <Trash2 size={16} />
@@ -631,7 +631,7 @@ function EditGroupModal({ theme, group, onClose, onSave }: EditGroupModalProps) 
 
   return (
     <div 
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end z-50 animate-fade-in"
+      className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-end z-50 animate-fade-in"
       onClick={onClose}
     >
       <div
@@ -640,32 +640,34 @@ function EditGroupModal({ theme, group, onClose, onSave }: EditGroupModalProps) 
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-white font-semibold text-lg">グループを編集</h3>
+          <h3 className="font-semibold text-lg" style={{ color: theme.text }}>グループを編集</h3>
           <button onClick={onClose}>
-            <X size={24} className="text-white/60" />
+            <X size={24} style={{ color: theme.textSecondary }} />
           </button>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="text-white/50 text-sm mb-2 block">グループ名 *</label>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>グループ名 *</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 青帯研究会"
-              className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30"
+              className="w-full rounded-xl px-4 py-3 outline-none border focus:border-blue-500"
+              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
             />
           </div>
 
           <div>
-            <label className="text-white/50 text-sm mb-2 block">説明</label>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>説明</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="グループの説明..."
               rows={2}
-              className="w-full bg-white/5 rounded-xl px-4 py-3 text-white outline-none placeholder:text-white/30 border border-white/10 focus:border-white/30 resize-none"
+              className="w-full rounded-xl px-4 py-3 outline-none border focus:border-blue-500 resize-none"
+              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
             />
           </div>
 
