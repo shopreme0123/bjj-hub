@@ -8,13 +8,8 @@
   --background-end-rgb: 248, 250, 252;
 }
 
-/* PWA全画面対応 */
-html, body {
-  height: 100%;
-  overflow: hidden;
-}
-
 body {
+  height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Noto Sans CJK JP', 'Yu Gothic', sans-serif;
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-start-rgb));

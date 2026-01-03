@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { AuthProvider, useAuth } from '@/lib/auth-context';
 import { AppProvider, useApp } from '@/lib/context';
@@ -224,6 +224,18 @@ function AuthenticatedApp() {
 }
 
 export default function HomePage() {
+  useEffect(() => {
+    // PWA全画面対応: このページでのみoverflow: hiddenを適用
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      // クリーンアップ: ページを離れる時に元に戻す
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   return (
     <I18nProvider>
       <AuthProvider>

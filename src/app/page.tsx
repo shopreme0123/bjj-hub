@@ -1450,7 +1450,7 @@ export default function LandingPage() {
               </svg>
             </div>
             <h3>メニューを開く</h3>
-            <p><strong>iOS:</strong> 共有ボタン（↑）をタップ<br /><strong>Android:</strong> メニュー（⋮）をタップ</p>
+            <p><strong>iOS:</strong> 共有ボタン（□に↑）をタップ<br /><strong>Android:</strong> メニュー（⋮）をタップ</p>
           </div>
           <div className="lp-step-card">
             <div className="lp-step-number">3</div>
