@@ -2,7 +2,7 @@
   "name": "BJJ Hub - 柔術テクニック管理",
   "short_name": "BJJ Hub",
   "description": "柔術の技とコンビネーションを管理・記録するアプリ",
-  "start_url": "/",
+  "start_url": "/home",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#030712",
