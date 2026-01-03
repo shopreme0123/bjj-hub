@@ -2,3 +2,7 @@ node_modules/
 .next/
 .env.local
 .vercel
+
+# PWA service worker files (auto-generated)
+public/sw.js
+public/workbox-*.js
