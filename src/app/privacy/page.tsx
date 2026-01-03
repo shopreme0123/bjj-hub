@@ -124,12 +124,12 @@ export default function PrivacyPolicy() {
             </p>
             <p className="mt-2">
               <a
-                href="https://x.com/lifeishabit"
+                href="https://x.com/bjjshopreme"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:text-blue-800 underline"
               >
-                X (Twitter): @lifeishabit
+                X (Twitter): @bjjshopreme
               </a>
             </p>
           </section>
