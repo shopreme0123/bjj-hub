@@ -1,8 +1,33 @@
 'use client';
 
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
 export default function LandingPage() {
+  const [activeSection, setActiveSection] = useState('');
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['features', 'belts', 'users', 'install'];
+      const scrollPosition = window.scrollY + 100;
+
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const { offsetTop, offsetHeight } = element;
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div className="landing-page">
       <style jsx global>{`
@@ -101,11 +126,29 @@ export default function LandingPage() {
           text-decoration: none;
           font-size: 0.9rem;
           font-weight: 500;
-          transition: color 0.3s ease;
+          transition: all 0.3s ease;
+          position: relative;
+          padding-bottom: 0.25rem;
         }
 
         .lp-nav-links a:hover {
           color: var(--accent-blue);
+        }
+
+        .lp-nav-links a.active {
+          color: var(--accent-blue);
+          font-weight: 600;
+        }
+
+        .lp-nav-links a.active::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background: var(--accent-gradient);
+          border-radius: 2px;
         }
 
         .lp-cta-btn {
@@ -825,6 +868,104 @@ export default function LandingPage() {
           font-weight: 600;
         }
 
+        .lp-install-section {
+          padding: 8rem 2rem;
+          background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+
+        .lp-install-steps {
+          max-width: 1000px;
+          margin: 0 auto;
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 2rem;
+          margin-top: 3rem;
+        }
+
+        .lp-step-card {
+          background: var(--bg-card);
+          border-radius: 20px;
+          padding: 2rem;
+          border: 1px solid #e2e8f0;
+          text-align: center;
+          transition: all 0.4s ease;
+          position: relative;
+        }
+
+        .lp-step-card:hover {
+          transform: translateY(-6px);
+          box-shadow: var(--shadow-lg);
+          border-color: rgba(59, 130, 246, 0.2);
+        }
+
+        .lp-step-number {
+          width: 50px;
+          height: 50px;
+          background: var(--accent-gradient);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 1.5rem;
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: white;
+          box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .lp-step-card h3 {
+          font-size: 1.2rem;
+          font-weight: 700;
+          margin-bottom: 1rem;
+          color: var(--text-primary);
+        }
+
+        .lp-step-card p {
+          color: var(--text-secondary);
+          line-height: 1.8;
+          font-size: 0.95rem;
+        }
+
+        .lp-step-icon {
+          width: 80px;
+          height: 80px;
+          margin: 0 auto 1rem;
+          background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+          border-radius: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .lp-step-icon svg {
+          width: 40px;
+          height: 40px;
+          stroke: var(--accent-blue);
+          stroke-width: 2;
+          fill: none;
+        }
+
+        .lp-platform-note {
+          max-width: 700px;
+          margin: 3rem auto 0;
+          padding: 1.5rem;
+          background: rgba(59, 130, 246, 0.05);
+          border-radius: 16px;
+          border-left: 4px solid var(--accent-blue);
+        }
+
+        .lp-platform-note p {
+          color: var(--text-secondary);
+          font-size: 0.9rem;
+          line-height: 1.8;
+          margin: 0;
+        }
+
+        .lp-platform-note strong {
+          color: var(--text-primary);
+          font-weight: 600;
+        }
+
         .lp-cta-section {
           padding: 7rem 2rem;
           background: var(--bg-dark);
@@ -1052,6 +1193,7 @@ export default function LandingPage() {
           .lp-features,
           .lp-belt-section,
           .lp-use-cases,
+          .lp-install-section,
           .lp-cta-section {
             padding: 5rem 1.25rem;
           }
@@ -1088,9 +1230,10 @@ export default function LandingPage() {
             <span className="lp-logo-text">BJJ HUB</span>
           </a>
           <ul className="lp-nav-links">
-            <li><a href="#features">機能</a></li>
-            <li><a href="#belts">帯テーマ</a></li>
-            <li><a href="#users">こんな方に</a></li>
+            <li><a href="#features" className={activeSection === 'features' ? 'active' : ''}>機能</a></li>
+            <li><a href="#belts" className={activeSection === 'belts' ? 'active' : ''}>帯テーマ</a></li>
+            <li><a href="#users" className={activeSection === 'users' ? 'active' : ''}>こんな方に</a></li>
+            <li><a href="#install" className={activeSection === 'install' ? 'active' : ''}>インストール</a></li>
           </ul>
           <Link href="/home" className="lp-cta-btn">今すぐ始める</Link>
         </nav>
@@ -1278,6 +1421,55 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* PWA Install */}
+      <section className="lp-install-section" id="install">
+        <div className="lp-section-header-main">
+          <div className="lp-section-label">HOW TO INSTALL</div>
+          <h2 className="lp-section-title-main">アプリをホーム画面に追加</h2>
+          <p className="lp-section-desc">PWA（Progressive Web App）として、スマートフォンのホーム画面に追加できます。アプリのように使えて便利です。</p>
+        </div>
+        <div className="lp-install-steps">
+          <div className="lp-step-card">
+            <div className="lp-step-number">1</div>
+            <div className="lp-step-icon">
+              <svg viewBox="0 0 24 24">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+              </svg>
+            </div>
+            <h3>ブラウザで開く</h3>
+            <p>SafariまたはChromeで当サイトにアクセスします。</p>
+          </div>
+          <div className="lp-step-card">
+            <div className="lp-step-number">2</div>
+            <div className="lp-step-icon">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="1"></circle>
+                <circle cx="12" cy="5" r="1"></circle>
+                <circle cx="12" cy="19" r="1"></circle>
+              </svg>
+            </div>
+            <h3>メニューを開く</h3>
+            <p><strong>iOS:</strong> 共有ボタン（↑）をタップ<br /><strong>Android:</strong> メニュー（⋮）をタップ</p>
+          </div>
+          <div className="lp-step-card">
+            <div className="lp-step-number">3</div>
+            <div className="lp-step-icon">
+              <svg viewBox="0 0 24 24">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="12" y1="8" x2="12" y2="16"></line>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+              </svg>
+            </div>
+            <h3>ホーム画面に追加</h3>
+            <p>「ホーム画面に追加」を選択して、名前を確認後「追加」をタップします。</p>
+          </div>
+        </div>
+        <div className="lp-platform-note">
+          <p><strong>💡 ヒント：</strong> ホーム画面に追加すると、アプリのようにフルスクリーンで使用でき、オフラインでも一部機能が利用できます。</p>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="lp-cta-section">
         <div className="lp-cta-content">
@@ -1314,6 +1506,7 @@ export default function LandingPage() {
               <li><a href="#features">機能</a></li>
               <li><a href="#belts">帯テーマ</a></li>
               <li><a href="#users">こんな方に</a></li>
+              <li><a href="#install">インストール</a></li>
             </ul>
           </div>
           <div className="lp-footer-links">
