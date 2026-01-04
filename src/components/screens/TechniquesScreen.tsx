@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Search, Filter, ChevronRight, Star, Play, ChevronLeft, X, GitBranch, Trash2, Loader2, Pencil } from 'lucide-react';
+import { Plus, Search, Filter, ChevronRight, Star, Play, ChevronLeft, X, GitBranch, Trash2, Loader2, Pencil, Share2 } from 'lucide-react';
 import { useApp } from '@/lib/context';
 import { useAuth } from '@/lib/auth-context';
 import { useI18n } from '@/lib/i18n';
@@ -729,6 +729,7 @@ interface TechniqueDetailProps {
 
 export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: TechniqueDetailProps) {
   const { theme, flows, updateTechnique, deleteTechnique } = useApp();
+  const { showToast } = useToast();
   const [isFavorite, setIsFavorite] = useState(technique.mastery_level === 'favorite');
   const [masteryLevel, setMasteryLevel] = useState(technique.mastery_level);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -736,8 +737,8 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
   const handleToggleFavorite = () => {
     const newFavorite = !isFavorite;
     setIsFavorite(newFavorite);
-    updateTechnique(technique.id, { 
-      mastery_level: newFavorite ? 'favorite' : 'learned' 
+    updateTechnique(technique.id, {
+      mastery_level: newFavorite ? 'favorite' : 'learned'
     });
   };
 
@@ -751,6 +752,32 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
     if (confirm('この技を削除しますか？')) {
       deleteTechnique(technique.id);
       onBack();
+    }
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      type: 'bjj-technique',
+      version: '1.0',
+      technique: {
+        name: technique.name,
+        name_en: technique.name_en,
+        technique_type: technique.technique_type,
+        category: technique.category,
+        description: technique.description,
+        video_url: technique.video_url,
+        tags: technique.tags,
+      },
+    };
+
+    const jsonString = JSON.stringify(shareData, null, 2);
+
+    try {
+      await navigator.clipboard.writeText(jsonString);
+      showToast('技のデータをクリップボードにコピーしました');
+    } catch (error) {
+      console.error('Failed to copy:', error);
+      showToast('コピーに失敗しました', 'error');
     }
   };
 
@@ -806,6 +833,13 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
           <ChevronLeft size={20} className="text-white" />
         </button>
         <div className="absolute top-4 right-4 flex gap-2">
+          <button
+            onClick={handleShare}
+            className="p-2 rounded-full backdrop-blur-sm"
+            style={{ background: 'rgba(0,0,0,0.3)' }}
+          >
+            <Share2 size={20} className="text-white" />
+          </button>
           <button
             onClick={() => setShowEditModal(true)}
             className="p-2 rounded-full backdrop-blur-sm"

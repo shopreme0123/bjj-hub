@@ -19,7 +19,7 @@ import ReactFlow, {
   EdgeLabelRenderer,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Plus, GitBranch, Star, X, GripVertical, Trash2, ChevronLeft, Save, Tag, Pencil } from 'lucide-react';
+import { Plus, GitBranch, Star, X, GripVertical, Trash2, ChevronLeft, Save, Tag, Pencil, Share2 } from 'lucide-react';
 import { useApp } from '@/lib/context';
 import { useAuth } from '@/lib/auth-context';
 import { useI18n } from '@/lib/i18n';
@@ -754,7 +754,7 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
   const handleSave = async () => {
     if (flow) {
       // ノードとエッジをflow_dataに保存
-      await updateFlow(flow.id, { 
+      await updateFlow(flow.id, {
         name: flowName,
         flow_data: { nodes, edges }
       });
@@ -769,6 +769,40 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
       await deleteFlow(flow.id);
       showToast('フローを削除しました');
       onBack();
+    }
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      type: 'bjj-flow',
+      version: '1.0',
+      flow: {
+        name: flowName,
+        description: flow?.description,
+        tags: flow?.tags || [],
+        nodes: nodes,
+        edges: edges.map(edge => ({
+          id: edge.id,
+          source: edge.source,
+          target: edge.target,
+          sourceHandle: edge.sourceHandle,
+          targetHandle: edge.targetHandle,
+          type: edge.type,
+          animated: edge.animated,
+          style: edge.style,
+          label: edge.data?.label,
+        })),
+      },
+    };
+
+    const jsonString = JSON.stringify(shareData, null, 2);
+
+    try {
+      await navigator.clipboard.writeText(jsonString);
+      showToast('フローのデータをクリップボードにコピーしました');
+    } catch (error) {
+      console.error('Failed to copy:', error);
+      showToast('コピーに失敗しました', 'error');
     }
   };
 
@@ -790,14 +824,23 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
           style={{ color: theme.text }}
           placeholder="フロー名"
         />
-        <button
-          onClick={handleSave}
-          className="px-4 py-1.5 rounded-full text-sm font-medium text-white flex items-center gap-1"
-          style={{ background: theme.gradient }}
-        >
-          <Save size={14} />
-          保存
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleShare}
+            className="px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-1"
+            style={{ color: theme.primary, border: `1px solid ${theme.primary}` }}
+          >
+            <Share2 size={14} />
+          </button>
+          <button
+            onClick={handleSave}
+            className="px-4 py-1.5 rounded-full text-sm font-medium text-white flex items-center gap-1"
+            style={{ background: theme.gradient }}
+          >
+            <Save size={14} />
+            保存
+          </button>
+        </div>
       </div>
 
       {/* ツールバー */}

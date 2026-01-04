@@ -118,7 +118,14 @@ export function HomeScreen({
               style={{ background: beltBgColor }}
             >
               {[...Array(stripes)].map((_, i) => (
-                <div key={i} className="h-2.5 w-1.5 bg-white rounded-sm" />
+                <div
+                  key={i}
+                  className="h-3 w-1.5 bg-white rounded-sm"
+                  style={{
+                    border: beltColor === 'white' ? '1px solid rgba(0,0,0,0.2)' : 'none',
+                    boxShadow: beltColor === 'white' ? '0 1px 2px rgba(0,0,0,0.1)' : 'none',
+                  }}
+                />
               ))}
             </div>
             <div className="flex-1">
