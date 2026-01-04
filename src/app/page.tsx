@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
 export default function LandingPage() {
@@ -1221,11 +1222,13 @@ export default function LandingPage() {
         <nav className="lp-nav">
           <a href="#" className="lp-logo">
             <div className="lp-logo-icon">
-              <svg viewBox="0 0 24 24">
-                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                <path d="M2 17l10 5 10-5"></path>
-                <path d="M2 12l10 5 10-5"></path>
-              </svg>
+              <Image
+                src="/bjj-logo.png"
+                alt="BJJ Hub Logo"
+                width={40}
+                height={40}
+                className="object-contain"
+              />
             </div>
             <span className="lp-logo-text">BJJ HUB</span>
           </a>
@@ -1490,11 +1493,13 @@ export default function LandingPage() {
           <div className="lp-footer-brand">
             <a href="#" className="lp-logo">
               <div className="lp-logo-icon">
-                <svg viewBox="0 0 24 24">
-                  <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                  <path d="M2 17l10 5 10-5"></path>
-                  <path d="M2 12l10 5 10-5"></path>
-                </svg>
+                <Image
+                  src="/bjj-logo.png"
+                  alt="BJJ Hub Logo"
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                />
               </div>
               <span className="lp-logo-text">BJJ HUB</span>
             </a>
