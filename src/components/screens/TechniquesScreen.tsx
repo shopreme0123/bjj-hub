@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Search, Filter, ChevronRight, Star, Play, ChevronLeft, X, GitBranch, Trash2, Loader2, Pencil, Share2 } from 'lucide-react';
+import { Plus, Search, Filter, ChevronRight, Star, Play, ChevronLeft, X, GitBranch, Trash2, Loader2, Pencil, Share2, Download, Upload, Copy, Check } from 'lucide-react';
 import { useApp } from '@/lib/context';
 import { useAuth } from '@/lib/auth-context';
 import { useI18n } from '@/lib/i18n';
@@ -44,6 +44,7 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState<TechniqueCategory | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [customCategories, setCustomCategories] = useState<TechniqueCategory[]>([]);
@@ -405,15 +406,26 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
           setSearchQuery('');
         }}
         rightAction={
-          <button
-            className="p-2 rounded-full relative z-10 bg-white/20"
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowAddModal(true);
-            }}
-          >
-            <Plus size={18} className="text-white" />
-          </button>
+          <div className="flex gap-2">
+            <button
+              className="p-2 rounded-full relative z-10 bg-white/20"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowImportModal(true);
+              }}
+            >
+              <Upload size={18} className="text-white" />
+            </button>
+            <button
+              className="p-2 rounded-full relative z-10 bg-white/20"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowAddModal(true);
+              }}
+            >
+              <Plus size={18} className="text-white" />
+            </button>
+          </div>
         }
       />
 
@@ -481,6 +493,19 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
           category={editingCategory}
           onClose={() => setEditingCategory(null)}
           onSave={updateCustomCategory}
+        />
+      )}
+
+      {/* インポートモーダル */}
+      {showImportModal && (
+        <ImportTechniqueModal
+          theme={theme}
+          onClose={() => setShowImportModal(false)}
+          onImport={(tech) => {
+            addTechnique(tech);
+            setShowImportModal(false);
+            showToast('技をインポートしました');
+          }}
         />
       )}
     </div>
@@ -733,6 +758,7 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
   const [isFavorite, setIsFavorite] = useState(technique.mastery_level === 'favorite');
   const [masteryLevel, setMasteryLevel] = useState(technique.mastery_level);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
 
   const handleToggleFavorite = () => {
     const newFavorite = !isFavorite;
@@ -755,30 +781,8 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
     }
   };
 
-  const handleShare = async () => {
-    const shareData = {
-      type: 'bjj-technique',
-      version: '1.0',
-      technique: {
-        name: technique.name,
-        name_en: technique.name_en,
-        technique_type: technique.technique_type,
-        category: technique.category,
-        description: technique.description,
-        video_url: technique.video_url,
-        tags: technique.tags,
-      },
-    };
-
-    const jsonString = JSON.stringify(shareData, null, 2);
-
-    try {
-      await navigator.clipboard.writeText(jsonString);
-      showToast('技のデータをクリップボードにコピーしました');
-    } catch (error) {
-      console.error('Failed to copy:', error);
-      showToast('コピーに失敗しました', 'error');
-    }
+  const handleShare = () => {
+    setShowExportModal(true);
   };
 
   // この技に関連するフロー
@@ -979,6 +983,15 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
             updateTechnique(technique.id, data);
             setShowEditModal(false);
           }}
+        />
+      )}
+
+      {/* エクスポートモーダル */}
+      {showExportModal && (
+        <ExportTechniqueModal
+          theme={theme}
+          technique={technique}
+          onClose={() => setShowExportModal(false)}
         />
       )}
     </div>
@@ -1383,6 +1396,181 @@ function EditCategoryModal({ theme, category, onClose, onSave }: EditCategoryMod
             更新
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// エクスポートモーダル
+interface ExportTechniqueModalProps {
+  theme: any;
+  technique: Technique;
+  onClose: () => void;
+}
+
+function ExportTechniqueModal({ theme, technique, onClose }: ExportTechniqueModalProps) {
+  const [copied, setCopied] = useState(false);
+
+  const shareData = {
+    type: 'bjj-technique',
+    version: '1.0',
+    technique: {
+      name: technique.name,
+      name_en: technique.name_en,
+      technique_type: technique.technique_type,
+      category: technique.category,
+      description: technique.description,
+      video_url: technique.video_url,
+      tags: technique.tags,
+    },
+  };
+
+  const jsonString = JSON.stringify(shareData, null, 2);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(jsonString);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy:', error);
+    }
+  };
+
+  return (
+    <div
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-end z-50 animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="w-full rounded-t-3xl p-5 animate-slide-up max-h-[80vh] flex flex-col"
+        style={{ background: theme.bg }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="font-semibold text-lg" style={{ color: theme.text }}>技をエクスポート</h3>
+          <button onClick={onClose}>
+            <X size={24} style={{ color: theme.textSecondary }} />
+          </button>
+        </div>
+
+        <p className="text-sm mb-4" style={{ color: theme.textSecondary }}>
+          以下のデータをコピーして共有できます
+        </p>
+
+        <div className="flex-1 overflow-auto mb-4">
+          <pre
+            className="rounded-xl p-4 text-xs overflow-auto"
+            style={{ background: theme.card, color: theme.text }}
+          >
+            {jsonString}
+          </pre>
+        </div>
+
+        <button
+          onClick={handleCopy}
+          className="w-full py-4 rounded-xl text-white font-semibold flex items-center justify-center gap-2"
+          style={{ background: theme.gradient }}
+        >
+          {copied ? <Check size={18} /> : <Copy size={18} />}
+          {copied ? 'コピーしました' : 'コピー'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// インポートモーダル
+interface ImportTechniqueModalProps {
+  theme: any;
+  onClose: () => void;
+  onImport: (technique: Omit<Technique, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => void;
+}
+
+function ImportTechniqueModal({ theme, onClose, onImport }: ImportTechniqueModalProps) {
+  const [jsonText, setJsonText] = useState('');
+  const [error, setError] = useState('');
+
+  const handleImport = () => {
+    try {
+      const data = JSON.parse(jsonText);
+
+      if (data.type !== 'bjj-technique') {
+        setError('技のデータではありません');
+        return;
+      }
+
+      const tech = data.technique;
+      if (!tech.name || !tech.technique_type) {
+        setError('必須項目が不足しています');
+        return;
+      }
+
+      onImport({
+        name: tech.name,
+        name_en: tech.name_en || '',
+        technique_type: tech.technique_type,
+        category: tech.category,
+        description: tech.description || '',
+        video_url: tech.video_url || '',
+        video_type: 'youtube',
+        tags: tech.tags || [],
+        mastery_level: 'learning',
+      });
+    } catch (e) {
+      setError('JSONの形式が正しくありません');
+    }
+  };
+
+  return (
+    <div
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-end z-50 animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="w-full rounded-t-3xl p-5 animate-slide-up max-h-[80vh] flex flex-col"
+        style={{ background: theme.bg }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="font-semibold text-lg" style={{ color: theme.text }}>技をインポート</h3>
+          <button onClick={onClose}>
+            <X size={24} style={{ color: theme.textSecondary }} />
+          </button>
+        </div>
+
+        <p className="text-sm mb-4" style={{ color: theme.textSecondary }}>
+          エクスポートした技のデータを貼り付けてください
+        </p>
+
+        <textarea
+          value={jsonText}
+          onChange={(e) => {
+            setJsonText(e.target.value);
+            setError('');
+          }}
+          placeholder='{"type": "bjj-technique", ...}'
+          rows={10}
+          className="w-full rounded-xl p-4 text-sm outline-none border mb-2 font-mono"
+          style={{
+            background: theme.card,
+            color: theme.text,
+            borderColor: error ? '#ef4444' : theme.cardBorder
+          }}
+        />
+
+        {error && (
+          <p className="text-sm text-red-500 mb-4">{error}</p>
+        )}
+
+        <button
+          onClick={handleImport}
+          disabled={!jsonText.trim()}
+          className="w-full py-4 rounded-xl text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{ background: theme.gradient }}
+        >
+          インポート
+        </button>
       </div>
     </div>
   );

@@ -120,10 +120,10 @@ export function HomeScreen({
               {[...Array(stripes)].map((_, i) => (
                 <div
                   key={i}
-                  className="h-3 w-1.5 bg-white rounded-sm"
+                  className="h-4 w-2 bg-white rounded-sm"
                   style={{
-                    border: beltColor === 'white' ? '1px solid rgba(0,0,0,0.2)' : 'none',
-                    boxShadow: beltColor === 'white' ? '0 1px 2px rgba(0,0,0,0.1)' : 'none',
+                    border: '1px solid rgba(0,0,0,0.3)',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
                   }}
                 />
               ))}

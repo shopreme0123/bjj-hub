@@ -19,7 +19,7 @@ import ReactFlow, {
   EdgeLabelRenderer,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Plus, GitBranch, Star, X, GripVertical, Trash2, ChevronLeft, Save, Tag, Pencil, Share2 } from 'lucide-react';
+import { Plus, GitBranch, Star, X, GripVertical, Trash2, ChevronLeft, Save, Tag, Pencil, Share2, Upload, Copy, Check } from 'lucide-react';
 import { useApp } from '@/lib/context';
 import { useAuth } from '@/lib/auth-context';
 import { useI18n } from '@/lib/i18n';
@@ -40,6 +40,7 @@ export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'all' | 'favorite'>('all');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
 
   const filteredFlows = flows.filter((flow) => {
     if (activeTab === 'favorite') return flow.is_favorite;
@@ -73,15 +74,26 @@ export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
       <Header
         title={t('flows.title')}
         rightAction={
-          <button
-            className="p-2 rounded-full relative z-10 bg-white/20"
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowAddModal(true);
-            }}
-          >
-            <Plus size={18} className="text-white" />
-          </button>
+          <div className="flex gap-2">
+            <button
+              className="p-2 rounded-full relative z-10 bg-white/20"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowImportModal(true);
+              }}
+            >
+              <Upload size={18} className="text-white" />
+            </button>
+            <button
+              className="p-2 rounded-full relative z-10 bg-white/20"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowAddModal(true);
+              }}
+            >
+              <Plus size={18} className="text-white" />
+            </button>
+          </div>
         }
       />
 
@@ -177,6 +189,19 @@ export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
           theme={theme}
           onClose={() => setShowAddModal(false)}
           onSave={handleAddFlow}
+        />
+      )}
+
+      {/* インポートモーダル */}
+      {showImportModal && (
+        <ImportFlowModal
+          theme={theme}
+          onClose={() => setShowImportModal(false)}
+          onImport={(flowData) => {
+            addFlow(flowData);
+            setShowImportModal(false);
+            showToast('フローをインポートしました');
+          }}
         />
       )}
     </div>
@@ -538,6 +563,7 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
   const [showLabelModal, setShowLabelModal] = useState(false);
   const [editingEdgeId, setEditingEdgeId] = useState<string | null>(null);
   const [customCategories, setCustomCategories] = useState<TechniqueCategory[]>([]);
+  const [showExportModal, setShowExportModal] = useState(false);
 
   // 初期ノード（保存データがあれば復元）
   const getInitialNodes = (): Node<CustomNodeData>[] => {
@@ -772,38 +798,8 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
     }
   };
 
-  const handleShare = async () => {
-    const shareData = {
-      type: 'bjj-flow',
-      version: '1.0',
-      flow: {
-        name: flowName,
-        description: flow?.description,
-        tags: flow?.tags || [],
-        nodes: nodes,
-        edges: edges.map(edge => ({
-          id: edge.id,
-          source: edge.source,
-          target: edge.target,
-          sourceHandle: edge.sourceHandle,
-          targetHandle: edge.targetHandle,
-          type: edge.type,
-          animated: edge.animated,
-          style: edge.style,
-          label: edge.data?.label,
-        })),
-      },
-    };
-
-    const jsonString = JSON.stringify(shareData, null, 2);
-
-    try {
-      await navigator.clipboard.writeText(jsonString);
-      showToast('フローのデータをクリップボードにコピーしました');
-    } catch (error) {
-      console.error('Failed to copy:', error);
-      showToast('コピーに失敗しました', 'error');
-    }
+  const handleShare = () => {
+    setShowExportModal(true);
   };
 
   return (
@@ -965,6 +961,18 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
             setShowLabelModal(false);
           }}
           onSave={editingEdgeId ? updateEdgeLabel : addEdgeWithLabel}
+        />
+      )}
+
+      {/* エクスポートモーダル */}
+      {showExportModal && (
+        <ExportFlowModal
+          theme={theme}
+          flowName={flowName}
+          flow={flow}
+          nodes={nodes}
+          edges={edges}
+          onClose={() => setShowExportModal(false)}
         />
       )}
     </div>
@@ -1189,6 +1197,191 @@ function TechniqueSelectPanel({ theme, techniques, categories, onSelect, onClose
             )}
           </>
         )}
+      </div>
+    </div>
+  );
+}
+
+// エクスポートモーダル
+interface ExportFlowModalProps {
+  theme: any;
+  flowName: string;
+  flow?: Flow;
+  nodes: Node[];
+  edges: Edge[];
+  onClose: () => void;
+}
+
+function ExportFlowModal({ theme, flowName, flow, nodes, edges, onClose }: ExportFlowModalProps) {
+  const [copied, setCopied] = useState(false);
+
+  const shareData = {
+    type: 'bjj-flow',
+    version: '1.0',
+    flow: {
+      name: flowName,
+      description: flow?.description,
+      tags: flow?.tags || [],
+      nodes: nodes,
+      edges: edges.map(edge => ({
+        id: edge.id,
+        source: edge.source,
+        target: edge.target,
+        sourceHandle: edge.sourceHandle,
+        targetHandle: edge.targetHandle,
+        type: edge.type,
+        animated: edge.animated,
+        style: edge.style,
+        label: edge.data?.label,
+      })),
+    },
+  };
+
+  const jsonString = JSON.stringify(shareData, null, 2);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(jsonString);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy:', error);
+    }
+  };
+
+  return (
+    <div
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-end z-50 animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="w-full rounded-t-3xl p-5 animate-slide-up max-h-[80vh] flex flex-col"
+        style={{ background: theme.bg }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="font-semibold text-lg" style={{ color: theme.text }}>フローをエクスポート</h3>
+          <button onClick={onClose}>
+            <X size={24} style={{ color: theme.textSecondary }} />
+          </button>
+        </div>
+
+        <p className="text-sm mb-4" style={{ color: theme.textSecondary }}>
+          以下のデータをコピーして共有できます
+        </p>
+
+        <div className="flex-1 overflow-auto mb-4">
+          <pre
+            className="rounded-xl p-4 text-xs overflow-auto"
+            style={{ background: theme.card, color: theme.text }}
+          >
+            {jsonString}
+          </pre>
+        </div>
+
+        <button
+          onClick={handleCopy}
+          className="w-full py-4 rounded-xl text-white font-semibold flex items-center justify-center gap-2"
+          style={{ background: theme.gradient }}
+        >
+          {copied ? <Check size={18} /> : <Copy size={18} />}
+          {copied ? 'コピーしました' : 'コピー'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// インポートモーダル
+interface ImportFlowModalProps {
+  theme: any;
+  onClose: () => void;
+  onImport: (flow: Omit<Flow, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => void;
+}
+
+function ImportFlowModal({ theme, onClose, onImport }: ImportFlowModalProps) {
+  const [jsonText, setJsonText] = useState('');
+  const [error, setError] = useState('');
+
+  const handleImport = () => {
+    try {
+      const data = JSON.parse(jsonText);
+
+      if (data.type !== 'bjj-flow') {
+        setError('フローのデータではありません');
+        return;
+      }
+
+      const flowData = data.flow;
+      if (!flowData.name) {
+        setError('必須項目が不足しています');
+        return;
+      }
+
+      onImport({
+        name: flowData.name,
+        description: flowData.description || '',
+        tags: flowData.tags || [],
+        is_favorite: false,
+        flow_data: {
+          nodes: flowData.nodes || [],
+          edges: flowData.edges || [],
+        },
+      });
+    } catch (e) {
+      setError('JSONの形式が正しくありません');
+    }
+  };
+
+  return (
+    <div
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-end z-50 animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="w-full rounded-t-3xl p-5 animate-slide-up max-h-[80vh] flex flex-col"
+        style={{ background: theme.bg }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="font-semibold text-lg" style={{ color: theme.text }}>フローをインポート</h3>
+          <button onClick={onClose}>
+            <X size={24} style={{ color: theme.textSecondary }} />
+          </button>
+        </div>
+
+        <p className="text-sm mb-4" style={{ color: theme.textSecondary }}>
+          エクスポートしたフローのデータを貼り付けてください
+        </p>
+
+        <textarea
+          value={jsonText}
+          onChange={(e) => {
+            setJsonText(e.target.value);
+            setError('');
+          }}
+          placeholder='{"type": "bjj-flow", ...}'
+          rows={10}
+          className="w-full rounded-xl p-4 text-sm outline-none border mb-2 font-mono"
+          style={{
+            background: theme.card,
+            color: theme.text,
+            borderColor: error ? '#ef4444' : theme.cardBorder
+          }}
+        />
+
+        {error && (
+          <p className="text-sm text-red-500 mb-4">{error}</p>
+        )}
+
+        <button
+          onClick={handleImport}
+          disabled={!jsonText.trim()}
+          className="w-full py-4 rounded-xl text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{ background: theme.gradient }}
+        >
+          インポート
+        </button>
       </div>
     </div>
   );
