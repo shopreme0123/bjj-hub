@@ -20,12 +20,13 @@ export function Header({ title, showBack = false, onBack, rightAction }: HeaderP
         {showBack && (
           <button
             onClick={onBack}
-            className="p-1 -ml-1 opacity-60 hover:opacity-100 transition-opacity"
+            className="p-2 rounded-full transition-all hover:bg-white/20"
+            style={{ background: 'rgba(255, 255, 255, 0.15)' }}
           >
-            <ChevronLeft size={24} style={{ color: theme.text }} />
+            <ChevronLeft size={20} className="text-white" />
           </button>
         )}
-        <h1 className="font-semibold text-lg tracking-tight" style={{ color: theme.text }}>{title}</h1>
+        <h1 className="font-semibold text-lg tracking-tight text-white">{title}</h1>
       </div>
       {rightAction}
     </div>

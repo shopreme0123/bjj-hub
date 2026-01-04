@@ -19,7 +19,7 @@ import ReactFlow, {
   EdgeLabelRenderer,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Plus, GitBranch, Star, X, GripVertical, Trash2, ChevronLeft, Save, Tag } from 'lucide-react';
+import { Plus, GitBranch, Star, X, GripVertical, Trash2, ChevronLeft, Save, Tag, Pencil } from 'lucide-react';
 import { useApp } from '@/lib/context';
 import { useI18n } from '@/lib/i18n';
 import { useToast } from '@/components/ui/Toast';
@@ -343,42 +343,69 @@ function TechniqueNode({ data, selected }: NodeProps<CustomNodeData>) {
         minWidth: '120px',
       }}
     >
-      {/* 上部ハンドル（入力） */}
+      {/* 上部ハンドル（入出力両用） */}
       <Handle
         type="target"
         position={Position.Top}
+        id="top-target"
         className="!bg-blue-500 !w-3 !h-3 !border-2 !border-white"
       />
-      
+      <Handle
+        type="source"
+        position={Position.Top}
+        id="top-source"
+        className="!bg-blue-500 !w-3 !h-3 !border-2 !border-white"
+      />
+
       <div className="flex items-center gap-2">
         <GripVertical size={14} style={{ color: theme.textMuted }} />
         <span className="text-sm font-medium whitespace-nowrap" style={{ color: theme.text }}>
           {data.label}
         </span>
       </div>
-      
-      {/* 下部ハンドル（出力・メイン） */}
+
+      {/* 下部ハンドル（入出力両用） */}
+      <Handle
+        type="target"
+        position={Position.Bottom}
+        id="bottom-target"
+        className="!bg-blue-500 !w-3 !h-3 !border-2 !border-white"
+      />
       <Handle
         type="source"
         position={Position.Bottom}
-        id="main"
+        id="bottom-source"
         className="!bg-blue-500 !w-3 !h-3 !border-2 !border-white"
       />
-      
-      {/* 左側ハンドル（分岐1） */}
+
+      {/* 左側ハンドル（入出力両用） */}
       <Handle
-        type="source"
+        type="target"
         position={Position.Left}
-        id="branch-left"
+        id="left-target"
         className="!bg-green-500 !w-2.5 !h-2.5 !border-2 !border-white"
         style={{ top: '50%' }}
       />
-      
-      {/* 右側ハンドル（分岐2） */}
+      <Handle
+        type="source"
+        position={Position.Left}
+        id="left-source"
+        className="!bg-green-500 !w-2.5 !h-2.5 !border-2 !border-white"
+        style={{ top: '50%' }}
+      />
+
+      {/* 右側ハンドル（入出力両用） */}
+      <Handle
+        type="target"
+        position={Position.Right}
+        id="right-target"
+        className="!bg-orange-500 !w-2.5 !h-2.5 !border-2 !border-white"
+        style={{ top: '50%' }}
+      />
       <Handle
         type="source"
         position={Position.Right}
-        id="branch-right"
+        id="right-source"
         className="!bg-orange-500 !w-2.5 !h-2.5 !border-2 !border-white"
         style={{ top: '50%' }}
       />
@@ -393,6 +420,8 @@ const nodeTypes = {
 // カスタムエッジ（ラベル付き）
 interface CustomEdgeData {
   label?: string;
+  onEdit?: (edgeId: string) => void;
+  onDelete?: (edgeId: string) => void;
 }
 
 function LabeledEdge({
@@ -405,6 +434,7 @@ function LabeledEdge({
   targetPosition,
   style = {},
   data,
+  selected,
 }: EdgeProps<CustomEdgeData>) {
   const { theme } = useApp();
   const [edgePath, labelX, labelY] = getBezierPath({
@@ -420,7 +450,10 @@ function LabeledEdge({
     <>
       <path
         id={id}
-        style={style}
+        style={{
+          ...style,
+          strokeWidth: selected ? 3 : 2,
+        }}
         className="react-flow__edge-path"
         d={edgePath}
         markerEnd="url(#arrowhead)"
@@ -434,20 +467,45 @@ function LabeledEdge({
               pointerEvents: 'all',
             }}
             className="text-center"
-            contentEditable={false}
           >
-            <span
-              className="px-2 py-1 rounded text-xs inline-block"
-              style={{ 
-                background: theme.card, 
-                border: `1px solid ${theme.cardBorder}`,
-                color: theme.text,
-                whiteSpace: 'nowrap',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-              }}
-            >
-              {data.label}
-            </span>
+            <div className="flex items-center gap-1">
+              <span
+                className="px-2 py-1 rounded text-xs inline-block"
+                style={{
+                  background: selected ? theme.primary : theme.card,
+                  border: `1px solid ${selected ? theme.primary : theme.cardBorder}`,
+                  color: selected ? 'white' : theme.text,
+                  whiteSpace: 'nowrap',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                }}
+              >
+                {data.label}
+              </span>
+              {selected && (
+                <div className="flex gap-0.5">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      data.onEdit?.(id);
+                    }}
+                    className="p-1 rounded bg-blue-500 hover:bg-blue-600 transition-colors"
+                    title="編集"
+                  >
+                    <Pencil size={10} className="text-white" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      data.onDelete?.(id);
+                    }}
+                    className="p-1 rounded bg-red-500 hover:bg-red-600 transition-colors"
+                    title="削除"
+                  >
+                    <X size={10} className="text-white" />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </EdgeLabelRenderer>
       )}
@@ -471,9 +529,11 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
   const [flowName, setFlowName] = useState(flow?.name || '新しいフロー');
   const [showTechniquePanel, setShowTechniquePanel] = useState(false);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
   const [pendingConnection, setPendingConnection] = useState<Connection | null>(null);
   const [showLabelModal, setShowLabelModal] = useState(false);
+  const [editingEdgeId, setEditingEdgeId] = useState<string | null>(null);
 
   // 初期ノード（保存データがあれば復元）
   const getInitialNodes = (): Node<CustomNodeData>[] => {
@@ -507,6 +567,22 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState(getInitialNodes());
   const [edges, setEdges, onEdgesChange] = useEdgesState(getInitialEdges());
 
+  // 既存のエッジにコールバックを追加
+  useEffect(() => {
+    setEdges((eds) =>
+      eds.map((edge) => ({
+        ...edge,
+        data: {
+          ...edge.data,
+          onEdit: editEdgeLabel,
+          onDelete: (edgeId: string) => {
+            setEdges((eds) => eds.filter((e) => e.id !== edgeId));
+          },
+        },
+      }))
+    );
+  }, []);
+
   // 変更を追跡
   useEffect(() => {
     setHasChanges(true);
@@ -525,23 +601,29 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
   const addEdgeWithLabel = useCallback(
     (label?: string) => {
       if (!pendingConnection) return;
-      
+
       // エッジの色をハンドルIDに基づいて設定
       let strokeColor = theme.primary;
-      if (pendingConnection.sourceHandle === 'branch-left') {
+      if (pendingConnection.sourceHandle?.includes('left')) {
         strokeColor = '#22c55e'; // green
-      } else if (pendingConnection.sourceHandle === 'branch-right') {
+      } else if (pendingConnection.sourceHandle?.includes('right')) {
         strokeColor = '#f97316'; // orange
       }
-      
+
       setEdges((eds) =>
         addEdge(
-          { 
-            ...pendingConnection, 
+          {
+            ...pendingConnection,
             type: 'labeled',
-            animated: true, 
+            animated: true,
             style: { stroke: strokeColor, strokeWidth: 2 },
-            data: { label: label || undefined },
+            data: {
+              label: label || undefined,
+              onEdit: editEdgeLabel,
+              onDelete: (edgeId: string) => {
+                setEdges((eds) => eds.filter((e) => e.id !== edgeId));
+              },
+            },
           },
           eds
         )
@@ -555,11 +637,19 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
   // ノード選択時の処理
   const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
     setSelectedNodeId(node.id);
+    setSelectedEdgeId(null);
+  }, []);
+
+  // エッジ選択時の処理
+  const onEdgeClick = useCallback((_: React.MouseEvent, edge: Edge) => {
+    setSelectedEdgeId(edge.id);
+    setSelectedNodeId(null);
   }, []);
 
   // 背景クリックで選択解除
   const onPaneClick = useCallback(() => {
     setSelectedNodeId(null);
+    setSelectedEdgeId(null);
   }, []);
 
   // 選択中のノードを削除
@@ -570,6 +660,38 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
       setSelectedNodeId(null);
     }
   };
+
+  // 選択中のエッジを削除
+  const deleteSelectedEdge = () => {
+    if (selectedEdgeId) {
+      setEdges((eds) => eds.filter((e) => e.id !== selectedEdgeId));
+      setSelectedEdgeId(null);
+    }
+  };
+
+  // エッジラベルを編集
+  const editEdgeLabel = (edgeId: string) => {
+    setEditingEdgeId(edgeId);
+    setShowLabelModal(true);
+  };
+
+  // エッジラベルを更新
+  const updateEdgeLabel = useCallback(
+    (label?: string) => {
+      if (!editingEdgeId) return;
+
+      setEdges((eds) =>
+        eds.map((edge) =>
+          edge.id === editingEdgeId
+            ? { ...edge, data: { ...edge.data, label: label || undefined } }
+            : edge
+        )
+      );
+      setEditingEdgeId(null);
+      setShowLabelModal(false);
+    },
+    [editingEdgeId, setEdges]
+  );
 
   const addNode = (label: string, type: CustomNodeData['type']) => {
     const newNode: Node<CustomNodeData> = {
@@ -650,11 +772,20 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
             className="px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 bg-red-500/20 text-red-500 whitespace-nowrap"
           >
             <Trash2 size={14} />
-            削除
+            ノード削除
+          </button>
+        )}
+        {selectedEdgeId && (
+          <button
+            onClick={deleteSelectedEdge}
+            className="px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 bg-red-500/20 text-red-500 whitespace-nowrap"
+          >
+            <Trash2 size={14} />
+            接続削除
           </button>
         )}
         <div className="ml-auto text-xs whitespace-nowrap" style={{ color: theme.textMuted }}>
-          ハンドルをドラッグして接続
+          {selectedEdgeId ? '接続を選択中' : 'ハンドルをドラッグして接続'}
         </div>
       </div>
 
@@ -662,11 +793,15 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
       <div className="flex-1">
         <ReactFlow
           nodes={nodes}
-          edges={edges}
+          edges={edges.map(edge => ({
+            ...edge,
+            selected: edge.id === selectedEdgeId,
+          }))}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onNodeClick={onNodeClick}
+          onEdgeClick={onEdgeClick}
           onPaneClick={onPaneClick}
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
@@ -731,11 +866,14 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
       {showLabelModal && (
         <EdgeLabelModal
           theme={theme}
+          initialLabel={editingEdgeId ? edges.find(e => e.id === editingEdgeId)?.data?.label : undefined}
+          isEditing={!!editingEdgeId}
           onClose={() => {
             setPendingConnection(null);
+            setEditingEdgeId(null);
             setShowLabelModal(false);
           }}
-          onSave={addEdgeWithLabel}
+          onSave={editingEdgeId ? updateEdgeLabel : addEdgeWithLabel}
         />
       )}
     </div>
@@ -753,12 +891,14 @@ interface TechniqueSelectPanelProps {
 // エッジラベル入力モーダル
 interface EdgeLabelModalProps {
   theme: any;
+  initialLabel?: string;
+  isEditing?: boolean;
   onClose: () => void;
   onSave: (label?: string) => void;
 }
 
-function EdgeLabelModal({ theme, onClose, onSave }: EdgeLabelModalProps) {
-  const [label, setLabel] = useState('');
+function EdgeLabelModal({ theme, initialLabel, isEditing, onClose, onSave }: EdgeLabelModalProps) {
+  const [label, setLabel] = useState(initialLabel || '');
   const presetLabels = [
     '相手が起き上がる',
     '相手が潰してくる',
@@ -771,7 +911,7 @@ function EdgeLabelModal({ theme, onClose, onSave }: EdgeLabelModalProps) {
   ];
 
   return (
-    <div 
+    <div
       className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-end z-50 animate-fade-in"
       onClick={onClose}
     >
@@ -783,7 +923,7 @@ function EdgeLabelModal({ theme, onClose, onSave }: EdgeLabelModalProps) {
         <div className="flex justify-between items-center mb-4">
           <h3 className="font-semibold text-lg flex items-center gap-2" style={{ color: theme.text }}>
             <Tag size={18} />
-            分岐条件を追加
+            {isEditing ? '分岐条件を編集' : '分岐条件を追加'}
           </h3>
           <button onClick={onClose}>
             <X size={24} style={{ color: theme.textSecondary }} />
@@ -826,19 +966,21 @@ function EdgeLabelModal({ theme, onClose, onSave }: EdgeLabelModalProps) {
 
         {/* ボタン */}
         <div className="flex gap-2">
-          <button
-            onClick={() => onSave(undefined)}
-            className="flex-1 py-3 rounded-xl"
-            style={{ background: theme.card, color: theme.textSecondary, border: `1px solid ${theme.cardBorder}` }}
-          >
-            ラベルなしで接続
-          </button>
+          {!isEditing && (
+            <button
+              onClick={() => onSave(undefined)}
+              className="flex-1 py-3 rounded-xl"
+              style={{ background: theme.card, color: theme.textSecondary, border: `1px solid ${theme.cardBorder}` }}
+            >
+              ラベルなしで接続
+            </button>
+          )}
           <button
             onClick={() => onSave(label || undefined)}
             className="flex-1 py-3 rounded-xl text-white font-medium"
             style={{ background: theme.gradient }}
           >
-            {label ? '追加' : 'OK'}
+            {isEditing ? '更新' : (label ? '追加' : 'OK')}
           </button>
         </div>
       </div>
