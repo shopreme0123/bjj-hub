@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Search, Filter, ChevronRight, Star, Play, ChevronLeft, X, GitBranch, Trash2, Loader2 } from 'lucide-react';
+import { Plus, Search, Filter, ChevronRight, Star, Play, ChevronLeft, X, GitBranch, Trash2, Loader2, Pencil } from 'lucide-react';
 import { useApp } from '@/lib/context';
 import { useAuth } from '@/lib/auth-context';
 import { useI18n } from '@/lib/i18n';
@@ -44,6 +44,7 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<TechniqueCategory | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [customCategories, setCustomCategories] = useState<TechniqueCategory[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
@@ -159,6 +160,38 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
     }
   };
 
+  // カテゴリを更新
+  const updateCustomCategory = async (category: TechniqueCategory) => {
+    if (!user) {
+      const updated = customCategories.map(c => c.id === category.id ? category : c);
+      setCustomCategories(updated);
+      localStorage.setItem('bjj-hub-custom-categories', JSON.stringify(updated));
+      showToast('カテゴリを更新しました');
+      setEditingCategory(null);
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('custom_categories')
+        .update({
+          name: category.name,
+          icon: category.icon,
+        })
+        .eq('id', category.id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      setCustomCategories(customCategories.map(c => c.id === category.id ? category : c));
+      showToast('カテゴリを更新しました');
+      setEditingCategory(null);
+    } catch (error) {
+      console.error('Error updating category:', error);
+      showToast('カテゴリの更新に失敗しました', 'error');
+    }
+  };
+
   // カテゴリでフィルタリング
   const filteredTechniques = techniques.filter(tech => {
     const matchesSearch = !searchQuery || 
@@ -234,28 +267,59 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
         <ChevronRight size={18} style={{ color: theme.textMuted }} />
       </Card>
 
-      {allCategories.map((cat) => (
-        <Card
-          key={cat.id}
-          onClick={() => {
-            setSelectedCategory(cat.id);
-            setView('list');
-          }}
-          className="flex items-center gap-4"
-        >
-          <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center text-xl"
-            style={{ background: `${theme.primary}20` }}
+      {allCategories.map((cat) => {
+        const isCustom = !defaultCategories.find(dc => dc.id === cat.id);
+        return (
+          <Card
+            key={cat.id}
+            className="flex items-center gap-4"
           >
-            {cat.icon}
-          </div>
-          <div className="flex-1">
-            <p className="font-medium" style={{ color: theme.text }}>{cat.name}</p>
-            <p className="text-xs mt-0.5" style={{ color: theme.textSecondary }}>{getCategoryCount(cat.id)}{t('techniques.count_suffix')}</p>
-          </div>
-          <ChevronRight size={18} style={{ color: theme.textMuted }} />
-        </Card>
-      ))}
+            <div
+              onClick={() => {
+                setSelectedCategory(cat.id);
+                setView('list');
+              }}
+              className="flex items-center gap-4 flex-1 cursor-pointer"
+            >
+              <div
+                className="w-12 h-12 rounded-xl flex items-center justify-center text-xl"
+                style={{ background: `${theme.primary}20` }}
+              >
+                {cat.icon}
+              </div>
+              <div className="flex-1">
+                <p className="font-medium" style={{ color: theme.text }}>{cat.name}</p>
+                <p className="text-xs mt-0.5" style={{ color: theme.textSecondary }}>{getCategoryCount(cat.id)}{t('techniques.count_suffix')}</p>
+              </div>
+            </div>
+            {isCustom && (
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingCategory(cat);
+                  }}
+                  className="p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                >
+                  <Pencil size={18} className="text-blue-500" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (confirm(`「${cat.name}」カテゴリを削除しますか？`)) {
+                      deleteCustomCategory(cat.id);
+                    }
+                  }}
+                  className="p-2 rounded-lg hover:bg-red-50 transition-colors"
+                >
+                  <Trash2 size={18} className="text-red-500" />
+                </button>
+              </div>
+            )}
+            <ChevronRight size={18} style={{ color: theme.textMuted }} />
+          </Card>
+        );
+      })}
 
       {/* カテゴリ追加ボタン */}
       <button
@@ -407,6 +471,16 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
           theme={theme}
           onClose={() => setShowCategoryModal(false)}
           onSave={saveCustomCategory}
+        />
+      )}
+
+      {/* カテゴリ編集モーダル */}
+      {editingCategory && (
+        <EditCategoryModal
+          theme={theme}
+          category={editingCategory}
+          onClose={() => setEditingCategory(null)}
+          onSave={updateCustomCategory}
         />
       )}
     </div>
@@ -657,6 +731,7 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
   const { theme, flows, updateTechnique, deleteTechnique } = useApp();
   const [isFavorite, setIsFavorite] = useState(technique.mastery_level === 'favorite');
   const [masteryLevel, setMasteryLevel] = useState(technique.mastery_level);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const handleToggleFavorite = () => {
     const newFavorite = !isFavorite;
@@ -714,7 +789,7 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
           </div>
         ) : (
           <div
-            className="aspect-video flex items-center justify-center"
+            className="aspect-video w-full max-h-[40vh] flex items-center justify-center"
             style={{ background: theme.gradient }}
           >
             <div className="text-center">
@@ -730,18 +805,27 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
         >
           <ChevronLeft size={20} className="text-white" />
         </button>
-        <button
-          onClick={handleToggleFavorite}
-          className="absolute top-4 right-4 p-2 rounded-full backdrop-blur-sm"
-          style={{ background: 'rgba(0,0,0,0.3)' }}
-        >
-          <Star 
-            size={20} 
-            className="text-white" 
-            fill={isFavorite ? theme.accent : 'transparent'}
-            style={{ color: isFavorite ? theme.accent : 'white' }}
-          />
-        </button>
+        <div className="absolute top-4 right-4 flex gap-2">
+          <button
+            onClick={() => setShowEditModal(true)}
+            className="p-2 rounded-full backdrop-blur-sm"
+            style={{ background: 'rgba(0,0,0,0.3)' }}
+          >
+            <Pencil size={20} className="text-white" />
+          </button>
+          <button
+            onClick={handleToggleFavorite}
+            className="p-2 rounded-full backdrop-blur-sm"
+            style={{ background: 'rgba(0,0,0,0.3)' }}
+          >
+            <Star
+              size={20}
+              className="text-white"
+              fill={isFavorite ? theme.accent : 'transparent'}
+              style={{ color: isFavorite ? theme.accent : 'white' }}
+            />
+          </button>
+        </div>
       </div>
 
       <div
@@ -850,6 +934,19 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
           この技を削除
         </button>
       </div>
+
+      {/* 技編集モーダル */}
+      {showEditModal && (
+        <EditTechniqueModal
+          theme={theme}
+          technique={technique}
+          onClose={() => setShowEditModal(false)}
+          onSave={(data) => {
+            updateTechnique(technique.id, data);
+            setShowEditModal(false);
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -877,7 +974,7 @@ function AddCategoryModal({ theme, onClose, onSave }: AddCategoryModalProps) {
   };
 
   return (
-    <div 
+    <div
       className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-end z-50 animate-fade-in"
       onClick={onClose}
     >
@@ -935,6 +1032,321 @@ function AddCategoryModal({ theme, onClose, onSave }: AddCategoryModalProps) {
             style={{ background: theme.gradient }}
           >
             追加
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 技編集モーダル
+interface EditTechniqueModalProps {
+  theme: any;
+  technique: Technique;
+  onClose: () => void;
+  onSave: (data: Partial<Technique>) => void;
+}
+
+function EditTechniqueModal({ theme, technique, onClose, onSave }: EditTechniqueModalProps) {
+  const [name, setName] = useState(technique.name);
+  const [nameEn, setNameEn] = useState(technique.name_en || '');
+  const [type, setType] = useState<TechniqueType>(technique.technique_type);
+  const [category, setCategory] = useState<string>(technique.category || '');
+  const [description, setDescription] = useState(technique.description || '');
+  const [videoUrl, setVideoUrl] = useState(technique.video_url || '');
+  const [tagInput, setTagInput] = useState('');
+  const [tags, setTags] = useState<string[]>(technique.tags || []);
+
+  // カテゴリはdefaultCategoriesを使用（カスタムカテゴリの編集は別途対応が必要）
+  const categories = defaultCategories;
+
+  const techniqueTypes: { value: TechniqueType; label: string }[] = [
+    { value: 'submission', label: 'サブミッション' },
+    { value: 'sweep', label: 'スイープ' },
+    { value: 'pass', label: 'パス' },
+    { value: 'escape', label: 'エスケープ' },
+    { value: 'takedown', label: 'テイクダウン' },
+    { value: 'position', label: 'ポジション' },
+  ];
+
+  const addTag = () => {
+    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
+      setTags([...tags, tagInput.trim()]);
+      setTagInput('');
+    }
+  };
+
+  const removeTag = (tag: string) => {
+    setTags(tags.filter(t => t !== tag));
+  };
+
+  const handleSubmit = () => {
+    if (!name.trim()) return;
+    onSave({
+      name: name.trim(),
+      name_en: nameEn.trim() || undefined,
+      technique_type: type,
+      description: description.trim() || undefined,
+      video_url: videoUrl.trim() || undefined,
+      tags,
+      category: category || undefined,
+    });
+  };
+
+  return (
+    <div
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-end z-50 animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="w-full rounded-t-3xl p-5 max-h-[85%] overflow-auto animate-slide-up"
+        style={{ background: theme.bg }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="font-semibold text-lg" style={{ color: theme.text }}>技を編集</h3>
+          <button onClick={onClose}>
+            <X size={24} style={{ color: theme.textSecondary }} />
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {/* カテゴリ */}
+          <div>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>カテゴリ *</label>
+            <div className="grid grid-cols-3 gap-2 max-h-48 overflow-auto">
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setCategory(cat.id)}
+                  className="p-3 rounded-xl text-center transition-all"
+                  style={{
+                    background: category === cat.id ? theme.gradient : theme.card,
+                    border: `1px solid ${category === cat.id ? 'transparent' : theme.cardBorder}`,
+                  }}
+                >
+                  <span className="text-xl block">{cat.icon}</span>
+                  <span
+                    className="text-xs mt-1 block"
+                    style={{ color: category === cat.id ? 'white' : theme.textSecondary }}
+                  >
+                    {cat.name}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 技名 */}
+          <div>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>技名 *</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="例: 三角絞め"
+              className="w-full rounded-xl px-4 py-3 outline-none border focus:border-blue-500"
+              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
+            />
+          </div>
+
+          {/* 英語名 */}
+          <div>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>英語名</label>
+            <input
+              type="text"
+              value={nameEn}
+              onChange={(e) => setNameEn(e.target.value)}
+              placeholder="例: Triangle Choke"
+              className="w-full rounded-xl px-4 py-3 outline-none border focus:border-blue-500"
+              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
+            />
+          </div>
+
+          {/* 種類 */}
+          <div>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>種類 *</label>
+            <div className="flex flex-wrap gap-2">
+              {techniqueTypes.map((t) => (
+                <button
+                  key={t.value}
+                  onClick={() => setType(t.value)}
+                  className="px-3 py-2 rounded-lg text-sm transition-all"
+                  style={{
+                    background: type === t.value ? theme.gradient : theme.card,
+                    color: type === t.value ? 'white' : theme.textSecondary,
+                    border: `1px solid ${type === t.value ? 'transparent' : theme.cardBorder}`,
+                  }}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* タグ */}
+          <div>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>タグ</label>
+            <div className="flex gap-2 mb-2">
+              <input
+                type="text"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                placeholder="タグを入力..."
+                className="flex-1 rounded-xl px-4 py-3 outline-none border focus:border-blue-500"
+                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
+              />
+              <button
+                onClick={addTag}
+                className="px-4 rounded-xl"
+                style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}
+              >
+                <Plus size={18} style={{ color: theme.primary }} />
+              </button>
+            </div>
+            {tags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {tags.map((tag, i) => (
+                  <span
+                    key={i}
+                    className="px-3 py-1.5 rounded-full text-xs flex items-center gap-1"
+                    style={{
+                      background: `${theme.primary}20`,
+                      color: theme.accent,
+                    }}
+                  >
+                    #{tag}
+                    <button onClick={() => removeTag(tag)}>
+                      <X size={12} />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* 説明 */}
+          <div>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>説明・メモ</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="ポイントや注意点を記入..."
+              rows={3}
+              className="w-full rounded-xl px-4 py-3 outline-none border focus:border-blue-500 resize-none"
+              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
+            />
+          </div>
+
+          {/* YouTube URL */}
+          <div>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>YouTube動画URL</label>
+            <input
+              type="text"
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+              placeholder="https://youtube.com/watch?v=..."
+              className="w-full rounded-xl px-4 py-3 outline-none border focus:border-blue-500"
+              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
+            />
+          </div>
+
+          {/* 保存ボタン */}
+          <button
+            onClick={handleSubmit}
+            disabled={!name.trim()}
+            className="w-full py-4 rounded-xl text-white font-semibold mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ background: theme.gradient }}
+          >
+            更新
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// カテゴリ編集モーダル
+interface EditCategoryModalProps {
+  theme: any;
+  category: TechniqueCategory;
+  onClose: () => void;
+  onSave: (category: TechniqueCategory) => void;
+}
+
+function EditCategoryModal({ theme, category, onClose, onSave }: EditCategoryModalProps) {
+  const [name, setName] = useState(category.name);
+  const [icon, setIcon] = useState(category.icon);
+
+  const handleSubmit = () => {
+    if (!name.trim()) return;
+    onSave({
+      id: category.id,
+      name: name.trim(),
+      icon,
+    });
+  };
+
+  return (
+    <div
+      className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-end z-50 animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="w-full rounded-t-3xl p-5 animate-slide-up"
+        style={{ background: theme.bg }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="font-semibold text-lg" style={{ color: theme.text }}>カテゴリを編集</h3>
+          <button onClick={onClose}>
+            <X size={24} style={{ color: theme.textSecondary }} />
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {/* アイコン選択 */}
+          <div>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>アイコン</label>
+            <div className="flex flex-wrap gap-2">
+              {emojiOptions.map((emoji) => (
+                <button
+                  key={emoji}
+                  onClick={() => setIcon(emoji)}
+                  className="w-12 h-12 rounded-xl text-2xl flex items-center justify-center transition-all"
+                  style={{
+                    background: icon === emoji ? theme.gradient : theme.card,
+                    border: `1px solid ${icon === emoji ? 'transparent' : theme.cardBorder}`,
+                  }}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* カテゴリ名 */}
+          <div>
+            <label className="text-sm mb-2 block" style={{ color: theme.textSecondary }}>カテゴリ名 *</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="例: ハーフガード"
+              className="w-full rounded-xl px-4 py-3 outline-none border focus:border-blue-500"
+              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
+            />
+          </div>
+
+          {/* 保存ボタン */}
+          <button
+            onClick={handleSubmit}
+            disabled={!name.trim()}
+            className="w-full py-4 rounded-xl text-white font-semibold mt-4 disabled:opacity-50"
+            style={{ background: theme.gradient }}
+          >
+            更新
           </button>
         </div>
       </div>
