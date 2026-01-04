@@ -15,7 +15,7 @@ export function Header({ title, showBack = false, onBack, rightAction }: HeaderP
   const { theme } = useApp();
   
   return (
-    <div className="px-5 py-4 flex items-center justify-between">
+    <div className="px-5 py-4 flex items-center justify-between relative z-10">
       <div className="flex items-center gap-3">
         {showBack && (
           <button

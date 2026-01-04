@@ -21,12 +21,14 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import { Plus, GitBranch, Star, X, GripVertical, Trash2, ChevronLeft, Save, Tag, Pencil } from 'lucide-react';
 import { useApp } from '@/lib/context';
+import { useAuth } from '@/lib/auth-context';
 import { useI18n } from '@/lib/i18n';
 import { useToast } from '@/components/ui/Toast';
 import { Card } from '@/components/ui/Card';
 import { Header } from '@/components/ui/Header';
 import { Flow, Technique } from '@/types';
-import { techniqueCategories } from './TechniquesScreen';
+import { techniqueCategories, TechniqueCategory } from './TechniquesScreen';
+import { supabase } from '@/lib/supabase';
 
 interface FlowsScreenProps {
   onOpenEditor: (flow?: Flow) => void;
@@ -525,6 +527,7 @@ interface FlowEditorProps {
 
 export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
   const { theme, techniques, updateFlow, deleteFlow } = useApp();
+  const { user } = useAuth();
   const { showToast } = useToast();
   const [flowName, setFlowName] = useState(flow?.name || '新しいフロー');
   const [showTechniquePanel, setShowTechniquePanel] = useState(false);
@@ -534,6 +537,7 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
   const [pendingConnection, setPendingConnection] = useState<Connection | null>(null);
   const [showLabelModal, setShowLabelModal] = useState(false);
   const [editingEdgeId, setEditingEdgeId] = useState<string | null>(null);
+  const [customCategories, setCustomCategories] = useState<TechniqueCategory[]>([]);
 
   // 初期ノード（保存データがあれば復元）
   const getInitialNodes = (): Node<CustomNodeData>[] => {
@@ -566,6 +570,49 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
 
   const [nodes, setNodes, onNodesChange] = useNodesState(getInitialNodes());
   const [edges, setEdges, onEdgesChange] = useEdgesState(getInitialEdges());
+
+  // カスタムカテゴリを読み込み
+  useEffect(() => {
+    const loadCustomCategories = async () => {
+      if (!user) {
+        // ログインしていない場合はlocalStorageから読み込み
+        const saved = localStorage.getItem('bjj-hub-custom-categories');
+        if (saved) {
+          setCustomCategories(JSON.parse(saved));
+        }
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('custom_categories')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: true });
+
+        if (error) throw error;
+
+        const categories = (data || []).map(cat => ({
+          id: cat.id,
+          name: cat.name,
+          icon: cat.icon,
+        }));
+        setCustomCategories(categories);
+      } catch (error) {
+        console.error('Error loading categories:', error);
+        // フォールバック: localStorageから読み込み
+        const saved = localStorage.getItem('bjj-hub-custom-categories');
+        if (saved) {
+          setCustomCategories(JSON.parse(saved));
+        }
+      }
+    };
+
+    loadCustomCategories();
+  }, [user]);
+
+  // 全カテゴリ（デフォルト + カスタム）
+  const allCategories = [...techniqueCategories, ...customCategories];
 
   // 既存のエッジにコールバックを追加
   useEffect(() => {
@@ -857,6 +904,7 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
         <TechniqueSelectPanel
           theme={theme}
           techniques={techniques}
+          categories={allCategories}
           onSelect={addNode}
           onClose={() => setShowTechniquePanel(false)}
         />
@@ -884,6 +932,7 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
 interface TechniqueSelectPanelProps {
   theme: any;
   techniques: Technique[];
+  categories: TechniqueCategory[];
   onSelect: (label: string, type: CustomNodeData['type']) => void;
   onClose: () => void;
 }
@@ -988,7 +1037,7 @@ function EdgeLabelModal({ theme, initialLabel, isEditing, onClose, onSave }: Edg
   );
 }
 
-function TechniqueSelectPanel({ theme, techniques, onSelect, onClose }: TechniqueSelectPanelProps) {
+function TechniqueSelectPanel({ theme, techniques, categories, onSelect, onClose }: TechniqueSelectPanelProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [customLabel, setCustomLabel] = useState('');
 
@@ -1052,7 +1101,7 @@ function TechniqueSelectPanel({ theme, techniques, onSelect, onClose }: Techniqu
 
             {/* カテゴリ一覧 */}
             <div className="grid grid-cols-2 gap-2">
-              {techniqueCategories.map((cat) => (
+              {categories.map((cat) => (
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
