@@ -19,11 +19,12 @@ import ReactFlow, {
   EdgeLabelRenderer,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Plus, GitBranch, Star, X, GripVertical, Trash2, ChevronLeft, Save, Tag, Pencil, Share2, Upload, Copy, Check } from 'lucide-react';
+import { Plus, GitBranch, Star, X, GripVertical, Trash2, ChevronLeft, Save, Tag, Pencil, Share2, Upload, Copy, Check, Globe, Link as LinkIcon, Loader2 } from 'lucide-react';
 import { useApp } from '@/lib/context';
 import { useAuth } from '@/lib/auth-context';
 import { useI18n } from '@/lib/i18n';
 import { useToast } from '@/components/ui/Toast';
+import { shareContent, getSharedContent, getPublicContent, type Visibility } from '@/lib/shared-content';
 import { Card } from '@/components/ui/Card';
 import { Header } from '@/components/ui/Header';
 import { Flow, Technique } from '@/types';
@@ -972,6 +973,7 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorProps) {
           flow={flow}
           nodes={nodes}
           edges={edges}
+          userId={user?.id}
           onClose={() => setShowExportModal(false)}
         />
       )}
@@ -1209,43 +1211,67 @@ interface ExportFlowModalProps {
   flow?: Flow;
   nodes: Node[];
   edges: Edge[];
+  userId?: string;
   onClose: () => void;
 }
 
-function ExportFlowModal({ theme, flowName, flow, nodes, edges, onClose }: ExportFlowModalProps) {
+function ExportFlowModal({ theme, flowName, flow, nodes, edges, userId, onClose }: ExportFlowModalProps) {
+  const [visibility, setVisibility] = useState<Visibility>('public');
+  const [shareCode, setShareCode] = useState<string | null>(null);
+  const [isSharing, setIsSharing] = useState(false);
   const [copied, setCopied] = useState(false);
+  const { showToast } = useToast();
 
-  const shareData = {
-    type: 'bjj-flow',
-    version: '1.0',
-    flow: {
-      name: flowName,
-      description: flow?.description,
-      tags: flow?.tags || [],
-      nodes: nodes,
-      edges: edges.map(edge => ({
-        id: edge.id,
-        source: edge.source,
-        target: edge.target,
-        sourceHandle: edge.sourceHandle,
-        targetHandle: edge.targetHandle,
-        type: edge.type,
-        animated: edge.animated,
-        style: edge.style,
-        label: edge.data?.label,
-      })),
-    },
+  const handleShare = async () => {
+    setIsSharing(true);
+    try {
+      const contentData = {
+        name: flowName,
+        description: flow?.description,
+        tags: flow?.tags || [],
+        nodes: nodes,
+        edges: edges.map(edge => ({
+          id: edge.id,
+          source: edge.source,
+          target: edge.target,
+          sourceHandle: edge.sourceHandle,
+          targetHandle: edge.targetHandle,
+          type: edge.type,
+          animated: edge.animated,
+          style: edge.style,
+          label: edge.data?.label,
+        })),
+      };
+
+      const result = await shareContent(
+        'flow',
+        contentData,
+        flowName,
+        visibility,
+        flow?.description,
+        userId
+      );
+
+      if (result.success && result.shareCode) {
+        setShareCode(result.shareCode);
+        showToast('フローを共有しました');
+      } else {
+        showToast('共有に失敗しました', 'error');
+      }
+    } catch (error) {
+      console.error('Share error:', error);
+      showToast('共有に失敗しました', 'error');
+    } finally {
+      setIsSharing(false);
+    }
   };
 
-  const jsonString = JSON.stringify(shareData, null, 2);
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(jsonString);
+  const handleCopyCode = () => {
+    if (shareCode) {
+      navigator.clipboard.writeText(shareCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      console.error('Failed to copy:', error);
+      showToast('共有コードをコピーしました');
     }
   };
 
@@ -1260,33 +1286,108 @@ function ExportFlowModal({ theme, flowName, flow, nodes, edges, onClose }: Expor
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
-          <h3 className="font-semibold text-lg" style={{ color: theme.text }}>フローをエクスポート</h3>
+          <h3 className="font-semibold text-lg" style={{ color: theme.text }}>フローを共有</h3>
           <button onClick={onClose}>
             <X size={24} style={{ color: theme.textSecondary }} />
           </button>
         </div>
 
-        <p className="text-sm mb-4" style={{ color: theme.textSecondary }}>
-          以下のデータをコピーして共有できます
-        </p>
+        {!shareCode ? (
+          <>
+            <p className="text-sm mb-4" style={{ color: theme.textSecondary }}>
+              公開範囲を選択してください
+            </p>
 
-        <div className="flex-1 overflow-auto mb-4">
-          <pre
-            className="rounded-xl p-4 text-xs overflow-auto"
-            style={{ background: theme.card, color: theme.text }}
-          >
-            {jsonString}
-          </pre>
-        </div>
+            <div className="space-y-3 mb-6">
+              <button
+                onClick={() => setVisibility('public')}
+                className="w-full p-4 rounded-xl flex items-center gap-3 border-2 transition-all"
+                style={{
+                  background: visibility === 'public' ? `${theme.primary}15` : theme.card,
+                  borderColor: visibility === 'public' ? theme.primary : theme.cardBorder,
+                }}
+              >
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center"
+                  style={{ background: `${theme.primary}20` }}
+                >
+                  <Globe size={20} style={{ color: theme.primary }} />
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="font-medium" style={{ color: theme.text }}>全体公開</p>
+                  <p className="text-xs" style={{ color: theme.textSecondary }}>誰でも検索・閲覧できます</p>
+                </div>
+              </button>
 
-        <button
-          onClick={handleCopy}
-          className="w-full py-4 rounded-xl text-white font-semibold flex items-center justify-center gap-2"
-          style={{ background: theme.gradient }}
-        >
-          {copied ? <Check size={18} /> : <Copy size={18} />}
-          {copied ? 'コピーしました' : 'コピー'}
-        </button>
+              <button
+                onClick={() => setVisibility('link_only')}
+                className="w-full p-4 rounded-xl flex items-center gap-3 border-2 transition-all"
+                style={{
+                  background: visibility === 'link_only' ? `${theme.primary}15` : theme.card,
+                  borderColor: visibility === 'link_only' ? theme.primary : theme.cardBorder,
+                }}
+              >
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center"
+                  style={{ background: `${theme.primary}20` }}
+                >
+                  <LinkIcon size={20} style={{ color: theme.primary }} />
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="font-medium" style={{ color: theme.text }}>コードを知っている人のみ</p>
+                  <p className="text-xs" style={{ color: theme.textSecondary }}>共有コードを持つ人だけが閲覧できます</p>
+                </div>
+              </button>
+            </div>
+
+            <button
+              onClick={handleShare}
+              disabled={isSharing}
+              className="w-full py-4 rounded-xl text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ background: theme.gradient }}
+            >
+              {isSharing ? '共有中...' : '共有する'}
+            </button>
+          </>
+        ) : (
+          <>
+            <div className="text-center mb-6">
+              <div
+                className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+                style={{ background: `${theme.primary}20` }}
+              >
+                <Check size={32} style={{ color: theme.primary }} />
+              </div>
+              <p className="font-semibold mb-2" style={{ color: theme.text }}>共有コード</p>
+              <div
+                className="text-3xl font-bold tracking-widest mb-2"
+                style={{ color: theme.primary }}
+              >
+                {shareCode}
+              </div>
+              <p className="text-sm" style={{ color: theme.textSecondary }}>
+                このコードを相手に伝えてください
+              </p>
+            </div>
+
+            <button
+              onClick={handleCopyCode}
+              className="w-full py-4 rounded-xl text-white font-semibold flex items-center justify-center gap-2 mb-3"
+              style={{ background: theme.gradient }}
+            >
+              {copied ? <Check size={18} /> : <Copy size={18} />}
+              {copied ? 'コピーしました' : 'コードをコピー'}
+            </button>
+
+            <button
+              onClick={onClose}
+              className="w-full py-3 rounded-xl font-medium"
+              style={{ color: theme.textSecondary }}
+            >
+              閉じる
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
@@ -1300,24 +1401,56 @@ interface ImportFlowModalProps {
 }
 
 function ImportFlowModal({ theme, onClose, onImport }: ImportFlowModalProps) {
-  const [jsonText, setJsonText] = useState('');
+  const [view, setView] = useState<'code' | 'browse'>('code');
+  const [shareCode, setShareCode] = useState('');
+  const [publicContent, setPublicContent] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const { showToast } = useToast();
 
-  const handleImport = () => {
+  useEffect(() => {
+    if (view === 'browse') {
+      loadPublicContent();
+    }
+  }, [view]);
+
+  const loadPublicContent = async () => {
+    setIsLoading(true);
     try {
-      const data = JSON.parse(jsonText);
+      const content = await getPublicContent('flow', 20);
+      setPublicContent(content);
+    } catch (error) {
+      console.error('Load public content error:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-      if (data.type !== 'bjj-flow') {
+  const handleImportByCode = async () => {
+    if (!shareCode.trim()) {
+      setError('共有コードを入力してください');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const content = await getSharedContent(shareCode.trim().toUpperCase());
+
+      if (!content) {
+        setError('共有コードが見つかりません');
+        setIsLoading(false);
+        return;
+      }
+
+      if (content.content_type !== 'flow') {
         setError('フローのデータではありません');
+        setIsLoading(false);
         return;
       }
 
-      const flowData = data.flow;
-      if (!flowData.name) {
-        setError('必須項目が不足しています');
-        return;
-      }
-
+      const flowData = content.content_data;
       onImport({
         name: flowData.name,
         description: flowData.description || '',
@@ -1329,8 +1462,25 @@ function ImportFlowModal({ theme, onClose, onImport }: ImportFlowModalProps) {
         },
       });
     } catch (e) {
-      setError('JSONの形式が正しくありません');
+      console.error('Import error:', e);
+      setError('インポートに失敗しました');
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleImportFromBrowse = (content: any) => {
+    const flowData = content.content_data;
+    onImport({
+      name: flowData.name,
+      description: flowData.description || '',
+      tags: flowData.tags || [],
+      is_favorite: false,
+      flow_data: {
+        nodes: flowData.nodes || [],
+        edges: flowData.edges || [],
+      },
+    });
   };
 
   return (
@@ -1350,38 +1500,112 @@ function ImportFlowModal({ theme, onClose, onImport }: ImportFlowModalProps) {
           </button>
         </div>
 
-        <p className="text-sm mb-4" style={{ color: theme.textSecondary }}>
-          エクスポートしたフローのデータを貼り付けてください
-        </p>
+        {/* タブ */}
+        <div className="flex gap-2 mb-4">
+          <button
+            onClick={() => setView('code')}
+            className="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all"
+            style={{
+              background: view === 'code' ? theme.gradient : theme.card,
+              color: view === 'code' ? 'white' : theme.text,
+            }}
+          >
+            共有コード
+          </button>
+          <button
+            onClick={() => setView('browse')}
+            className="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all"
+            style={{
+              background: view === 'browse' ? theme.gradient : theme.card,
+              color: view === 'browse' ? 'white' : theme.text,
+            }}
+          >
+            公開フローを探す
+          </button>
+        </div>
 
-        <textarea
-          value={jsonText}
-          onChange={(e) => {
-            setJsonText(e.target.value);
-            setError('');
-          }}
-          placeholder='{"type": "bjj-flow", ...}'
-          rows={10}
-          className="w-full rounded-xl p-4 text-sm outline-none border mb-2 font-mono"
-          style={{
-            background: theme.card,
-            color: theme.text,
-            borderColor: error ? '#ef4444' : theme.cardBorder
-          }}
-        />
+        {view === 'code' ? (
+          <>
+            <p className="text-sm mb-4" style={{ color: theme.textSecondary }}>
+              共有されたフローのコードを入力してください
+            </p>
 
-        {error && (
-          <p className="text-sm text-red-500 mb-4">{error}</p>
+            <input
+              type="text"
+              value={shareCode}
+              onChange={(e) => {
+                setShareCode(e.target.value.toUpperCase());
+                setError('');
+              }}
+              placeholder="XXXXXX"
+              maxLength={6}
+              className="w-full rounded-xl p-4 text-center text-2xl font-bold tracking-widest outline-none border mb-2 uppercase"
+              style={{
+                background: theme.card,
+                color: theme.text,
+                borderColor: error ? '#ef4444' : theme.cardBorder
+              }}
+            />
+
+            {error && (
+              <p className="text-sm text-red-500 mb-4">{error}</p>
+            )}
+
+            <button
+              onClick={handleImportByCode}
+              disabled={!shareCode.trim() || isLoading}
+              className="w-full py-4 rounded-xl text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ background: theme.gradient }}
+            >
+              {isLoading ? 'インポート中...' : 'インポート'}
+            </button>
+          </>
+        ) : (
+          <div className="flex-1 overflow-auto">
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 size={32} className="animate-spin" style={{ color: theme.primary }} />
+              </div>
+            ) : publicContent.length === 0 ? (
+              <div className="text-center py-12">
+                <p style={{ color: theme.textSecondary }}>公開されているフローがありません</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {publicContent.map((content) => (
+                  <button
+                    key={content.id}
+                    onClick={() => handleImportFromBrowse(content)}
+                    className="w-full p-4 rounded-xl text-left"
+                    style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}
+                  >
+                    <p className="font-medium mb-1" style={{ color: theme.text }}>
+                      {content.title}
+                    </p>
+                    {content.description && (
+                      <p className="text-xs mb-2" style={{ color: theme.textSecondary }}>
+                        {content.description}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-2">
+                      {content.content_data.tags && content.content_data.tags.length > 0 && (
+                        <span
+                          className="text-xs px-2 py-1 rounded"
+                          style={{ background: `${theme.primary}15`, color: theme.primary }}
+                        >
+                          {content.content_data.tags[0]}
+                        </span>
+                      )}
+                      <span className="text-xs" style={{ color: theme.textMuted }}>
+                        {new Date(content.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         )}
-
-        <button
-          onClick={handleImport}
-          disabled={!jsonText.trim()}
-          className="w-full py-4 rounded-xl text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{ background: theme.gradient }}
-        >
-          インポート
-        </button>
       </div>
     </div>
   );
