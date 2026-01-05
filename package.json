@@ -6,8 +6,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:ios": "next build --config next.config.ios.js && npx cap sync ios",
+    "build:android": "next build --config next.config.ios.js && npx cap sync android",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "cap:ios": "npx cap open ios",
+    "cap:android": "npx cap open android"
   },
   "keywords": [],
   "author": "",
