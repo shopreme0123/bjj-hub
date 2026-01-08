@@ -26,41 +26,41 @@ import { EdgeLabelModal, ShareFlowModal } from './modals';
 import { defaultCategories } from '@/components/shared/categories';
 
 interface FlowEditorScreenProps {
-  flow: Flow;
+  flow?: Flow;
   onBack: () => void;
-  onUpdate: (updates: Partial<Flow>) => void;
 }
 
-export function FlowEditorScreen({ flow, onBack, onUpdate }: FlowEditorScreenProps) {
-  const { theme, techniques, updateFlow, deleteFlow } = useApp();
+export function FlowEditorScreen({ flow, onBack }: FlowEditorScreenProps) {
+  const { theme, techniques, updateFlow, deleteFlow, addFlow } = useApp();
   const { user } = useAuth();
   const { showToast } = useToast();
   const [showTechniquePanel, setShowTechniquePanel] = useState(false);
   const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
   const [showEdgeLabelModal, setShowEdgeLabelModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(flow.is_favorite);
+  const [currentFlow, setCurrentFlow] = useState<Flow | null>(flow || null);
+  const [isFavorite, setIsFavorite] = useState(flow?.is_favorite || false);
 
   // React Flow ノードとエッジの状態
   const initialNodes = useMemo(() => {
-    if (flow.flow_data?.nodes) {
-      return flow.flow_data.nodes.map((node: any) => ({
+    if (currentFlow?.flow_data?.nodes) {
+      return currentFlow.flow_data.nodes.map((node: any) => ({
         ...node,
         data: { ...node.data, theme },
       }));
     }
     return [];
-  }, [flow.flow_data?.nodes, theme]);
+  }, [currentFlow?.flow_data?.nodes, theme]);
 
   const initialEdges = useMemo(() => {
-    if (flow.flow_data?.edges) {
-      return flow.flow_data.edges.map((edge: any) => ({
+    if (currentFlow?.flow_data?.edges) {
+      return currentFlow.flow_data.edges.map((edge: any) => ({
         ...edge,
         data: { ...edge.data, theme },
       }));
     }
     return [];
-  }, [flow.flow_data?.edges, theme]);
+  }, [currentFlow?.flow_data?.edges, theme]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -140,21 +140,36 @@ export function FlowEditorScreen({ flow, onBack, onUpdate }: FlowEditorScreenPro
       nodes: nodes.map((n) => ({ ...n, data: { ...n.data, theme: undefined } })),
       edges: edges.map((e) => ({ ...e, data: { ...e.data, theme: undefined } })),
     };
-    await updateFlow(flow.id, { flow_data: flowData });
-    showToast('フローを保存しました');
+    if (currentFlow) {
+      await updateFlow(currentFlow.id, { flow_data: flowData });
+      showToast('フローを保存しました');
+    } else {
+      // 新規フローを作成して戻る
+      await addFlow({
+        name: '新しいフロー',
+        description: '',
+        tags: [],
+        is_favorite: false,
+        flow_data: flowData,
+      });
+      showToast('フローを作成しました');
+      onBack();
+    }
   };
 
   // お気に入り切り替え
   const handleToggleFavorite = () => {
+    if (!currentFlow) return;
     const newFavorite = !isFavorite;
     setIsFavorite(newFavorite);
-    updateFlow(flow.id, { is_favorite: newFavorite });
+    updateFlow(currentFlow.id, { is_favorite: newFavorite });
   };
 
   // フローを削除
   const handleDeleteFlow = () => {
+    if (!currentFlow) return;
     if (confirm('このフローを削除しますか？')) {
-      deleteFlow(flow.id);
+      deleteFlow(currentFlow.id);
       onBack();
     }
   };
@@ -162,7 +177,7 @@ export function FlowEditorScreen({ flow, onBack, onUpdate }: FlowEditorScreenPro
   return (
     <div className="flex flex-col h-full" style={{ background: theme.bg }}>
       <Header
-        title={flow.name}
+        title={currentFlow?.name || '新しいフロー'}
         showBack
         onBack={onBack}
         rightAction={
@@ -268,10 +283,10 @@ export function FlowEditorScreen({ flow, onBack, onUpdate }: FlowEditorScreenPro
       )}
 
       {/* 共有モーダル */}
-      {showShareModal && (
+      {showShareModal && currentFlow && (
         <ShareFlowModal
           theme={theme}
-          flow={{ ...flow, flow_data: { nodes, edges } }}
+          flow={{ ...currentFlow, flow_data: { nodes, edges } }}
           userId={user?.id}
           onClose={() => setShowShareModal(false)}
         />
