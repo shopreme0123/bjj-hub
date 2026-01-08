@@ -389,13 +389,13 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-end z-50 animate-fade-in"
       onClick={onClose}
     >
       <div
-        className="w-full rounded-t-3xl px-4 pt-4 pb-8 animate-slide-up"
-        style={{ background: theme.bg, maxHeight: '80vh' }}
+        className="w-full rounded-t-3xl px-4 pt-4 pb-6 animate-slide-up"
+        style={{ background: theme.bg, maxHeight: '85vh' }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-3">
@@ -405,7 +405,7 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
           </button>
         </div>
 
-        <div className="overflow-y-auto overflow-x-hidden space-y-2.5 px-1" style={{ maxHeight: 'calc(80vh - 80px)' }}>
+        <div className="overflow-y-auto overflow-x-hidden space-y-2.5 px-1" style={{ maxHeight: 'calc(85vh - 70px)' }}>
           {/* 日付 */}
           <div>
             <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>日付 *</label>
@@ -555,6 +555,12 @@ export function DiaryDetailScreen({ log, onBack, onOpenTechnique, onOpenFlow }: 
 
   return (
     <div className="flex flex-col h-full" style={{ background: theme.bg }}>
+      {/* グラデーション背景 - ヘッダー部分 */}
+      <div
+        className="absolute top-0 left-0 right-0 h-20 z-0"
+        style={{ background: theme.gradient }}
+      />
+
       <Header
         title={format(new Date(currentLog.training_date), 'M月d日（E）', { locale: ja })}
         showBack
@@ -696,13 +702,13 @@ function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps) {
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-end z-50 animate-fade-in"
       onClick={onClose}
     >
       <div
-        className="w-full rounded-t-3xl px-4 pt-4 pb-8 animate-slide-up"
-        style={{ background: theme.bg, maxHeight: '80vh' }}
+        className="w-full rounded-t-3xl px-4 pt-4 pb-6 animate-slide-up"
+        style={{ background: theme.bg, maxHeight: '85vh' }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-3">
@@ -712,7 +718,7 @@ function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps) {
           </button>
         </div>
 
-        <div className="overflow-y-auto overflow-x-hidden space-y-2.5 px-1" style={{ maxHeight: 'calc(80vh - 80px)' }}>
+        <div className="overflow-y-auto overflow-x-hidden space-y-2.5 px-1" style={{ maxHeight: 'calc(85vh - 70px)' }}>
           {/* 日付 */}
           <div>
             <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>日付 *</label>
