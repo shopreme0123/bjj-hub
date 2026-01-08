@@ -95,6 +95,8 @@ const translations: Record<Language, Record<string, string>> = {
     'techniques.count_suffix': '技',
     'techniques.no_techniques': '技が登録されていません',
     'techniques.search_placeholder': '技を検索...',
+    'techniques.search': '技を検索...',
+    'techniques.list': '技一覧',
 
     // カテゴリ
     'category.guard_bottom': 'ガード（ボトム）',
@@ -108,6 +110,8 @@ const translations: Record<Language, Record<string, string>> = {
 
     // フロー画面
     'flows.title': 'フローチャート',
+    'flows.list': 'フロー一覧',
+    'flows.search': 'フローを検索...',
     'flows.add': 'フローを作成',
     'flows.edit': 'フローを編集',
     'flows.delete': 'このフローを削除',
@@ -304,6 +308,8 @@ const translations: Record<Language, Record<string, string>> = {
     'techniques.count_suffix': '',
     'techniques.no_techniques': 'No techniques registered',
     'techniques.search_placeholder': 'Search techniques...',
+    'techniques.search': 'Search techniques...',
+    'techniques.list': 'Techniques',
 
     // Categories
     'category.guard_bottom': 'Guard (Bottom)',
@@ -317,6 +323,8 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Flows Screen
     'flows.title': 'Flow Charts',
+    'flows.list': 'Flows',
+    'flows.search': 'Search flows...',
     'flows.add': 'Create Flow',
     'flows.edit': 'Edit Flow',
     'flows.delete': 'Delete this flow',
@@ -513,6 +521,8 @@ const translations: Record<Language, Record<string, string>> = {
     'techniques.count_suffix': '',
     'techniques.no_techniques': 'Nenhuma técnica registrada',
     'techniques.search_placeholder': 'Buscar técnicas...',
+    'techniques.search': 'Buscar técnicas...',
+    'techniques.list': 'Técnicas',
 
     // Categorias
     'category.guard_bottom': 'Guarda (Baixo)',
@@ -526,6 +536,8 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Tela de Fluxos
     'flows.title': 'Fluxogramas',
+    'flows.list': 'Fluxos',
+    'flows.search': 'Buscar fluxos...',
     'flows.add': 'Criar Fluxo',
     'flows.edit': 'Editar Fluxo',
     'flows.delete': 'Excluir este fluxo',

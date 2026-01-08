@@ -36,10 +36,13 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorScreenProps) {
   const { showToast } = useToast();
   const [showTechniquePanel, setShowTechniquePanel] = useState(false);
   const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
+  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [showEdgeLabelModal, setShowEdgeLabelModal] = useState(false);
+  const [showNodeDeleteModal, setShowNodeDeleteModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [currentFlow, setCurrentFlow] = useState<Flow | null>(flow || null);
   const [isFavorite, setIsFavorite] = useState(flow?.is_favorite || false);
+  const [pendingConnection, setPendingConnection] = useState<Connection | null>(null);
 
   // React Flow ノードとエッジの状態
   const initialNodes = useMemo(() => {
@@ -69,22 +72,48 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorScreenProps) {
   const nodeTypes = useMemo(() => ({ technique: TechniqueNode }), []);
   const edgeTypes = useMemo(() => ({ labeled: LabeledEdge }), []);
 
-  // エッジ接続時
+  // エッジ接続時 - ラベル入力モーダルを表示
   const onConnect = useCallback(
     (params: Connection) => {
-      setEdges((eds) =>
-        addEdge(
-          {
-            ...params,
-            type: 'labeled',
-            data: { theme, label: '' },
-          },
-          eds
-        )
-      );
+      setPendingConnection(params);
+      setShowEdgeLabelModal(true);
     },
-    [setEdges, theme]
+    []
   );
+
+  // 接続を確定（ラベル付き）
+  const handleConfirmConnection = (label: string) => {
+    if (pendingConnection) {
+      const newEdge: Edge = {
+        id: `edge-${Date.now()}`,
+        source: pendingConnection.source!,
+        target: pendingConnection.target!,
+        sourceHandle: pendingConnection.sourceHandle,
+        targetHandle: pendingConnection.targetHandle,
+        type: 'labeled',
+        data: { theme, label },
+      };
+      setEdges((eds) => [...eds, newEdge]);
+    }
+    setPendingConnection(null);
+    setShowEdgeLabelModal(false);
+  };
+
+  // ノードクリック時
+  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+    setSelectedNode(node);
+    setShowNodeDeleteModal(true);
+  }, []);
+
+  // ノードを削除
+  const handleDeleteNode = () => {
+    if (!selectedNode) return;
+    setNodes((nds) => nds.filter((n) => n.id !== selectedNode.id));
+    // 関連するエッジも削除
+    setEdges((eds) => eds.filter((e) => e.source !== selectedNode.id && e.target !== selectedNode.id));
+    setShowNodeDeleteModal(false);
+    setSelectedNode(null);
+  };
 
   // エッジクリック時
   const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
@@ -176,6 +205,12 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorScreenProps) {
 
   return (
     <div className="flex flex-col h-full" style={{ background: theme.bg }}>
+      {/* グラデーション背景 - ヘッダー部分 */}
+      <div
+        className="absolute top-0 left-0 right-0 h-20 z-0"
+        style={{ background: theme.gradient }}
+      />
+
       <Header
         title={currentFlow?.name || '新しいフロー'}
         showBack
@@ -221,6 +256,7 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorScreenProps) {
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onEdgeClick={onEdgeClick}
+          onNodeClick={onNodeClick}
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           fitView
@@ -243,7 +279,7 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorScreenProps) {
 
       {/* ボトムバー */}
       <div
-        className="px-5 py-3 flex items-center justify-between border-t"
+        className="px-5 py-3 flex items-center justify-between border-t mb-16"
         style={{ background: theme.card, borderColor: theme.cardBorder }}
       >
         <div className="text-sm" style={{ color: theme.textSecondary }}>
@@ -268,7 +304,7 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorScreenProps) {
         />
       )}
 
-      {/* エッジラベル編集モーダル */}
+      {/* エッジラベル編集モーダル（既存エッジ編集時） */}
       {showEdgeLabelModal && selectedEdge && (
         <EdgeLabelModal
           theme={theme}
@@ -280,6 +316,66 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorScreenProps) {
           onSave={handleUpdateEdgeLabel}
           onDelete={handleDeleteEdge}
         />
+      )}
+
+      {/* エッジラベル入力モーダル（新規接続時） */}
+      {showEdgeLabelModal && pendingConnection && !selectedEdge && (
+        <EdgeLabelModal
+          theme={theme}
+          edge={null}
+          onClose={() => {
+            setShowEdgeLabelModal(false);
+            setPendingConnection(null);
+          }}
+          onSave={handleConfirmConnection}
+          onDelete={() => {
+            setShowEdgeLabelModal(false);
+            setPendingConnection(null);
+          }}
+          isNewConnection
+        />
+      )}
+
+      {/* ノード削除確認モーダル */}
+      {showNodeDeleteModal && selectedNode && (
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+          onClick={() => {
+            setShowNodeDeleteModal(false);
+            setSelectedNode(null);
+          }}
+        >
+          <div
+            className="w-[90%] max-w-sm rounded-2xl p-5"
+            style={{ background: theme.card }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="font-semibold text-center mb-2" style={{ color: theme.text }}>
+              {selectedNode.data.label}
+            </h3>
+            <p className="text-sm text-center mb-4" style={{ color: theme.textSecondary }}>
+              このノードを削除しますか？
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setShowNodeDeleteModal(false);
+                  setSelectedNode(null);
+                }}
+                className="flex-1 py-2.5 rounded-xl"
+                style={{ background: theme.cardBorder, color: theme.text }}
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={handleDeleteNode}
+                className="flex-1 py-2.5 rounded-xl bg-red-500 text-white"
+              >
+                削除
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* 共有モーダル */}
