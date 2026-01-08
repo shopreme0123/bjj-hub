@@ -11,10 +11,10 @@ import { Flow } from '@/types';
 import { AddFlowModal, ImportFlowModal } from './modals';
 
 interface FlowsScreenProps {
-  onSelectFlow: (flow: Flow) => void;
+  onOpenEditor: (flow?: Flow) => void;
 }
 
-export function FlowsScreen({ onSelectFlow }: FlowsScreenProps) {
+export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
   const { theme, flows, addFlow } = useApp();
   const { t } = useI18n();
   const { showToast } = useToast();
@@ -128,7 +128,7 @@ export function FlowsScreen({ onSelectFlow }: FlowsScreenProps) {
               {sortedFlows.map((flow) => (
                 <Card
                   key={flow.id}
-                  onClick={() => onSelectFlow(flow)}
+                  onClick={() => onOpenEditor(flow)}
                 >
                   <div className="flex items-center gap-4">
                     <div
