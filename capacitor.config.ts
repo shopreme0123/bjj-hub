@@ -1,3 +1,4 @@
+// @ts-ignore - Capacitor CLI types are optional for web builds
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
