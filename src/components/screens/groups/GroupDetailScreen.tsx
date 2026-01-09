@@ -217,15 +217,9 @@ export function GroupDetailScreen({ group, onBack, onOpenFlow, onOpenTechnique }
 
   return (
     <div className="flex flex-col h-full" style={{ background: theme.bg }}>
-      {/* グラデーション背景 - ヘッダー部分 */}
-      <div
-        className="absolute top-0 left-0 right-0 h-20 z-0"
-        style={{ background: theme.gradient }}
-      />
-
       <Header title={currentGroup.name} showBack onBack={onBack} />
 
-      <div className="flex-1 overflow-auto px-5 pb-24 space-y-4 relative z-10">
+      <div className="flex-1 overflow-auto px-4 pt-2 pb-24 space-y-4">
         {/* グループ情報 */}
         <Card>
           <div className="flex items-center gap-4 mb-4">

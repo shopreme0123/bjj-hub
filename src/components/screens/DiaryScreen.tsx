@@ -604,7 +604,7 @@ export function DiaryDetailScreen({ log, onBack, onOpenTechnique, onOpenFlow }: 
         onBack={onBack}
       />
 
-      <div className="flex-1 overflow-auto px-4 pb-24 space-y-3">
+      <div className="flex-1 overflow-auto px-4 pt-2 pb-24 space-y-3">
         {/* 時間・基本情報 */}
         <Card>
           <div className="space-y-3">
