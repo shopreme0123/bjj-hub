@@ -8,7 +8,7 @@ import { useApp } from '@/lib/context';
 import { useI18n } from '@/lib/i18n';
 import { useToast } from '@/components/ui/Toast';
 import { Card } from '@/components/ui/Card';
-import { Header } from '@/components/ui/Header';
+import { Header, IconButton } from '@/components/ui/Header';
 import { TrainingLog, Technique, Flow } from '@/types';
 
 // 時間を「HH:mm」形式に変換（秒を除去）
@@ -78,28 +78,18 @@ export function DiaryScreen({ onOpenDetail }: DiaryScreenProps) {
 
   return (
     <div className="flex flex-col h-full" style={{ background: theme.bg }}>
-      <div
-        className="absolute top-0 left-0 right-0 h-48 rounded-b-3xl"
-        style={{ background: theme.gradient }}
-      />
-
       <Header
         title={t('diary.title')}
         rightAction={
-          <button
-            className="p-2 rounded-full relative z-10 bg-white/20"
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowAddModal(true);
-            }}
-          >
-            <Plus size={18} className="text-white" />
-          </button>
+          <IconButton
+            icon={<Plus size={18} />}
+            onClick={() => setShowAddModal(true)}
+          />
         }
       />
 
       {/* タブ */}
-      <div className="flex gap-2 px-5 pb-4 relative z-10">
+      <div className="flex gap-2 px-4 pb-3">
         {[
           { id: 'calendar', label: language === 'ja' ? 'カレンダー' : 'Calendar' },
           { id: 'stats', label: language === 'ja' ? '統計' : 'Stats' },
@@ -107,10 +97,11 @@ export function DiaryScreen({ onOpenDetail }: DiaryScreenProps) {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
-            className="px-4 py-2 rounded-full text-sm transition-all"
+            className="px-3 py-1.5 rounded-lg text-xs transition-all"
             style={{
-              background: activeTab === tab.id ? 'white' : 'rgba(255,255,255,0.2)',
-              color: activeTab === tab.id ? theme.primary : 'white',
+              background: activeTab === tab.id ? theme.primary : theme.card,
+              color: activeTab === tab.id ? 'white' : theme.textSecondary,
+              border: `1px solid ${activeTab === tab.id ? 'transparent' : theme.cardBorder}`,
             }}
           >
             {tab.label}
@@ -118,7 +109,7 @@ export function DiaryScreen({ onOpenDetail }: DiaryScreenProps) {
         ))}
       </div>
 
-      <div className="flex-1 overflow-auto px-5 pb-24 relative z-10">
+      <div className="flex-1 overflow-auto px-4 pb-24">
         {activeTab === 'calendar' ? (
           <>
             {/* カレンダー */}
@@ -607,19 +598,13 @@ export function DiaryDetailScreen({ log, onBack, onOpenTechnique, onOpenFlow }: 
 
   return (
     <div className="flex flex-col h-full" style={{ background: theme.bg }}>
-      {/* グラデーション背景 - ヘッダー部分 */}
-      <div
-        className="absolute top-0 left-0 right-0 h-20 z-0"
-        style={{ background: theme.gradient }}
-      />
-
       <Header
         title={format(new Date(currentLog.training_date), 'M月d日（E）', { locale: ja })}
         showBack
         onBack={onBack}
       />
 
-      <div className="flex-1 overflow-auto px-5 pb-24 pt-4 space-y-4 relative z-10">
+      <div className="flex-1 overflow-auto px-4 pb-24 space-y-3">
         {/* 時間・基本情報 */}
         <Card>
           <div className="space-y-3">
