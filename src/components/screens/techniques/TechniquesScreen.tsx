@@ -44,12 +44,13 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
   const [categories, setCategories] = useState<TechniqueCategory[]>(defaultCategories);
 
   const techniqueTypes: { value: TechniqueType; label: string }[] = [
-    { value: 'submission', label: 'サブミッション' },
-    { value: 'sweep', label: 'スイープ' },
-    { value: 'pass', label: 'パス' },
-    { value: 'escape', label: 'エスケープ' },
-    { value: 'takedown', label: 'テイクダウン' },
-    { value: 'position', label: 'ポジション' },
+    { value: 'submission', label: t('techniques.type.submission') },
+    { value: 'sweep', label: t('techniques.type.sweep') },
+    { value: 'pass', label: t('techniques.type.pass') },
+    { value: 'escape', label: t('techniques.type.escape') },
+    { value: 'takedown', label: t('techniques.type.takedown') },
+    { value: 'position', label: t('techniques.type.position') },
+    { value: 'other', label: t('techniques.type.other') },
   ];
 
   // 技をフィルタリング

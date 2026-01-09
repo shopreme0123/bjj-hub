@@ -4,9 +4,10 @@ import React, { useState } from 'react';
 import { ChevronLeft, Star, Play, Pencil, Share2, ChevronRight, GitBranch, Trash2 } from 'lucide-react';
 import { useApp } from '@/lib/context';
 import { useAuth } from '@/lib/auth-context';
+import { useI18n } from '@/lib/i18n';
 import { useToast } from '@/components/ui/Toast';
 import { Card } from '@/components/ui/Card';
-import { Technique, Flow } from '@/types';
+import { Technique, Flow, TechniqueType } from '@/types';
 import { EditTechniqueModal, ShareTechniqueModal } from './modals';
 
 interface TechniqueDetailProps {
@@ -18,7 +19,13 @@ interface TechniqueDetailProps {
 export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: TechniqueDetailProps) {
   const { theme, flows, updateTechnique, deleteTechnique } = useApp();
   const { user } = useAuth();
+  const { t } = useI18n();
   const { showToast } = useToast();
+
+  // 技の種類の翻訳を取得
+  const getTechniqueTypeLabel = (type: TechniqueType): string => {
+    return t(`techniques.type.${type}`);
+  };
   const [isFavorite, setIsFavorite] = useState(technique.mastery_level === 'favorite');
   const [masteryLevel, setMasteryLevel] = useState(technique.mastery_level);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -138,10 +145,10 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span
-              className="px-2 py-0.5 rounded text-xs font-medium capitalize"
+              className="px-2 py-0.5 rounded text-xs font-medium"
               style={{ background: `${theme.primary}30`, color: theme.accent }}
             >
-              {technique.technique_type}
+              {getTechniqueTypeLabel(technique.technique_type)}
             </span>
           </div>
           <h1 className="text-2xl font-bold" style={{ color: theme.text }}>{technique.name}</h1>

@@ -209,7 +209,7 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
         {/* 招待コードで参加 */}
         <Card className="!p-3">
           <p className="text-xs mb-2" style={{ color: theme.textMuted }}>{t('groups.enter_code')}</p>
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-2 items-center justify-center">
             <input
               type="text"
               value={inviteCode}

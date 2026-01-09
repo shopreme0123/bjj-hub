@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Plus, X } from 'lucide-react';
 import { Technique, TechniqueType } from '@/types';
 import { TechniqueCategory, defaultCategories } from '@/components/shared/categories';
+import { useI18n } from '@/lib/i18n';
 
 interface EditTechniqueModalProps {
   theme: any;
@@ -13,6 +14,7 @@ interface EditTechniqueModalProps {
 }
 
 export function EditTechniqueModal({ theme, technique, onClose, onSave }: EditTechniqueModalProps) {
+  const { t } = useI18n();
   const [name, setName] = useState(technique.name);
   const [nameEn, setNameEn] = useState(technique.name_en || '');
   const [type, setType] = useState<TechniqueType>(technique.technique_type);
@@ -26,12 +28,13 @@ export function EditTechniqueModal({ theme, technique, onClose, onSave }: EditTe
   const categories = defaultCategories;
 
   const techniqueTypes: { value: TechniqueType; label: string }[] = [
-    { value: 'submission', label: 'サブミッション' },
-    { value: 'sweep', label: 'スイープ' },
-    { value: 'pass', label: 'パス' },
-    { value: 'escape', label: 'エスケープ' },
-    { value: 'takedown', label: 'テイクダウン' },
-    { value: 'position', label: 'ポジション' },
+    { value: 'submission', label: t('techniques.type.submission') },
+    { value: 'sweep', label: t('techniques.type.sweep') },
+    { value: 'pass', label: t('techniques.type.pass') },
+    { value: 'escape', label: t('techniques.type.escape') },
+    { value: 'takedown', label: t('techniques.type.takedown') },
+    { value: 'position', label: t('techniques.type.position') },
+    { value: 'other', label: t('techniques.type.other') },
   ];
 
   const addTag = () => {
