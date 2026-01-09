@@ -6,7 +6,6 @@ import { EdgeProps, getBezierPath, EdgeLabelRenderer } from 'reactflow';
 interface LabeledEdgeData {
   label?: string;
   theme: any;
-  onLabelClick?: () => void;
 }
 
 function LabeledEdgeComponent({
@@ -34,6 +33,17 @@ function LabeledEdgeComponent({
 
   return (
     <>
+      {/* クリック用の透明な太い線 */}
+      <path
+        d={edgePath}
+        style={{
+          stroke: 'transparent',
+          strokeWidth: 20,
+          fill: 'none',
+          cursor: 'pointer',
+        }}
+        className="react-flow__edge-interaction"
+      />
       <path
         id={id}
         style={{
@@ -47,15 +57,11 @@ function LabeledEdgeComponent({
       />
       {data?.label && (
         <EdgeLabelRenderer>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              data?.onLabelClick?.();
-            }}
+          <div
             style={{
               position: 'absolute',
               transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-              pointerEvents: 'all',
+              pointerEvents: 'none',
               background: theme?.card,
               border: `1px solid ${selected ? theme?.primary : theme?.cardBorder}`,
               padding: '2px 8px',
@@ -63,10 +69,9 @@ function LabeledEdgeComponent({
               fontSize: '11px',
               color: theme?.textSecondary,
             }}
-            className="nodrag nopan hover:scale-105 transition-transform"
           >
             {data.label}
-          </button>
+          </div>
         </EdgeLabelRenderer>
       )}
       <defs>

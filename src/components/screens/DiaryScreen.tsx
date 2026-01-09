@@ -419,24 +419,24 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
           </div>
 
           {/* 時間 */}
-          <div className="grid grid-cols-2 gap-2">
-            <div className="min-w-0">
-              <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>開始</label>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>開始</label>
               <input
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                className="w-full rounded-lg px-2 py-2 outline-none border focus:border-blue-500 text-sm box-border"
+                className="w-full rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
                 style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
               />
             </div>
-            <div className="min-w-0">
-              <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>終了</label>
+            <div>
+              <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>終了</label>
               <input
                 type="time"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
-                className="w-full rounded-lg px-2 py-2 outline-none border focus:border-blue-500 text-sm box-border"
+                className="w-full rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
                 style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
               />
             </div>
@@ -567,7 +567,7 @@ export function DiaryDetailScreen({ log, onBack, onOpenTechnique, onOpenFlow }: 
         onBack={onBack}
       />
 
-      <div className="flex-1 overflow-auto px-5 pb-24 space-y-4">
+      <div className="flex-1 overflow-auto px-5 pb-24 pt-4 space-y-4 relative z-10">
         {/* 時間・基本情報 */}
         <Card>
           <div className="space-y-3">
@@ -732,24 +732,24 @@ function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps) {
           </div>
 
           {/* 時間 */}
-          <div className="grid grid-cols-2 gap-2">
-            <div className="min-w-0">
-              <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>開始</label>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>開始</label>
               <input
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                className="w-full rounded-lg px-2 py-2 outline-none border focus:border-blue-500 text-sm box-border"
+                className="w-full rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
                 style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
               />
             </div>
-            <div className="min-w-0">
-              <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>終了</label>
+            <div>
+              <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>終了</label>
               <input
                 type="time"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
-                className="w-full rounded-lg px-2 py-2 outline-none border focus:border-blue-500 text-sm box-border"
+                className="w-full rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
                 style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
               />
             </div>
