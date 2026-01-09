@@ -416,32 +416,53 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="block rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
-                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%', maxWidth: '100%' }}
+                className="rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
+                style={{
+                  background: theme.card,
+                  color: theme.text,
+                  borderColor: theme.cardBorder,
+                  width: '100%',
+                  boxSizing: 'border-box',
+                  minWidth: 0,
+                }}
               />
             </div>
 
             {/* 時間 - 横並び */}
             <div>
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <div style={{ flex: 1 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
                   <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>開始</label>
                   <input
                     type="time"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
-                    className="block rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
-                    style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%' }}
+                    className="rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
+                    style={{
+                      background: theme.card,
+                      color: theme.text,
+                      borderColor: theme.cardBorder,
+                      width: '100%',
+                      boxSizing: 'border-box',
+                      minWidth: 0,
+                    }}
                   />
                 </div>
-                <div style={{ flex: 1 }}>
+                <div>
                   <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>終了</label>
                   <input
                     type="time"
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
-                    className="block rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
-                    style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%' }}
+                    className="rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
+                    style={{
+                      background: theme.card,
+                      color: theme.text,
+                      borderColor: theme.cardBorder,
+                      width: '100%',
+                      boxSizing: 'border-box',
+                      minWidth: 0,
+                    }}
                   />
                 </div>
               </div>
@@ -462,19 +483,23 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
             </div>
 
             {/* コンディション + スパー */}
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <div style={{ flex: 1 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div>
                 <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>コンディション</label>
-                <div className="flex gap-1">
+                <div style={{ display: 'flex', gap: '4px' }}>
                   {[1, 2, 3, 4, 5].map((n) => (
                     <button
                       key={n}
                       onClick={() => setCondition(n)}
-                      className="flex-1 py-2 rounded-lg transition-all text-sm"
                       style={{
+                        flex: 1,
+                        padding: '8px 0',
+                        borderRadius: '8px',
+                        fontSize: '14px',
                         background: n <= condition ? theme.gradient : theme.card,
                         border: n <= condition ? 'none' : `1px solid ${theme.cardBorder}`,
                         color: n <= condition ? 'white' : theme.text,
+                        minWidth: 0,
                       }}
                     >
                       {n}
@@ -482,7 +507,7 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
                   ))}
                 </div>
               </div>
-              <div style={{ flex: 1 }}>
+              <div>
                 <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>スパー本数</label>
                 <input
                   type="number"
@@ -490,8 +515,15 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
                   value={sparringRounds}
                   onChange={(e) => setSparringRounds(e.target.value)}
                   placeholder="例: 5"
-                  className="block rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm"
-                  style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%' }}
+                  className="rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm"
+                  style={{
+                    background: theme.card,
+                    color: theme.text,
+                    borderColor: theme.cardBorder,
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    minWidth: 0,
+                  }}
                 />
               </div>
             </div>
@@ -504,8 +536,14 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="例: テクニック練習、スパーリング"
-                className="block rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
-                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%' }}
+                className="rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
+                style={{
+                  background: theme.card,
+                  color: theme.text,
+                  borderColor: theme.cardBorder,
+                  width: '100%',
+                  boxSizing: 'border-box',
+                }}
               />
             </div>
 
@@ -517,8 +555,14 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="うまくいったこと、改善点など..."
                 rows={3}
-                className="block rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 resize-none text-sm"
-                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%' }}
+                className="rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 resize-none text-sm"
+                style={{
+                  background: theme.card,
+                  color: theme.text,
+                  borderColor: theme.cardBorder,
+                  width: '100%',
+                  boxSizing: 'border-box',
+                }}
               />
             </div>
           </div>
@@ -737,32 +781,53 @@ function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps) {
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="block rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
-                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%', maxWidth: '100%' }}
+                className="rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
+                style={{
+                  background: theme.card,
+                  color: theme.text,
+                  borderColor: theme.cardBorder,
+                  width: '100%',
+                  boxSizing: 'border-box',
+                  minWidth: 0,
+                }}
               />
             </div>
 
             {/* 時間 - 横並び */}
             <div>
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <div style={{ flex: 1 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
                   <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>開始</label>
                   <input
                     type="time"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
-                    className="block rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
-                    style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%' }}
+                    className="rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
+                    style={{
+                      background: theme.card,
+                      color: theme.text,
+                      borderColor: theme.cardBorder,
+                      width: '100%',
+                      boxSizing: 'border-box',
+                      minWidth: 0,
+                    }}
                   />
                 </div>
-                <div style={{ flex: 1 }}>
+                <div>
                   <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>終了</label>
                   <input
                     type="time"
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
-                    className="block rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
-                    style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%' }}
+                    className="rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
+                    style={{
+                      background: theme.card,
+                      color: theme.text,
+                      borderColor: theme.cardBorder,
+                      width: '100%',
+                      boxSizing: 'border-box',
+                      minWidth: 0,
+                    }}
                   />
                 </div>
               </div>
@@ -783,19 +848,23 @@ function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps) {
             </div>
 
             {/* コンディション + スパー */}
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <div style={{ flex: 1 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div>
                 <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>コンディション</label>
-                <div className="flex gap-1">
+                <div style={{ display: 'flex', gap: '4px' }}>
                   {[1, 2, 3, 4, 5].map((n) => (
                     <button
                       key={n}
                       onClick={() => setCondition(n)}
-                      className="flex-1 py-2 rounded-lg transition-all text-sm"
                       style={{
+                        flex: 1,
+                        padding: '8px 0',
+                        borderRadius: '8px',
+                        fontSize: '14px',
                         background: n <= condition ? theme.gradient : theme.card,
                         border: n <= condition ? 'none' : `1px solid ${theme.cardBorder}`,
                         color: n <= condition ? 'white' : theme.text,
+                        minWidth: 0,
                       }}
                     >
                       {n}
@@ -803,7 +872,7 @@ function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps) {
                   ))}
                 </div>
               </div>
-              <div style={{ flex: 1 }}>
+              <div>
                 <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>スパー本数</label>
                 <input
                   type="number"
@@ -811,8 +880,15 @@ function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps) {
                   value={sparringRounds}
                   onChange={(e) => setSparringRounds(e.target.value)}
                   placeholder="例: 5"
-                  className="block rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm"
-                  style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%' }}
+                  className="rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm"
+                  style={{
+                    background: theme.card,
+                    color: theme.text,
+                    borderColor: theme.cardBorder,
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    minWidth: 0,
+                  }}
                 />
               </div>
             </div>
@@ -825,8 +901,14 @@ function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps) {
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="例: テクニック練習、スパーリング"
-                className="block rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
-                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%' }}
+                className="rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
+                style={{
+                  background: theme.card,
+                  color: theme.text,
+                  borderColor: theme.cardBorder,
+                  width: '100%',
+                  boxSizing: 'border-box',
+                }}
               />
             </div>
 
@@ -838,8 +920,14 @@ function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps) {
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="うまくいったこと、改善点など..."
                 rows={3}
-                className="block rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 resize-none text-sm"
-                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%' }}
+                className="rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 resize-none text-sm"
+                style={{
+                  background: theme.card,
+                  color: theme.text,
+                  borderColor: theme.cardBorder,
+                  width: '100%',
+                  boxSizing: 'border-box',
+                }}
               />
             </div>
           </div>
