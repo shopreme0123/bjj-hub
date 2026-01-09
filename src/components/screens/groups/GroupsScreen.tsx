@@ -9,7 +9,7 @@ import { useToast } from '@/components/ui/Toast';
 import { supabase } from '@/lib/supabase';
 import { generateSecureCode } from '@/lib/security';
 import { Card } from '@/components/ui/Card';
-import { Header } from '@/components/ui/Header';
+import { Header, IconButton } from '@/components/ui/Header';
 import { Group } from '@/types';
 import { CreateGroupModal } from './modals';
 
@@ -194,104 +194,101 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
 
   return (
     <div className="flex flex-col h-full" style={{ background: theme.bg }}>
-      {/* グラデーション背景 - 固定 */}
-      <div
-        className="absolute top-0 left-0 right-0 h-48 rounded-b-3xl"
-        style={{ background: theme.gradient }}
+      <Header
+        title={t('groups.title')}
+        rightAction={
+          <IconButton
+            icon={<Plus size={18} />}
+            onClick={() => setShowCreateModal(true)}
+          />
+        }
       />
 
-      <Header title={t('groups.title')} />
+      {/* スクロール可能なコンテンツ */}
+      <div className="flex-1 overflow-auto px-4 pb-24 space-y-4">
+        {/* 招待コードで参加 */}
+        <Card className="!p-3">
+          <p className="text-xs mb-2" style={{ color: theme.textMuted }}>{t('groups.enter_code')}</p>
+          <div className="flex gap-2 items-center">
+            <input
+              type="text"
+              value={inviteCode}
+              onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+              placeholder={t('groups.invite_code')}
+              maxLength={6}
+              className="w-28 rounded-lg px-3 py-2 outline-none border text-center tracking-widest font-mono text-sm"
+              style={{
+                background: theme.card,
+                color: theme.text,
+                borderColor: theme.cardBorder
+              }}
+            />
+            <button
+              onClick={handleJoinGroup}
+              disabled={!inviteCode.trim() || joining}
+              className="px-3 py-2 rounded-lg text-white font-medium text-sm disabled:opacity-50 flex items-center gap-2"
+              style={{ background: theme.primary }}
+            >
+              {joining ? <Loader2 size={14} className="animate-spin" /> : t('groups.join')}
+            </button>
+          </div>
+        </Card>
 
-      {/* スクロール可能なコンテンツ - 背景色で覆う */}
-      <div className="flex-1 overflow-auto relative z-10">
-        <div
-          className="min-h-full px-5 pb-24 space-y-4 pt-4"
-          style={{ background: theme.bg, marginTop: '60px', borderTopLeftRadius: '24px', borderTopRightRadius: '24px' }}
-        >
-          {/* 招待コードで参加 */}
-          <Card className="!py-3">
-            <p className="text-sm mb-2" style={{ color: theme.textSecondary }}>{t('groups.enter_code')}</p>
-            <div className="flex gap-2 items-center">
-              <input
-                type="text"
-                value={inviteCode}
-                onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-                placeholder={t('groups.invite_code')}
-                maxLength={6}
-                className="w-32 rounded-lg px-3 py-2 outline-none border text-center tracking-widest font-mono text-sm"
-                style={{
-                  background: theme.card,
-                  color: theme.text,
-                  borderColor: theme.cardBorder
-                }}
-              />
-              <button
-                onClick={handleJoinGroup}
-                disabled={!inviteCode.trim() || joining}
-                className="px-4 py-2 rounded-lg text-white font-medium text-sm disabled:opacity-50 flex items-center gap-2"
-                style={{ background: theme.gradient }}
-              >
-                {joining ? <Loader2 size={16} className="animate-spin" /> : t('groups.join')}
-              </button>
-            </div>
-          </Card>
-
-          {/* グループ一覧 */}
-          {loading ? (
-            <div className="flex justify-center py-12">
-              <Loader2 size={32} className="animate-spin" style={{ color: theme.textMuted }} />
-            </div>
-          ) : groups.length > 0 ? (
-            <div className="space-y-3">
-              <h3 className="text-sm font-medium" style={{ color: theme.textSecondary }}>{t('groups.title')}</h3>
-              {groups.map((group) => (
-                <Card key={group.id} onClick={() => onSelectGroup(group)}>
-                  <div className="flex items-center gap-4">
-                    <div
-                      className="w-14 h-14 rounded-xl flex items-center justify-center"
-                      style={{ background: theme.gradient }}
-                    >
-                      <Users size={24} className="text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium" style={{ color: theme.text }}>{group.name}</p>
-                        {group.is_admin && (
-                          <span
-                            className="text-[10px] px-1.5 py-0.5 rounded"
-                            style={{ background: `${theme.accent}20`, color: theme.accent }}
-                          >
-                            管理者
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm mt-0.5" style={{ color: theme.textSecondary }}>{group.member_count}人</p>
-                    </div>
-                    <ChevronRight size={18} style={{ color: theme.textMuted }} />
+        {/* グループ一覧 */}
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 size={28} className="animate-spin" style={{ color: theme.textMuted }} />
+          </div>
+        ) : groups.length > 0 ? (
+          <div className="space-y-2">
+            <h3 className="text-xs font-medium" style={{ color: theme.textMuted }}>{t('groups.title')}</h3>
+            {groups.map((group) => (
+              <Card key={group.id} onClick={() => onSelectGroup(group)} className="!p-3">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style={{ background: `${theme.primary}15` }}
+                  >
+                    <Users size={18} style={{ color: theme.primary }} />
                   </div>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <Users size={48} className="mx-auto mb-4" style={{ color: theme.textMuted }} />
-              <p className="mb-2" style={{ color: theme.textSecondary }}>グループに参加していません</p>
-              <p className="text-sm" style={{ color: theme.textMuted }}>
-                グループを作成するか、招待コードで参加してください
-              </p>
-            </div>
-          )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium text-sm truncate" style={{ color: theme.text }}>{group.name}</p>
+                      {group.is_admin && (
+                        <span
+                          className="text-[10px] px-1.5 py-0.5 rounded flex-shrink-0"
+                          style={{ background: `${theme.accent}20`, color: theme.accent }}
+                        >
+                          管理者
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs mt-0.5" style={{ color: theme.textMuted }}>{group.member_count}人</p>
+                  </div>
+                  <ChevronRight size={16} style={{ color: theme.textMuted }} />
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <Users size={40} className="mx-auto mb-3" style={{ color: theme.textMuted }} />
+            <p className="text-sm mb-1" style={{ color: theme.textSecondary }}>グループに参加していません</p>
+            <p className="text-xs" style={{ color: theme.textMuted }}>
+              グループを作成するか、招待コードで参加
+            </p>
+          </div>
+        )}
 
-          {/* 新規作成ボタン */}
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="w-full rounded-xl py-4 border-2 border-dashed flex items-center justify-center gap-2 transition-all hover:border-solid"
-            style={{ borderColor: theme.cardBorder, color: theme.textSecondary }}
-          >
-            <Plus size={18} />
-            <span className="text-sm">新しいグループを作成</span>
-          </button>
-        </div>
+        {/* 新規作成ボタン */}
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="w-full rounded-xl py-3 border-2 border-dashed flex items-center justify-center gap-2 transition-all hover:border-solid"
+          style={{ borderColor: theme.cardBorder, color: theme.textSecondary }}
+        >
+          <Plus size={16} />
+          <span className="text-sm">新しいグループを作成</span>
+        </button>
       </div>
 
       {/* グループ作成モーダル */}
