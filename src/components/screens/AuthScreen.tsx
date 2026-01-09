@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
-import { Mail, Lock, User, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Mail, Lock, User, Eye, EyeOff, Loader2, Check, X } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { useI18n } from '@/lib/i18n';
+import { validatePassword, validateEmail, validateDisplayName } from '@/lib/security';
 
 interface AuthScreenProps {
   onSuccess?: () => void;
@@ -21,6 +22,12 @@ export function AuthScreen({ onSuccess }: AuthScreenProps) {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
+  // パスワード強度のリアルタイムチェック
+  const passwordValidation = useMemo(() => {
+    if (!password || mode !== 'signup') return null;
+    return validatePassword(password);
+  }, [password, mode]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -28,12 +35,31 @@ export function AuthScreen({ onSuccess }: AuthScreenProps) {
     setLoading(true);
 
     try {
+      // メールバリデーション
+      const emailValidation = validateEmail(email);
+      if (!emailValidation.isValid) {
+        setError(emailValidation.error || 'メールアドレスが無効です');
+        setLoading(false);
+        return;
+      }
+
       if (mode === 'signup') {
-        if (!displayName.trim()) {
-          setError('表示名を入力してください');
+        // 表示名バリデーション
+        const nameValidation = validateDisplayName(displayName);
+        if (!nameValidation.isValid) {
+          setError(nameValidation.error || '表示名を入力してください');
           setLoading(false);
           return;
         }
+
+        // パスワード強度チェック
+        const pwValidation = validatePassword(password);
+        if (!pwValidation.isValid) {
+          setError(pwValidation.errors[0]);
+          setLoading(false);
+          return;
+        }
+
         const { error } = await signUp(email, password, displayName);
         if (error) {
           if (error.message.includes('already registered')) {
@@ -122,7 +148,7 @@ export function AuthScreen({ onSuccess }: AuthScreenProps) {
               onChange={(e) => setPassword(e.target.value)}
               placeholder={t('auth.password')}
               required
-              minLength={6}
+              minLength={8}
               className="w-full bg-white rounded-xl pl-12 pr-12 py-4 text-slate-800 outline-none placeholder:text-slate-400 border border-slate-200 focus:border-blue-500 transition shadow-sm"
             />
             <button
@@ -133,6 +159,47 @@ export function AuthScreen({ onSuccess }: AuthScreenProps) {
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
+
+          {/* パスワード強度インジケーター（新規登録時のみ） */}
+          {mode === 'signup' && password && passwordValidation && (
+            <div className="space-y-2">
+              {/* 強度バー */}
+              <div className="flex gap-1">
+                <div
+                  className={`h-1 flex-1 rounded-full transition-colors ${
+                    passwordValidation.strength === 'weak' ? 'bg-red-400' :
+                    passwordValidation.strength === 'medium' ? 'bg-yellow-400' : 'bg-green-400'
+                  }`}
+                />
+                <div
+                  className={`h-1 flex-1 rounded-full transition-colors ${
+                    passwordValidation.strength === 'medium' ? 'bg-yellow-400' :
+                    passwordValidation.strength === 'strong' ? 'bg-green-400' : 'bg-slate-200'
+                  }`}
+                />
+                <div
+                  className={`h-1 flex-1 rounded-full transition-colors ${
+                    passwordValidation.strength === 'strong' ? 'bg-green-400' : 'bg-slate-200'
+                  }`}
+                />
+              </div>
+              {/* 要件チェックリスト */}
+              <div className="text-xs space-y-1">
+                <div className={`flex items-center gap-1 ${password.length >= 8 ? 'text-green-600' : 'text-slate-400'}`}>
+                  {password.length >= 8 ? <Check size={12} /> : <X size={12} />}
+                  <span>8文字以上</span>
+                </div>
+                <div className={`flex items-center gap-1 ${/[a-zA-Z]/.test(password) ? 'text-green-600' : 'text-slate-400'}`}>
+                  {/[a-zA-Z]/.test(password) ? <Check size={12} /> : <X size={12} />}
+                  <span>英字を含む</span>
+                </div>
+                <div className={`flex items-center gap-1 ${/[0-9]/.test(password) ? 'text-green-600' : 'text-slate-400'}`}>
+                  {/[0-9]/.test(password) ? <Check size={12} /> : <X size={12} />}
+                  <span>数字を含む</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {error && (
             <p className="text-red-500 text-sm text-center">{error}</p>

@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/auth-context';
 import { useI18n } from '@/lib/i18n';
 import { useToast } from '@/components/ui/Toast';
 import { supabase } from '@/lib/supabase';
+import { generateSecureCode } from '@/lib/security';
 import { Card } from '@/components/ui/Card';
 import { Header } from '@/components/ui/Header';
 import { Group } from '@/types';
@@ -98,7 +99,7 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
     if (!user) return;
 
     try {
-      const inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+      const inviteCode = generateSecureCode(6);
 
       // グループを作成
       const { data: newGroup, error: groupError } = await supabase
