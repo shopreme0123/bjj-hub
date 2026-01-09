@@ -60,80 +60,70 @@ body {
   background: rgba(0, 0, 0, 0.2);
 }
 
-/* アニメーション */
+/* アニメーション（チラつき防止版） */
 @keyframes fadeIn {
   from {
-    opacity: 0;
-    transform: translateY(10px);
+    opacity: 0.95;
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.15s ease-out;
 }
 
 @keyframes slideUp {
   from {
-    opacity: 0;
     transform: translateY(100%);
   }
   to {
-    opacity: 1;
     transform: translateY(0);
   }
 }
 
 .animate-slide-up {
-  animation: slideUp 0.3s ease-out;
+  animation: slideUp 0.25s ease-out;
 }
 
 @keyframes slideDown {
   from {
-    opacity: 0;
     transform: translateY(-20px);
   }
   to {
-    opacity: 1;
     transform: translateY(0);
   }
 }
 
 .animate-slide-down {
-  animation: slideDown 0.3s ease-out;
+  animation: slideDown 0.2s ease-out;
 }
 
 @keyframes slideInRight {
   from {
-    opacity: 0;
-    transform: translateX(20px);
+    transform: translateX(30px);
   }
   to {
-    opacity: 1;
     transform: translateX(0);
   }
 }
 
 .animate-slide-in-right {
-  animation: slideInRight 0.25s ease-out;
+  animation: slideInRight 0.2s ease-out;
 }
 
 @keyframes slideInLeft {
   from {
-    opacity: 0;
-    transform: translateX(-20px);
+    transform: translateX(-30px);
   }
   to {
-    opacity: 1;
     transform: translateX(0);
   }
 }
 
 .animate-slide-in-left {
-  animation: slideInLeft 0.25s ease-out;
+  animation: slideInLeft 0.2s ease-out;
 }
 
 /* カードシャドウ */
