@@ -238,10 +238,11 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorScreenProps) {
             </button>
             <button
               onClick={handleSave}
-              className="p-2 rounded-full"
-              style={{ background: 'rgba(255,255,255,0.2)' }}
+              className="px-3 py-1.5 rounded-full flex items-center gap-1.5 font-medium text-sm"
+              style={{ background: 'white', color: theme.primary }}
             >
-              <Save size={18} className="text-white" />
+              <Save size={16} />
+              保存
             </button>
           </div>
         }
