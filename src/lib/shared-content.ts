@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { Technique, Flow } from '@/types';
+import { safeJsonParse, generateSecureCode } from './security';
 
 export type SharedContentType = 'technique' | 'flow';
 export type Visibility = 'public' | 'link_only';
@@ -27,14 +28,9 @@ export interface GroupSharedContent {
   created_at: string;
 }
 
-// ランダムな共有コードを生成（6桁の英数字）
+// 暗号学的に安全な共有コードを生成（6桁の英数字）
 function generateShareCode(): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let code = '';
-  for (let i = 0; i < 6; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return code;
+  return generateSecureCode(6);
 }
 
 // コンテンツを共有
@@ -103,7 +99,7 @@ function shareToLocalStorage(
   };
 
   const existing = localStorage.getItem('bjj-hub-shared-content');
-  const allShared: SharedContent[] = existing ? JSON.parse(existing) : [];
+  const allShared: SharedContent[] = safeJsonParse<SharedContent[]>(existing, []);
   allShared.push(sharedContent);
   localStorage.setItem('bjj-hub-shared-content', JSON.stringify(allShared));
 
@@ -127,7 +123,7 @@ export async function getSharedContent(shareCode: string): Promise<SharedContent
     // LocalStorageから取得
     const existing = localStorage.getItem('bjj-hub-shared-content');
     if (existing) {
-      const allShared: SharedContent[] = JSON.parse(existing);
+      const allShared = safeJsonParse<SharedContent[]>(existing, []);
       return allShared.find(c => c.share_code === shareCode.toUpperCase()) || null;
     }
 
@@ -165,7 +161,7 @@ export async function getPublicContent(
     // フォールバック: LocalStorage
     const existing = localStorage.getItem('bjj-hub-shared-content');
     if (existing) {
-      const allShared: SharedContent[] = JSON.parse(existing);
+      const allShared = safeJsonParse<SharedContent[]>(existing, []);
       let filtered = allShared.filter(c => c.visibility === 'public');
 
       if (contentType) {
@@ -246,7 +242,7 @@ function shareToGroupLocalStorage(
   };
 
   const existing = localStorage.getItem('bjj-hub-group-shared-content');
-  const allShared: GroupSharedContent[] = existing ? JSON.parse(existing) : [];
+  const allShared = safeJsonParse<GroupSharedContent[]>(existing, []);
   allShared.push(sharedContent);
   localStorage.setItem('bjj-hub-group-shared-content', JSON.stringify(allShared));
 
@@ -281,7 +277,7 @@ export async function getGroupSharedContent(
     // フォールバック: LocalStorage
     const existing = localStorage.getItem('bjj-hub-group-shared-content');
     if (existing) {
-      const allShared: GroupSharedContent[] = JSON.parse(existing);
+      const allShared = safeJsonParse<GroupSharedContent[]>(existing, []);
       let filtered = allShared.filter(c => c.group_id === groupId);
 
       if (contentType) {
@@ -317,7 +313,7 @@ export async function deleteGroupSharedContent(
       // LocalStorageからも試す
       const existing = localStorage.getItem('bjj-hub-group-shared-content');
       if (existing) {
-        const allShared: GroupSharedContent[] = JSON.parse(existing);
+        const allShared = safeJsonParse<GroupSharedContent[]>(existing, []);
         const filtered = allShared.filter(c => c.id !== contentId);
         localStorage.setItem('bjj-hub-group-shared-content', JSON.stringify(filtered));
         return { success: true };
