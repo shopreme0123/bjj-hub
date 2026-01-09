@@ -394,7 +394,7 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
       onClick={onClose}
     >
       <div
-        className="w-full rounded-t-3xl px-4 pt-4 pb-6 animate-slide-up"
+        className="w-full rounded-t-3xl px-4 pt-4 pb-6 animate-slide-up overflow-hidden"
         style={{ background: theme.bg, maxHeight: '85vh' }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -405,7 +405,7 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
           </button>
         </div>
 
-        <div className="overflow-y-auto space-y-2.5 px-2" style={{ maxHeight: 'calc(85vh - 70px)' }}>
+        <div className="overflow-y-auto overflow-x-hidden space-y-2.5 px-2" style={{ maxHeight: 'calc(85vh - 70px)' }}>
           {/* 日付 */}
           <div>
             <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>日付 *</label>
