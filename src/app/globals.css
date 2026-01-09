@@ -146,3 +146,26 @@ select option {
   background: white;
   color: #1e293b;
 }
+
+/* iOS Safari 入力フィールド対策 */
+input,
+textarea,
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"] {
+  -webkit-appearance: none;
+  min-height: 44px; /* iOS タッチターゲット推奨サイズ */
+}
+
+/* CSS Grid でのオーバーフロー防止 */
+* {
+  min-width: 0;
+}
