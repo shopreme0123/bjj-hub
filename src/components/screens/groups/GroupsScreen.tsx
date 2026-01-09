@@ -205,7 +205,7 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
       />
 
       {/* スクロール可能なコンテンツ */}
-      <div className="flex-1 overflow-auto px-4 pb-24 space-y-4">
+      <div className="flex-1 overflow-auto px-4 pt-2 pb-24 space-y-4">
         {/* 招待コードで参加 */}
         <Card className="!p-3">
           <p className="text-xs mb-2" style={{ color: theme.textMuted }}>{t('groups.enter_code')}</p>
