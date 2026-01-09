@@ -74,10 +74,15 @@ export function HomeScreen({
   const favoriteTechniques = techniques.filter(t => t.mastery_level === 'favorite');
   const displayTechniques = favoriteTechniques.length > 0 ? favoriteTechniques : techniques.slice(0, 3);
 
-  const beltBgColor = beltColor === 'white' ? '#e2e8f0' :
-                     beltColor === 'blue' ? '#2563eb' :
-                     beltColor === 'purple' ? '#7c3aed' :
-                     beltColor === 'brown' ? '#92400e' : '#18181b';
+  // 帯の色設定
+  const beltColors = {
+    white: { main: '#e2e8f0', light: '#f8fafc', dark: '#cbd5e1', shadow: 'rgba(0,0,0,0.15)' },
+    blue: { main: '#2563eb', light: '#3b82f6', dark: '#1d4ed8', shadow: 'rgba(0,0,0,0.3)' },
+    purple: { main: '#7c3aed', light: '#8b5cf6', dark: '#6d28d9', shadow: 'rgba(0,0,0,0.3)' },
+    brown: { main: '#92400e', light: '#b45309', dark: '#78350f', shadow: 'rgba(0,0,0,0.3)' },
+    black: { main: '#18181b', light: '#27272a', dark: '#09090b', shadow: 'rgba(0,0,0,0.4)' },
+  };
+  const belt = beltColors[beltColor];
 
   return (
     <div className="flex flex-col h-full" style={{ background: theme.bg }}>
@@ -89,10 +94,18 @@ export function HomeScreen({
         <div className="flex items-center gap-3">
           {/* プロフィールアバター */}
           <div
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm"
+            className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm overflow-hidden"
             style={{ background: theme.gradient }}
           >
-            {displayName.charAt(0).toUpperCase()}
+            {profile?.avatar_url ? (
+              <img
+                src={profile.avatar_url}
+                alt={displayName}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              displayName.charAt(0).toUpperCase()
+            )}
           </div>
           <div>
             <p className="text-xs" style={{ color: theme.textMuted }}>{t('home.welcome')}</p>
@@ -114,22 +127,65 @@ export function HomeScreen({
       <div className="flex-1 overflow-auto px-4 pb-24 space-y-4">
         {/* 帯 & 統計カード */}
         <Card className="!p-4 mt-2">
-          <div className="flex items-center gap-3 mb-4 pb-3" style={{ borderBottom: `1px solid ${theme.cardBorder}` }}>
-            <div
-              className="w-14 h-3.5 rounded-full flex items-center justify-end pr-0.5 gap-0.5"
-              style={{ background: beltBgColor }}
-            >
-              {[...Array(stripes)].map((_, i) => (
+          <div className="flex items-center gap-4 mb-4 pb-4" style={{ borderBottom: `1px solid ${theme.cardBorder}` }}>
+            {/* リアルな帯デザイン */}
+            <div className="relative">
+              {/* 帯本体 */}
+              <div
+                className="w-20 h-5 rounded-sm relative overflow-hidden"
+                style={{
+                  background: `linear-gradient(180deg, ${belt.light} 0%, ${belt.main} 30%, ${belt.dark} 100%)`,
+                  boxShadow: `0 2px 8px ${belt.shadow}, inset 0 1px 0 ${belt.light}`,
+                }}
+              >
+                {/* 帯の質感（横線） */}
                 <div
-                  key={i}
-                  className="h-3.5 w-1.5 bg-white rounded-sm"
-                  style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.3)' }}
+                  className="absolute inset-0"
+                  style={{
+                    background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 3px)',
+                  }}
                 />
-              ))}
+                {/* ストライプ部分（黒帯部分） */}
+                <div
+                  className="absolute right-0 top-0 bottom-0 w-6 flex items-center justify-end pr-1 gap-0.5"
+                  style={{
+                    background: beltColor === 'black'
+                      ? 'linear-gradient(180deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%)'
+                      : 'linear-gradient(180deg, #27272a 0%, #18181b 50%, #09090b 100%)',
+                    borderLeft: beltColor === 'black' ? 'none' : '1px solid rgba(0,0,0,0.2)',
+                  }}
+                >
+                  {[...Array(stripes)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-4 w-1"
+                      style={{
+                        background: 'linear-gradient(180deg, #ffffff 0%, #e5e5e5 50%, #d4d4d4 100%)',
+                        boxShadow: '0 0 2px rgba(0,0,0,0.3)',
+                        borderRadius: '1px',
+                      }}
+                    />
+                  ))}
+                </div>
+                {/* 光沢効果 */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: 'linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 40%)',
+                  }}
+                />
+              </div>
             </div>
-            <p className="font-semibold text-sm" style={{ color: theme.text }}>
-              {t(`belt.${beltColor}`)} {stripes > 0 ? t('belt.stripes', { count: stripes }) : ''}
-            </p>
+            <div className="flex-1">
+              <p className="font-bold text-base" style={{ color: theme.text }}>
+                {t(`belt.${beltColor}`)}
+              </p>
+              {stripes > 0 && (
+                <p className="text-xs" style={{ color: theme.textSecondary }}>
+                  {t('belt.stripes', { count: stripes })}
+                </p>
+              )}
+            </div>
           </div>
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
