@@ -77,9 +77,9 @@ export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
       />
 
       {/* スクロール可能なコンテンツ */}
-      <div className="flex-1 overflow-auto px-4 pb-24 space-y-4">
+      <div className="flex-1 overflow-auto px-4 pt-2 pb-24 space-y-4">
         {/* 検索バー */}
-        <div className="relative mt-2">
+        <div className="relative">
           <Search
             size={18}
             className="absolute left-3 top-1/2 -translate-y-1/2"

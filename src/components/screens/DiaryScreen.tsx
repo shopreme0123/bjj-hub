@@ -89,7 +89,7 @@ export function DiaryScreen({ onOpenDetail }: DiaryScreenProps) {
       />
 
       {/* タブ */}
-      <div className="flex gap-2 px-4 pb-3">
+      <div className="flex gap-2 px-4 pt-2 pb-3">
         {[
           { id: 'calendar', label: language === 'ja' ? 'カレンダー' : 'Calendar' },
           { id: 'stats', label: language === 'ja' ? '統計' : 'Stats' },
