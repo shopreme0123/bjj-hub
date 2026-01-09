@@ -336,42 +336,95 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorScreenProps) {
         />
       )}
 
-      {/* ノード削除確認モーダル */}
+      {/* ノード情報モーダル */}
       {showNodeDeleteModal && selectedNode && (
         <div
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-end justify-center z-50"
           onClick={() => {
             setShowNodeDeleteModal(false);
             setSelectedNode(null);
           }}
         >
           <div
-            className="w-[90%] max-w-sm rounded-2xl p-5"
+            className="w-full max-w-lg rounded-t-3xl p-5 pb-8 animate-slide-up"
             style={{ background: theme.card }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="font-semibold text-center mb-2" style={{ color: theme.text }}>
-              {selectedNode.data.label}
-            </h3>
-            <p className="text-sm text-center mb-4" style={{ color: theme.textSecondary }}>
-              このノードを削除しますか？
-            </p>
-            <div className="flex gap-2">
+            {/* 技情報ヘッダー */}
+            <div className="flex items-center gap-4 mb-4">
+              <div
+                className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl"
+                style={{ background: `${theme.primary}15` }}
+              >
+                {selectedNode.data.emoji || '🥋'}
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-lg" style={{ color: theme.text }}>
+                  {selectedNode.data.label}
+                </h3>
+                {selectedNode.data.type && (
+                  <span
+                    className="text-xs px-2 py-0.5 rounded-full inline-block mt-1"
+                    style={{ background: `${theme.primary}20`, color: theme.primary }}
+                  >
+                    {selectedNode.data.type}
+                  </span>
+                )}
+              </div>
+              {selectedNode.data.isStartNode && (
+                <span
+                  className="text-xs px-2 py-1 rounded-full"
+                  style={{ background: theme.gradient, color: 'white' }}
+                >
+                  スタート
+                </span>
+              )}
+            </div>
+
+            {/* アクションボタン */}
+            <div className="space-y-2">
+              {!selectedNode.data.isStartNode && (
+                <button
+                  onClick={() => {
+                    // 全ノードのisStartNodeをfalseに、選択ノードをtrueに
+                    setNodes((nds) =>
+                      nds.map((n) => ({
+                        ...n,
+                        data: { ...n.data, isStartNode: n.id === selectedNode.id },
+                      }))
+                    );
+                    setShowNodeDeleteModal(false);
+                    setSelectedNode(null);
+                  }}
+                  className="w-full py-3 rounded-xl text-left px-4 flex items-center gap-3"
+                  style={{ background: theme.bg }}
+                >
+                  <span className="text-lg">🎯</span>
+                  <span style={{ color: theme.text }}>スタートノードに設定</span>
+                </button>
+              )}
               <button
                 onClick={() => {
                   setShowNodeDeleteModal(false);
                   setSelectedNode(null);
                 }}
-                className="flex-1 py-2.5 rounded-xl"
-                style={{ background: theme.cardBorder, color: theme.text }}
+                className="w-full py-3 rounded-xl text-left px-4 flex items-center gap-3"
+                style={{ background: theme.bg }}
               >
-                キャンセル
+                <span className="text-lg">✕</span>
+                <span style={{ color: theme.text }}>閉じる</span>
               </button>
+            </div>
+
+            {/* 削除ボタン - 下部に配置 */}
+            <div className="mt-4 pt-4 border-t" style={{ borderColor: theme.cardBorder }}>
               <button
                 onClick={handleDeleteNode}
-                className="flex-1 py-2.5 rounded-xl bg-red-500 text-white"
+                className="w-full py-3 rounded-xl flex items-center justify-center gap-2 text-red-500"
+                style={{ background: 'rgba(239, 68, 68, 0.1)' }}
               >
-                削除
+                <Trash2 size={18} />
+                <span>このノードを削除</span>
               </button>
             </div>
           </div>
