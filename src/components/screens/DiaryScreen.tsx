@@ -394,134 +394,142 @@ function AddTrainingModal({ theme, onClose, onSave, initialDate }: AddTrainingMo
       onClick={onClose}
     >
       <div
-        className="w-full rounded-t-3xl px-4 pt-4 pb-6 animate-slide-up overflow-hidden"
+        className="w-full rounded-t-3xl pt-4 pb-6 animate-slide-up overflow-hidden"
         style={{ background: theme.bg, maxHeight: '85vh' }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center mb-3">
+        {/* ヘッダー - 固定パディング */}
+        <div className="flex justify-between items-center mb-3 px-5">
           <h3 className="font-semibold" style={{ color: theme.text }}>練習を記録</h3>
           <button onClick={onClose}>
             <X size={22} style={{ color: theme.textSecondary }} />
           </button>
         </div>
 
-        <div className="overflow-y-auto overflow-x-hidden space-y-2.5 px-2" style={{ maxHeight: 'calc(85vh - 70px)' }}>
-          {/* 日付 */}
-          <div>
-            <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>日付 *</label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="w-full rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm box-border"
-              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
-            />
-          </div>
-
-          {/* 時間 */}
-          <div className="flex gap-3">
-            <div className="flex-1 min-w-0">
-              <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>開始</label>
-              <input
-                type="time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                className="w-full rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm box-border"
-                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
-              />
-            </div>
-            <div className="flex-1 min-w-0">
-              <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>終了</label>
-              <input
-                type="time"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                className="w-full rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm box-border"
-                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
-              />
-            </div>
-          </div>
-          
-          {/* 練習時間表示 */}
-          <div 
-            className="text-center py-1.5 rounded-lg text-sm"
-            style={{ 
-              color: isValidTime ? theme.textSecondary : '#ef4444',
-              background: isValidTime ? 'transparent' : 'rgba(239, 68, 68, 0.1)',
-            }}
-          >
-            {isValidTime ? (
-              <span>練習時間: {Math.floor(duration / 60)}時間{duration % 60}分</span>
-            ) : (
-              <span>終了時刻は開始時刻より後に</span>
-            )}
-          </div>
-
-          {/* コンディション + スパー */}
-          <div className="grid grid-cols-2 gap-3">
+        {/* スクロール領域 */}
+        <div className="overflow-y-auto overflow-x-hidden px-5" style={{ maxHeight: 'calc(85vh - 70px)' }}>
+          <div className="space-y-4">
+            {/* 日付 */}
             <div>
-              <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>コンディション</label>
-              <div className="flex gap-1">
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <button
-                    key={n}
-                    onClick={() => setCondition(n)}
-                    className="flex-1 py-1.5 rounded-lg transition-all"
-                    style={{
-                      background: n <= condition ? theme.gradient : theme.card,
-                      border: n <= condition ? 'none' : `1px solid ${theme.cardBorder}`,
-                    }}
-                  >
-                    <span style={{ color: n <= condition ? 'white' : theme.text }} className="text-sm">{n}</span>
-                  </button>
-                ))}
+              <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>日付 *</label>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="block rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
+                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%', maxWidth: '100%' }}
+              />
+            </div>
+
+            {/* 時間 - 横並び */}
+            <div>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <div style={{ flex: 1 }}>
+                  <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>開始</label>
+                  <input
+                    type="time"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    className="block rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
+                    style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%' }}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>終了</label>
+                  <input
+                    type="time"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    className="block rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
+                    style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%' }}
+                  />
+                </div>
+              </div>
+              {/* 練習時間表示 */}
+              <div
+                className="text-center py-2 rounded-lg text-sm mt-2"
+                style={{
+                  color: isValidTime ? theme.textSecondary : '#ef4444',
+                  background: isValidTime ? 'transparent' : 'rgba(239, 68, 68, 0.1)',
+                }}
+              >
+                {isValidTime ? (
+                  <span>練習時間: {Math.floor(duration / 60)}時間{duration % 60}分</span>
+                ) : (
+                  <span>終了時刻は開始時刻より後に</span>
+                )}
               </div>
             </div>
+
+            {/* コンディション + スパー */}
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <div style={{ flex: 1 }}>
+                <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>コンディション</label>
+                <div className="flex gap-1">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <button
+                      key={n}
+                      onClick={() => setCondition(n)}
+                      className="flex-1 py-2 rounded-lg transition-all text-sm"
+                      style={{
+                        background: n <= condition ? theme.gradient : theme.card,
+                        border: n <= condition ? 'none' : `1px solid ${theme.cardBorder}`,
+                        color: n <= condition ? 'white' : theme.text,
+                      }}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div style={{ flex: 1 }}>
+                <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>スパー本数</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={sparringRounds}
+                  onChange={(e) => setSparringRounds(e.target.value)}
+                  placeholder="例: 5"
+                  className="block rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm"
+                  style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%' }}
+                />
+              </div>
+            </div>
+
+            {/* 内容 */}
             <div>
-              <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>スパー本数</label>
+              <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>練習内容</label>
               <input
-                type="number"
-                min="0"
-                value={sparringRounds}
-                onChange={(e) => setSparringRounds(e.target.value)}
-                placeholder="例: 5"
-                className="w-full rounded-lg px-3 py-1.5 outline-none border focus:border-blue-500 text-sm"
-                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
+                type="text"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="例: テクニック練習、スパーリング"
+                className="block rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
+                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%' }}
+              />
+            </div>
+
+            {/* メモ */}
+            <div>
+              <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>気づき・メモ</label>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="うまくいったこと、改善点など..."
+                rows={3}
+                className="block rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 resize-none text-sm"
+                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%' }}
               />
             </div>
           </div>
+        </div>
 
-          {/* 内容 */}
-          <div>
-            <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>練習内容</label>
-            <input
-              type="text"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="例: テクニック練習、スパーリング"
-              className="w-full rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm"
-              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
-            />
-          </div>
-
-          {/* メモ */}
-          <div>
-            <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>気づき・メモ</label>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="うまくいったこと、改善点など..."
-              rows={2}
-              className="w-full rounded-lg px-3 py-2 outline-none border focus:border-blue-500 resize-none text-sm"
-              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
-            />
-          </div>
-
-          {/* 保存ボタン */}
+        {/* 保存ボタン - スクロール領域外に固定 */}
+        <div className="px-5 pt-3">
           <button
             onClick={handleSubmit}
             disabled={!isValidTime}
-            className="w-full py-3 rounded-xl text-white font-semibold disabled:opacity-50"
+            className="w-full py-3.5 rounded-xl text-white font-semibold disabled:opacity-50"
             style={{ background: theme.gradient }}
           >
             保存
@@ -707,134 +715,142 @@ function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps) {
       onClick={onClose}
     >
       <div
-        className="w-full rounded-t-3xl px-4 pt-4 pb-6 animate-slide-up"
+        className="w-full rounded-t-3xl pt-4 pb-6 animate-slide-up overflow-hidden"
         style={{ background: theme.bg, maxHeight: '85vh' }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center mb-3">
+        {/* ヘッダー */}
+        <div className="flex justify-between items-center mb-3 px-5">
           <h3 className="font-semibold" style={{ color: theme.text }}>記録を編集</h3>
           <button onClick={onClose}>
             <X size={22} style={{ color: theme.textSecondary }} />
           </button>
         </div>
 
-        <div className="overflow-y-auto space-y-2.5 px-2" style={{ maxHeight: 'calc(85vh - 70px)' }}>
-          {/* 日付 */}
-          <div>
-            <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>日付 *</label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="w-full rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm box-border"
-              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
-            />
-          </div>
-
-          {/* 時間 */}
-          <div className="flex gap-3">
-            <div className="flex-1 min-w-0">
-              <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>開始</label>
-              <input
-                type="time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                className="w-full rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm box-border"
-                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
-              />
-            </div>
-            <div className="flex-1 min-w-0">
-              <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>終了</label>
-              <input
-                type="time"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                className="w-full rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm box-border"
-                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
-              />
-            </div>
-          </div>
-          
-          {/* 練習時間表示 */}
-          <div 
-            className="text-center py-1.5 rounded-lg text-sm"
-            style={{ 
-              color: isValidTime ? theme.textSecondary : '#ef4444',
-              background: isValidTime ? 'transparent' : 'rgba(239, 68, 68, 0.1)',
-            }}
-          >
-            {isValidTime ? (
-              <span>練習時間: {Math.floor(duration / 60)}時間{duration % 60}分</span>
-            ) : (
-              <span>終了時刻は開始時刻より後に</span>
-            )}
-          </div>
-
-          {/* コンディション + スパー */}
-          <div className="grid grid-cols-2 gap-3">
+        {/* スクロール領域 */}
+        <div className="overflow-y-auto overflow-x-hidden px-5" style={{ maxHeight: 'calc(85vh - 120px)' }}>
+          <div className="space-y-4">
+            {/* 日付 */}
             <div>
-              <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>コンディション</label>
-              <div className="flex gap-1">
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <button
-                    key={n}
-                    onClick={() => setCondition(n)}
-                    className="flex-1 py-1.5 rounded-lg transition-all"
-                    style={{
-                      background: n <= condition ? theme.gradient : theme.card,
-                      border: n <= condition ? 'none' : `1px solid ${theme.cardBorder}`,
-                    }}
-                  >
-                    <span className="text-sm" style={{ color: n <= condition ? 'white' : theme.text }}>{n}</span>
-                  </button>
-                ))}
+              <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>日付 *</label>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="block rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
+                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%', maxWidth: '100%' }}
+              />
+            </div>
+
+            {/* 時間 - 横並び */}
+            <div>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <div style={{ flex: 1 }}>
+                  <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>開始</label>
+                  <input
+                    type="time"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    className="block rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
+                    style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%' }}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>終了</label>
+                  <input
+                    type="time"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    className="block rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
+                    style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%' }}
+                  />
+                </div>
+              </div>
+              {/* 練習時間表示 */}
+              <div
+                className="text-center py-2 rounded-lg text-sm mt-2"
+                style={{
+                  color: isValidTime ? theme.textSecondary : '#ef4444',
+                  background: isValidTime ? 'transparent' : 'rgba(239, 68, 68, 0.1)',
+                }}
+              >
+                {isValidTime ? (
+                  <span>練習時間: {Math.floor(duration / 60)}時間{duration % 60}分</span>
+                ) : (
+                  <span>終了時刻は開始時刻より後に</span>
+                )}
               </div>
             </div>
+
+            {/* コンディション + スパー */}
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <div style={{ flex: 1 }}>
+                <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>コンディション</label>
+                <div className="flex gap-1">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <button
+                      key={n}
+                      onClick={() => setCondition(n)}
+                      className="flex-1 py-2 rounded-lg transition-all text-sm"
+                      style={{
+                        background: n <= condition ? theme.gradient : theme.card,
+                        border: n <= condition ? 'none' : `1px solid ${theme.cardBorder}`,
+                        color: n <= condition ? 'white' : theme.text,
+                      }}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div style={{ flex: 1 }}>
+                <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>スパー本数</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={sparringRounds}
+                  onChange={(e) => setSparringRounds(e.target.value)}
+                  placeholder="例: 5"
+                  className="block rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm"
+                  style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%' }}
+                />
+              </div>
+            </div>
+
+            {/* 内容 */}
             <div>
-              <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>スパー本数</label>
+              <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>練習内容</label>
               <input
-                type="number"
-                min="0"
-                value={sparringRounds}
-                onChange={(e) => setSparringRounds(e.target.value)}
-                placeholder="例: 5"
-                className="w-full rounded-lg px-3 py-1.5 outline-none border focus:border-blue-500 text-sm"
-                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
+                type="text"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="例: テクニック練習、スパーリング"
+                className="block rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 text-sm"
+                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%' }}
+              />
+            </div>
+
+            {/* メモ */}
+            <div>
+              <label className="text-xs mb-1.5 block" style={{ color: theme.textSecondary }}>気づき・メモ</label>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="うまくいったこと、改善点など..."
+                rows={3}
+                className="block rounded-lg px-3 py-2.5 outline-none border focus:border-blue-500 resize-none text-sm"
+                style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder, width: '100%' }}
               />
             </div>
           </div>
+        </div>
 
-          {/* 内容 */}
-          <div>
-            <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>練習内容</label>
-            <input
-              type="text"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="例: テクニック練習、スパーリング"
-              className="w-full rounded-lg px-3 py-2 outline-none border focus:border-blue-500 text-sm"
-              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
-            />
-          </div>
-
-          {/* メモ */}
-          <div>
-            <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>気づき・メモ</label>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="うまくいったこと、改善点など..."
-              rows={2}
-              className="w-full rounded-lg px-3 py-2 outline-none border focus:border-blue-500 resize-none text-sm"
-              style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
-            />
-          </div>
-
-          {/* 保存ボタン */}
+        {/* 保存ボタン - スクロール領域外に固定 */}
+        <div className="px-5 pt-3">
           <button
             onClick={handleSubmit}
             disabled={!isValidTime || saving}
-            className="w-full py-3 rounded-xl text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-3.5 rounded-xl text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
             style={{ background: theme.gradient }}
           >
             {saving && <Loader2 size={18} className="animate-spin" />}
