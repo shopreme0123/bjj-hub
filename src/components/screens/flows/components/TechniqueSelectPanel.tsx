@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import { Search, Plus, X } from 'lucide-react';
-import { Technique } from '@/types';
+import { Technique, TechniqueType } from '@/types';
 import { TechniqueCategory, defaultCategories } from '@/components/shared/categories';
+import { useI18n } from '@/lib/i18n';
 
 interface TechniqueSelectPanelProps {
   theme: any;
@@ -13,9 +14,15 @@ interface TechniqueSelectPanelProps {
 }
 
 export function TechniqueSelectPanel({ theme, techniques, onSelect, onClose }: TechniqueSelectPanelProps) {
+  const { t } = useI18n();
   const [searchQuery, setSearchQuery] = useState('');
   const [showCustomForm, setShowCustomForm] = useState(false);
   const [customName, setCustomName] = useState('');
+
+  // 技の種類の翻訳を取得
+  const getTechniqueTypeLabel = (type: TechniqueType): string => {
+    return t(`techniques.type.${type}`);
+  };
 
   const filteredTechniques = techniques.filter(t =>
     t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -88,10 +95,10 @@ export function TechniqueSelectPanel({ theme, techniques, onSelect, onClose }: T
                   <span className="text-sm truncate" style={{ color: theme.text }}>{tech.name}</span>
                 </div>
                 <span
-                  className="text-[10px] mt-1 block capitalize"
+                  className="text-[10px] mt-1 block"
                   style={{ color: theme.textMuted }}
                 >
-                  {tech.technique_type}
+                  {getTechniqueTypeLabel(tech.technique_type)}
                 </span>
               </button>
             ))}
