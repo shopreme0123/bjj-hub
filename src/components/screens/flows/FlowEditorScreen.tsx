@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { ChevronLeft, Plus, Save, Star, Trash2, Share2 } from 'lucide-react';
+import { ChevronLeft, Plus, Save, Star, Trash2, Share2, X, Play, ExternalLink } from 'lucide-react';
 import ReactFlow, {
   Node,
   Edge,
@@ -18,9 +18,11 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import { useApp } from '@/lib/context';
 import { useAuth } from '@/lib/auth-context';
+import { useI18n } from '@/lib/i18n';
 import { useToast } from '@/components/ui/Toast';
 import { Header } from '@/components/ui/Header';
-import { Flow, Technique } from '@/types';
+import { Card } from '@/components/ui/Card';
+import { Flow, Technique, TechniqueType } from '@/types';
 import { TechniqueNode, LabeledEdge, TechniqueSelectPanel } from './components';
 import { EdgeLabelModal, ShareFlowModal } from './modals';
 import { defaultCategories } from '@/components/shared/categories';
@@ -34,6 +36,7 @@ interface FlowEditorScreenProps {
 export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorScreenProps) {
   const { theme, techniques, updateFlow, deleteFlow, addFlow } = useApp();
   const { user } = useAuth();
+  const { t } = useI18n();
   const { showToast } = useToast();
   const [showTechniquePanel, setShowTechniquePanel] = useState(false);
   const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
@@ -41,9 +44,20 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
   const [showEdgeLabelModal, setShowEdgeLabelModal] = useState(false);
   const [showNodeDeleteModal, setShowNodeDeleteModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showTechniqueDetailModal, setShowTechniqueDetailModal] = useState(false);
+  const [selectedTechnique, setSelectedTechnique] = useState<Technique | null>(null);
   const [currentFlow, setCurrentFlow] = useState<Flow | null>(flow || null);
   const [isFavorite, setIsFavorite] = useState(flow?.is_favorite || false);
   const [pendingConnection, setPendingConnection] = useState<Connection | null>(null);
+
+  // 技タイプの翻訳ヘルパー
+  const getTechniqueTypeLabel = (type: string): string => {
+    const validTypes = ['submission', 'sweep', 'pass', 'escape', 'takedown', 'position', 'other'];
+    if (validTypes.includes(type)) {
+      return t(`techniques.type.${type}`);
+    }
+    return type;
+  };
 
   // React Flow ノードとエッジの状態
   const initialNodes = useMemo(() => {
@@ -124,13 +138,14 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
 
   // 技を追加
   const handleAddTechnique = (technique: Technique | { name: string; type: string }) => {
+    const rawType = 'id' in technique ? technique.technique_type : (technique as any).type;
     const newNode: Node = {
       id: `node-${Date.now()}`,
       type: 'technique',
       position: { x: Math.random() * 200 + 100, y: nodes.length * 100 + 50 },
       data: {
         label: technique.name,
-        type: 'id' in technique ? technique.technique_type : (technique as any).type,
+        type: getTechniqueTypeLabel(rawType),
         isStartNode: nodes.length === 0,
         techniqueId: 'id' in technique ? technique.id : undefined,
         theme,
@@ -384,21 +399,21 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
             {/* アクションボタン */}
             <div className="space-y-2">
               {/* 技の詳細を確認ボタン */}
-              {selectedNode.data.techniqueId && onOpenTechnique && (
+              {selectedNode.data.techniqueId && (
                 <button
                   onClick={() => {
                     const technique = techniques.find(t => t.id === selectedNode.data.techniqueId);
                     if (technique) {
+                      setSelectedTechnique(technique);
                       setShowNodeDeleteModal(false);
-                      setSelectedNode(null);
-                      onOpenTechnique(technique);
+                      setShowTechniqueDetailModal(true);
                     }
                   }}
                   className="w-full py-3 rounded-xl text-left px-4 flex items-center gap-3"
                   style={{ background: theme.gradient }}
                 >
                   <span className="text-lg">📖</span>
-                  <span className="text-white font-medium">技の詳細を確認</span>
+                  <span className="text-white font-medium">技の詳細を見る</span>
                 </button>
               )}
               {!selectedNode.data.isStartNode && (
@@ -457,6 +472,130 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
           userId={user?.id}
           onClose={() => setShowShareModal(false)}
         />
+      )}
+
+      {/* 技詳細モーダル */}
+      {showTechniqueDetailModal && selectedTechnique && (
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in px-4"
+          onClick={() => {
+            setShowTechniqueDetailModal(false);
+            setSelectedTechnique(null);
+          }}
+        >
+          <div
+            className="w-full max-w-md max-h-[80vh] rounded-2xl overflow-hidden animate-slide-up"
+            style={{ background: theme.card }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* ヘッダー */}
+            <div className="flex justify-between items-center p-4 border-b" style={{ borderColor: theme.cardBorder }}>
+              <h3 className="font-bold text-lg" style={{ color: theme.text }}>{selectedTechnique.name}</h3>
+              <button onClick={() => {
+                setShowTechniqueDetailModal(false);
+                setSelectedTechnique(null);
+              }}>
+                <X size={24} style={{ color: theme.textSecondary }} />
+              </button>
+            </div>
+
+            {/* コンテンツ */}
+            <div className="p-4 overflow-auto" style={{ maxHeight: 'calc(80vh - 130px)' }}>
+              {/* 英語名・タイプ */}
+              <div className="flex flex-wrap items-center gap-2 mb-4">
+                {selectedTechnique.name_en && (
+                  <span className="text-sm" style={{ color: theme.textSecondary }}>{selectedTechnique.name_en}</span>
+                )}
+                <span
+                  className="text-xs px-2 py-0.5 rounded-full"
+                  style={{ background: `${theme.primary}20`, color: theme.primary }}
+                >
+                  {getTechniqueTypeLabel(selectedTechnique.technique_type)}
+                </span>
+              </div>
+
+              {/* 動画サムネイル */}
+              {selectedTechnique.video_url && (
+                <a
+                  href={selectedTechnique.video_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block mb-4 rounded-xl overflow-hidden relative group"
+                >
+                  <div
+                    className="aspect-video flex items-center justify-center"
+                    style={{ background: `${theme.primary}15` }}
+                  >
+                    {selectedTechnique.video_url.includes('youtube') || selectedTechnique.video_url.includes('youtu.be') ? (
+                      <img
+                        src={`https://img.youtube.com/vi/${selectedTechnique.video_url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\s?]+)/)?.[1]}/mqdefault.jpg`}
+                        alt={selectedTechnique.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Play size={32} style={{ color: theme.primary }} />
+                    )}
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
+                      <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
+                        <Play size={20} fill={theme.primary} style={{ color: theme.primary, marginLeft: 2 }} />
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              )}
+
+              {/* 説明 */}
+              {selectedTechnique.description && (
+                <div className="mb-4">
+                  <h4 className="text-sm font-medium mb-2" style={{ color: theme.text }}>説明</h4>
+                  <p className="text-sm" style={{ color: theme.textSecondary }}>{selectedTechnique.description}</p>
+                </div>
+              )}
+
+              {/* タグ */}
+              {selectedTechnique.tags && selectedTechnique.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {selectedTechnique.tags.map((tag, i) => (
+                    <span
+                      key={i}
+                      className="text-xs px-2 py-1 rounded-full"
+                      style={{ background: theme.bg, color: theme.textMuted }}
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* フッター */}
+            <div className="p-4 border-t flex gap-3" style={{ borderColor: theme.cardBorder }}>
+              <button
+                onClick={() => {
+                  setShowTechniqueDetailModal(false);
+                  setSelectedTechnique(null);
+                }}
+                className="flex-1 py-3 rounded-xl font-medium"
+                style={{ background: theme.bg, color: theme.textSecondary }}
+              >
+                閉じる
+              </button>
+              {onOpenTechnique && (
+                <button
+                  onClick={() => {
+                    setShowTechniqueDetailModal(false);
+                    onOpenTechnique(selectedTechnique);
+                  }}
+                  className="flex-1 py-3 rounded-xl font-medium text-white flex items-center justify-center gap-2"
+                  style={{ background: theme.gradient }}
+                >
+                  <ExternalLink size={16} />
+                  詳細ページへ
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
