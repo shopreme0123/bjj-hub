@@ -10,12 +10,27 @@ interface HeaderProps {
   onBack?: () => void;
   rightAction?: React.ReactNode;
   variant?: 'default' | 'transparent';
+  maxTitleLength?: number;
+  onTitleClick?: () => void;
 }
 
-export function Header({ title, showBack = false, onBack, rightAction, variant = 'default' }: HeaderProps) {
+export function Header({
+  title,
+  showBack = false,
+  onBack,
+  rightAction,
+  variant = 'default',
+  maxTitleLength,
+  onTitleClick,
+}: HeaderProps) {
   const { theme } = useApp();
 
   const isTransparent = variant === 'transparent';
+
+  // タイトルを指定文字数で切り詰め
+  const displayTitle = maxTitleLength && title.length > maxTitleLength
+    ? `${title.slice(0, maxTitleLength)}...`
+    : title;
 
   return (
     <div
@@ -40,10 +55,12 @@ export function Header({ title, showBack = false, onBack, rightAction, variant =
         </button>
       )}
       <h1
-        className="font-bold text-lg tracking-tight flex-1 min-w-0 truncate"
+        className={`font-bold text-lg tracking-tight flex-1 min-w-0 truncate ${onTitleClick ? 'cursor-pointer hover:opacity-80' : ''}`}
         style={{ color: isTransparent ? 'white' : theme.text }}
+        onClick={onTitleClick}
+        title={title}
       >
-        {title}
+        {displayTitle}
       </h1>
       {rightAction && (
         <div className="flex items-center gap-2 flex-shrink-0">

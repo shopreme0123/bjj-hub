@@ -148,7 +148,7 @@ export function HomeScreen({
                 />
                 {/* ストライプ部分（黒帯部分） */}
                 <div
-                  className="absolute right-0 top-0 bottom-0 w-10 flex items-center justify-end pr-1.5 gap-1"
+                  className="absolute right-0 top-0 bottom-0 w-10 flex items-center justify-end pr-1.5 gap-1 overflow-hidden"
                   style={{
                     background: beltColor === 'black'
                       ? 'linear-gradient(180deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%)'
@@ -159,13 +159,33 @@ export function HomeScreen({
                   {[...Array(stripes)].map((_, i) => (
                     <div
                       key={i}
-                      className="h-6 w-1.5"
+                      className="w-1.5 relative"
                       style={{
-                        background: 'linear-gradient(180deg, #ffffff 0%, #e5e5e5 50%, #d4d4d4 100%)',
-                        boxShadow: '0 0 3px rgba(0,0,0,0.3)',
-                        borderRadius: '1px',
+                        height: '100%',
                       }}
-                    />
+                    >
+                      {/* ストライプ本体 - 帯を巻くように見せる */}
+                      <div
+                        className="absolute inset-0"
+                        style={{
+                          background: 'linear-gradient(90deg, #d4d4d4 0%, #ffffff 30%, #ffffff 50%, #f5f5f5 70%, #e5e5e5 100%)',
+                        }}
+                      />
+                      {/* 上端の影（巻き込み効果） */}
+                      <div
+                        className="absolute top-0 left-0 right-0 h-1"
+                        style={{
+                          background: 'linear-gradient(180deg, rgba(0,0,0,0.3) 0%, transparent 100%)',
+                        }}
+                      />
+                      {/* 下端の影（巻き込み効果） */}
+                      <div
+                        className="absolute bottom-0 left-0 right-0 h-1"
+                        style={{
+                          background: 'linear-gradient(0deg, rgba(0,0,0,0.3) 0%, transparent 100%)',
+                        }}
+                      />
+                    </div>
                   ))}
                 </div>
                 {/* 光沢効果 */}
