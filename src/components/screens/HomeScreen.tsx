@@ -127,27 +127,28 @@ export function HomeScreen({
       <div className="flex-1 overflow-auto px-4 pb-24 space-y-4">
         {/* 帯 & 統計カード */}
         <Card className="!p-4 mt-2">
-          <div className="flex items-center gap-4 mb-4 pb-4" style={{ borderBottom: `1px solid ${theme.cardBorder}` }}>
-            {/* リアルな帯デザイン */}
-            <div className="relative">
+          {/* 帯を中央配置で大きく表示 */}
+          <div className="flex flex-col items-center mb-4 pb-4" style={{ borderBottom: `1px solid ${theme.cardBorder}` }}>
+            {/* リアルな帯デザイン（大きめ） */}
+            <div className="relative mb-3">
               {/* 帯本体 */}
               <div
-                className="w-20 h-5 rounded-sm relative overflow-hidden"
+                className="w-48 h-8 rounded-sm relative overflow-hidden"
                 style={{
                   background: `linear-gradient(180deg, ${belt.light} 0%, ${belt.main} 30%, ${belt.dark} 100%)`,
-                  boxShadow: `0 2px 8px ${belt.shadow}, inset 0 1px 0 ${belt.light}`,
+                  boxShadow: `0 4px 12px ${belt.shadow}, inset 0 2px 0 ${belt.light}`,
                 }}
               >
                 {/* 帯の質感（横線） */}
                 <div
                   className="absolute inset-0"
                   style={{
-                    background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 3px)',
+                    background: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 4px)',
                   }}
                 />
                 {/* ストライプ部分（黒帯部分） */}
                 <div
-                  className="absolute right-0 top-0 bottom-0 w-6 flex items-center justify-end pr-1 gap-0.5"
+                  className="absolute right-0 top-0 bottom-0 w-10 flex items-center justify-end pr-1.5 gap-1"
                   style={{
                     background: beltColor === 'black'
                       ? 'linear-gradient(180deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%)'
@@ -158,10 +159,10 @@ export function HomeScreen({
                   {[...Array(stripes)].map((_, i) => (
                     <div
                       key={i}
-                      className="h-4 w-1"
+                      className="h-6 w-1.5"
                       style={{
                         background: 'linear-gradient(180deg, #ffffff 0%, #e5e5e5 50%, #d4d4d4 100%)',
-                        boxShadow: '0 0 2px rgba(0,0,0,0.3)',
+                        boxShadow: '0 0 3px rgba(0,0,0,0.3)',
                         borderRadius: '1px',
                       }}
                     />
@@ -171,21 +172,19 @@ export function HomeScreen({
                 <div
                   className="absolute inset-0"
                   style={{
-                    background: 'linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 40%)',
+                    background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 45%)',
                   }}
                 />
               </div>
             </div>
-            <div className="flex-1">
-              <p className="font-bold text-base" style={{ color: theme.text }}>
-                {t(`belt.${beltColor}`)}
+            <p className="font-bold text-lg" style={{ color: theme.text }}>
+              {t(`belt.${beltColor}`)}
+            </p>
+            {stripes > 0 && (
+              <p className="text-sm" style={{ color: theme.textSecondary }}>
+                {t('belt.stripes', { count: stripes })}
               </p>
-              {stripes > 0 && (
-                <p className="text-xs" style={{ color: theme.textSecondary }}>
-                  {t('belt.stripes', { count: stripes })}
-                </p>
-              )}
-            </div>
+            )}
           </div>
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>

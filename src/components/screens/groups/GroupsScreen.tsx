@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Users, ChevronRight, Loader2 } from 'lucide-react';
+import { Plus, Users, ChevronRight, Loader2, X } from 'lucide-react';
 import { useApp } from '@/lib/context';
 import { useAuth } from '@/lib/auth-context';
 import { useI18n } from '@/lib/i18n';
@@ -18,6 +18,10 @@ interface GroupWithMembers extends Group {
   is_admin: boolean;
 }
 
+interface GroupPreview extends Group {
+  member_count: number;
+}
+
 interface GroupsScreenProps {
   onSelectGroup: (group: Group) => void;
 }
@@ -31,7 +35,9 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [groups, setGroups] = useState<GroupWithMembers[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searching, setSearching] = useState(false);
   const [joining, setJoining] = useState(false);
+  const [previewGroup, setPreviewGroup] = useState<GroupPreview | null>(null);
 
   // グループを読み込み
   const loadGroups = useCallback(async () => {
@@ -135,11 +141,11 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
     }
   };
 
-  // 招待コードで参加
-  const handleJoinGroup = async () => {
+  // 招待コードでグループを検索（プレビュー表示）
+  const handleSearchGroup = async () => {
     if (!user || !inviteCode.trim()) return;
 
-    setJoining(true);
+    setSearching(true);
     try {
       const code = inviteCode.trim().toUpperCase();
 
@@ -152,7 +158,7 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
 
       if (groupError || !group) {
         showToast('招待コードが見つかりません', 'error');
-        setJoining(false);
+        setSearching(false);
         return;
       }
 
@@ -166,15 +172,40 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
 
       if (existing) {
         showToast('すでに参加しています', 'info');
-        setJoining(false);
+        setSearching(false);
         return;
       }
 
+      // メンバー数を取得
+      const { count } = await supabase
+        .from('group_members')
+        .select('*', { count: 'exact', head: true })
+        .eq('group_id', group.id);
+
+      // プレビューを表示
+      setPreviewGroup({
+        ...group,
+        member_count: count || 0,
+      });
+    } catch (error) {
+      console.error('Error searching group:', error);
+      showToast('グループの検索に失敗しました', 'error');
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  // グループに参加
+  const handleJoinGroup = async () => {
+    if (!user || !previewGroup) return;
+
+    setJoining(true);
+    try {
       // メンバーとして追加
       const { error: memberError } = await supabase
         .from('group_members')
         .insert({
-          group_id: group.id,
+          group_id: previewGroup.id,
           user_id: user.id,
           role: 'member',
         });
@@ -182,6 +213,7 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
       if (memberError) throw memberError;
 
       setInviteCode('');
+      setPreviewGroup(null);
       showToast('グループに参加しました');
       loadGroups();
     } catch (error) {
@@ -224,12 +256,12 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
               }}
             />
             <button
-              onClick={handleJoinGroup}
-              disabled={!inviteCode.trim() || joining}
+              onClick={handleSearchGroup}
+              disabled={!inviteCode.trim() || searching}
               className="px-3 py-2 rounded-lg text-white font-medium text-sm disabled:opacity-50 flex items-center gap-2"
               style={{ background: theme.primary }}
             >
-              {joining ? <Loader2 size={14} className="animate-spin" /> : t('groups.join')}
+              {searching ? <Loader2 size={14} className="animate-spin" /> : '検索'}
             </button>
           </div>
         </Card>
@@ -298,6 +330,68 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
           onClose={() => setShowCreateModal(false)}
           onSave={handleCreateGroup}
         />
+      )}
+
+      {/* グループプレビューモーダル */}
+      {previewGroup && (
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in px-4"
+          onClick={() => setPreviewGroup(null)}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl p-5 animate-slide-up"
+            style={{ background: theme.card }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="font-semibold text-lg" style={{ color: theme.text }}>グループに参加</h3>
+              <button onClick={() => setPreviewGroup(null)}>
+                <X size={24} style={{ color: theme.textSecondary }} />
+              </button>
+            </div>
+
+            {/* グループ情報 */}
+            <div className="text-center py-4">
+              <div
+                className="w-20 h-20 rounded-2xl mx-auto flex items-center justify-center overflow-hidden mb-4"
+                style={{ background: theme.gradient }}
+              >
+                {previewGroup.icon_url ? (
+                  <img src={previewGroup.icon_url} alt={previewGroup.name} className="w-full h-full object-cover" />
+                ) : (
+                  <Users size={32} className="text-white" />
+                )}
+              </div>
+              <h4 className="font-bold text-xl mb-1" style={{ color: theme.text }}>{previewGroup.name}</h4>
+              <p className="text-sm mb-2" style={{ color: theme.textMuted }}>{previewGroup.member_count}人のメンバー</p>
+              {previewGroup.description && (
+                <p className="text-sm" style={{ color: theme.textSecondary }}>{previewGroup.description}</p>
+              )}
+            </div>
+
+            <p className="text-center text-sm mb-4" style={{ color: theme.textSecondary }}>
+              このグループに参加しますか？
+            </p>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setPreviewGroup(null)}
+                className="flex-1 py-3 rounded-xl font-medium"
+                style={{ background: theme.bg, color: theme.textSecondary }}
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={handleJoinGroup}
+                disabled={joining}
+                className="flex-1 py-3 rounded-xl text-white font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+                style={{ background: theme.gradient }}
+              >
+                {joining ? <Loader2 size={16} className="animate-spin" /> : '参加する'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
