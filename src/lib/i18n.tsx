@@ -60,6 +60,7 @@ const translations: Record<Language, Record<string, string>> = {
     'home.bjj_experience': '柔術歴 {years}年{months}ヶ月',
     'home.no_techniques': 'まだ技が登録されていません',
     'home.add_first_technique': '最初の技を追加',
+    'home.training': '練習',
 
     // 技画面
     'techniques.title': '技ライブラリ',
@@ -273,6 +274,7 @@ const translations: Record<Language, Record<string, string>> = {
     'home.bjj_experience': '{years} years {months} months in BJJ',
     'home.no_techniques': 'No techniques registered yet',
     'home.add_first_technique': 'Add your first technique',
+    'home.training': 'Training',
 
     // Techniques Screen
     'techniques.title': 'Technique Library',
@@ -486,6 +488,7 @@ const translations: Record<Language, Record<string, string>> = {
     'home.bjj_experience': '{years} anos e {months} meses no BJJ',
     'home.no_techniques': 'Nenhuma técnica registrada',
     'home.add_first_technique': 'Adicione sua primeira técnica',
+    'home.training': 'Treino',
 
     // Tela de Técnicas
     'techniques.title': 'Biblioteca de Técnicas',

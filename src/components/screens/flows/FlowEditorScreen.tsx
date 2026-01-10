@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { ChevronLeft, Plus, Save, Star, Trash2, Share2, X, Play, ExternalLink } from 'lucide-react';
+import { ChevronLeft, Plus, Save, Star, Trash2, Share2, X, Play, ExternalLink, Edit3 } from 'lucide-react';
 import ReactFlow, {
   Node,
   Edge,
@@ -49,6 +49,8 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
   const [currentFlow, setCurrentFlow] = useState<Flow | null>(flow || null);
   const [isFavorite, setIsFavorite] = useState(flow?.is_favorite || false);
   const [pendingConnection, setPendingConnection] = useState<Connection | null>(null);
+  const [showFlowNameModal, setShowFlowNameModal] = useState(false);
+  const [flowName, setFlowName] = useState(flow?.name || '新しいフロー');
 
   // 技タイプの翻訳ヘルパー
   const getTechniqueTypeLabel = (type: string): string => {
@@ -59,16 +61,47 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
     return type;
   };
 
+  // 技名から技を検索してIDを取得
+  const findTechniqueByName = (name: string): Technique | undefined => {
+    return techniques.find(t => t.name === name || t.name_en === name);
+  };
+
   // React Flow ノードとエッジの状態
   const initialNodes = useMemo(() => {
     if (currentFlow?.flow_data?.nodes) {
-      return currentFlow.flow_data.nodes.map((node: any) => ({
-        ...node,
-        data: { ...node.data, theme },
-      }));
+      return currentFlow.flow_data.nodes.map((node: any) => {
+        // 既存のノードから techniqueId を復元（保存されていない場合は名前から検索）
+        let techniqueId = node.data?.techniqueId;
+        let rawType = node.data?.rawType;
+
+        if (!techniqueId && node.data?.label) {
+          const matchedTech = findTechniqueByName(node.data.label);
+          if (matchedTech) {
+            techniqueId = matchedTech.id;
+            rawType = matchedTech.technique_type;
+          }
+        }
+
+        // 技タイプを翻訳（rawTypeがあれば使用、なければ既存のtypeから推測）
+        let displayType = node.data?.type;
+        if (rawType) {
+          displayType = getTechniqueTypeLabel(rawType);
+        }
+
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            theme,
+            techniqueId,
+            rawType,
+            type: displayType,
+          },
+        };
+      });
     }
     return [];
-  }, [currentFlow?.flow_data?.nodes, theme]);
+  }, [currentFlow?.flow_data?.nodes, theme, techniques]);
 
   const initialEdges = useMemo(() => {
     if (currentFlow?.flow_data?.edges) {
@@ -146,6 +179,7 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
       data: {
         label: technique.name,
         type: getTechniqueTypeLabel(rawType),
+        rawType: rawType, // 翻訳前の値を保存
         isStartNode: nodes.length === 0,
         techniqueId: 'id' in technique ? technique.id : undefined,
         theme,
@@ -226,9 +260,11 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
       />
 
       <Header
-        title={currentFlow?.name || '新しいフロー'}
+        title={flowName}
         showBack
         onBack={onBack}
+        maxTitleLength={10}
+        onTitleClick={() => setShowFlowNameModal(true)}
         rightAction={
           <div className="flex gap-2">
             <button
@@ -593,6 +629,73 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
                   詳細ページへ
                 </button>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* フロー名編集モーダル */}
+      {showFlowNameModal && (
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in px-4"
+          onClick={() => setShowFlowNameModal(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl p-5 animate-slide-up"
+            style={{ background: theme.card }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{ background: `${theme.primary}15` }}
+              >
+                <Edit3 size={20} style={{ color: theme.primary }} />
+              </div>
+              <h3 className="font-bold text-lg" style={{ color: theme.text }}>
+                フロー名を編集
+              </h3>
+            </div>
+
+            <input
+              type="text"
+              value={flowName}
+              onChange={(e) => setFlowName(e.target.value)}
+              placeholder="フロー名を入力..."
+              className="w-full rounded-xl py-3 px-4 outline-none border text-sm mb-4"
+              style={{
+                background: theme.bg,
+                color: theme.text,
+                borderColor: theme.cardBorder,
+              }}
+              autoFocus
+            />
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowFlowNameModal(false)}
+                className="flex-1 py-3 rounded-xl font-medium"
+                style={{ background: theme.bg, color: theme.textSecondary }}
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={() => {
+                  if (flowName.trim()) {
+                    if (currentFlow) {
+                      updateFlow(currentFlow.id, { name: flowName.trim() });
+                      setCurrentFlow({ ...currentFlow, name: flowName.trim() });
+                    }
+                    setShowFlowNameModal(false);
+                    showToast('フロー名を更新しました');
+                  }
+                }}
+                disabled={!flowName.trim()}
+                className="flex-1 py-3 rounded-xl font-medium text-white disabled:opacity-50"
+                style={{ background: theme.gradient }}
+              >
+                保存
+              </button>
             </div>
           </div>
         </div>
