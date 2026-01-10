@@ -179,15 +179,14 @@ export function GroupDetailScreen({ group, onBack, onOpenFlow, onOpenTechnique }
     }
   };
 
-  const handleUpdateGroup = async (updates: { name: string; description?: string }) => {
+  const handleUpdateGroup = async (updates: { name: string; description?: string; icon_url?: string }) => {
     if (!user || !isAdmin) return;
 
     try {
       const { error } = await supabase
         .from('groups')
         .update(updates)
-        .eq('id', currentGroup.id)
-        .eq('created_by', user.id);
+        .eq('id', currentGroup.id);
 
       if (error) throw error;
 
@@ -357,10 +356,14 @@ export function GroupDetailScreen({ group, onBack, onOpenFlow, onOpenTechnique }
         <Card>
           <div className="flex items-center gap-4 mb-4">
             <div
-              className="w-16 h-16 rounded-xl flex items-center justify-center"
+              className="w-16 h-16 rounded-xl flex items-center justify-center overflow-hidden"
               style={{ background: theme.gradient }}
             >
-              <Users size={28} className="text-white" />
+              {currentGroup.icon_url ? (
+                <img src={currentGroup.icon_url} alt={currentGroup.name} className="w-full h-full object-cover" />
+              ) : (
+                <Users size={28} className="text-white" />
+              )}
             </div>
             <div className="flex-1">
               <h2 className="font-semibold text-lg" style={{ color: theme.text }}>{currentGroup.name}</h2>

@@ -5,14 +5,14 @@ import { Handle, Position, NodeProps } from 'reactflow';
 
 interface TechniqueNodeData {
   label: string;
-  emoji?: string;
   type?: string;
   isStartNode?: boolean;
   theme: any;
+  techniqueId?: string;
 }
 
 function TechniqueNodeComponent({ data, selected }: NodeProps<TechniqueNodeData>) {
-  const { theme, isStartNode, emoji, label, type } = data;
+  const { theme, isStartNode, label, type } = data;
 
   return (
     <div
@@ -32,7 +32,6 @@ function TechniqueNodeComponent({ data, selected }: NodeProps<TechniqueNodeData>
           border: 'none'
         }}
       />
-      {emoji && <span className="text-lg">{emoji}</span>}
       <p
         className="text-sm font-medium truncate"
         style={{ color: isStartNode ? 'white' : theme.text }}

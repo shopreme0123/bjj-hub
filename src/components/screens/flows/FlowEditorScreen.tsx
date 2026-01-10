@@ -28,9 +28,10 @@ import { defaultCategories } from '@/components/shared/categories';
 interface FlowEditorScreenProps {
   flow?: Flow;
   onBack: () => void;
+  onOpenTechnique?: (technique: Technique) => void;
 }
 
-export function FlowEditorScreen({ flow, onBack }: FlowEditorScreenProps) {
+export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorScreenProps) {
   const { theme, techniques, updateFlow, deleteFlow, addFlow } = useApp();
   const { user } = useAuth();
   const { showToast } = useToast();
@@ -122,18 +123,16 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorScreenProps) {
   }, []);
 
   // 技を追加
-  const handleAddTechnique = (technique: Technique | { name: string; type: string; emoji: string }) => {
+  const handleAddTechnique = (technique: Technique | { name: string; type: string }) => {
     const newNode: Node = {
       id: `node-${Date.now()}`,
       type: 'technique',
       position: { x: Math.random() * 200 + 100, y: nodes.length * 100 + 50 },
       data: {
         label: technique.name,
-        emoji: 'id' in technique
-          ? defaultCategories.find(c => c.id === technique.category)?.icon || '🥋'
-          : (technique as any).emoji || '🥋',
         type: 'id' in technique ? technique.technique_type : (technique as any).type,
         isStartNode: nodes.length === 0,
+        techniqueId: 'id' in technique ? technique.id : undefined,
         theme,
       },
     };
@@ -354,10 +353,10 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorScreenProps) {
             {/* 技情報ヘッダー */}
             <div className="flex items-center gap-4 mb-4">
               <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl"
+                className="w-14 h-14 rounded-2xl flex items-center justify-center"
                 style={{ background: `${theme.primary}15` }}
               >
-                {selectedNode.data.emoji || '🥋'}
+                <span className="text-xl font-bold" style={{ color: theme.primary }}>技</span>
               </div>
               <div className="flex-1">
                 <h3 className="font-bold text-lg" style={{ color: theme.text }}>
@@ -384,6 +383,24 @@ export function FlowEditorScreen({ flow, onBack }: FlowEditorScreenProps) {
 
             {/* アクションボタン */}
             <div className="space-y-2">
+              {/* 技の詳細を確認ボタン */}
+              {selectedNode.data.techniqueId && onOpenTechnique && (
+                <button
+                  onClick={() => {
+                    const technique = techniques.find(t => t.id === selectedNode.data.techniqueId);
+                    if (technique) {
+                      setShowNodeDeleteModal(false);
+                      setSelectedNode(null);
+                      onOpenTechnique(technique);
+                    }
+                  }}
+                  className="w-full py-3 rounded-xl text-left px-4 flex items-center gap-3"
+                  style={{ background: theme.gradient }}
+                >
+                  <span className="text-lg">📖</span>
+                  <span className="text-white font-medium">技の詳細を確認</span>
+                </button>
+              )}
               {!selectedNode.data.isStartNode && (
                 <button
                   onClick={() => {
