@@ -58,20 +58,10 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
 
   return (
     <div className="flex flex-col h-full" style={{ background: theme.bg }}>
-      {/* グラデーション背景 - 固定 */}
-      <div
-        className="absolute top-0 left-0 right-0 h-48 rounded-b-3xl"
-        style={{ background: theme.gradient }}
-      />
-
       <Header title={t('settings.title')} showBack onBack={onBack} />
 
-      {/* スクロール可能なコンテンツ - 背景色で覆う */}
-      <div className="flex-1 overflow-auto relative z-10">
-        <div 
-          className="min-h-full px-5 pb-24 space-y-6 pt-4"
-          style={{ background: theme.bg, marginTop: '60px', borderTopLeftRadius: '24px', borderTopRightRadius: '24px' }}
-        >
+      {/* スクロール可能なコンテンツ */}
+      <div className="flex-1 overflow-auto px-4 pt-2 pb-24 space-y-4">
         {/* プロフィール */}
         <div>
           <h3 className="text-sm font-medium mb-3" style={{ color: theme.textSecondary }}>{t('settings.profile')}</h3>
@@ -254,7 +244,6 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
         <div className="text-center pt-4">
           <p className="text-xs" style={{ color: theme.textMuted }}>BJJ Hub v1.0.0</p>
           <p className="text-xs mt-1" style={{ color: theme.textMuted }}>© 2025 BJJ Hub</p>
-        </div>
         </div>
       </div>
 

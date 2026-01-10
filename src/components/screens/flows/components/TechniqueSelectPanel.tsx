@@ -3,13 +3,12 @@
 import React, { useState } from 'react';
 import { Search, Plus, X } from 'lucide-react';
 import { Technique, TechniqueType } from '@/types';
-import { TechniqueCategory, defaultCategories } from '@/components/shared/categories';
 import { useI18n } from '@/lib/i18n';
 
 interface TechniqueSelectPanelProps {
   theme: any;
   techniques: Technique[];
-  onSelect: (technique: Technique | { name: string; type: string; emoji: string }) => void;
+  onSelect: (technique: Technique | { name: string; type: string }) => void;
   onClose: () => void;
 }
 
@@ -34,16 +33,9 @@ export function TechniqueSelectPanel({ theme, techniques, onSelect, onClose }: T
     onSelect({
       name: customName.trim(),
       type: 'custom',
-      emoji: '🥋'
     });
     setCustomName('');
     setShowCustomForm(false);
-  };
-
-  // カテゴリアイコンを取得
-  const getCategoryEmoji = (categoryId?: string) => {
-    const category = defaultCategories.find(c => c.id === categoryId);
-    return category?.icon || '🥋';
   };
 
   return (
@@ -90,10 +82,7 @@ export function TechniqueSelectPanel({ theme, techniques, onSelect, onClose }: T
                 className="p-3 rounded-xl text-left transition-all hover:scale-[1.02]"
                 style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}
               >
-                <div className="flex items-center gap-2">
-                  <span>{getCategoryEmoji(tech.category)}</span>
-                  <span className="text-sm truncate" style={{ color: theme.text }}>{tech.name}</span>
-                </div>
+                <span className="text-sm truncate block" style={{ color: theme.text }}>{tech.name}</span>
                 <span
                   className="text-[10px] mt-1 block"
                   style={{ color: theme.textMuted }}

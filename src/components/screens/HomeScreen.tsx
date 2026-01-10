@@ -242,30 +242,41 @@ export function HomeScreen({
             </Card>
           ) : (
             <div className="space-y-2">
-              {trainingLogs.slice(0, 3).map((log) => (
-                <Card key={log.id} className="!p-3" onClick={() => onOpenDiaryDetail?.(log)}>
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="w-10 h-10 rounded-lg flex flex-col items-center justify-center"
-                      style={{ background: `${theme.primary}15` }}
-                    >
-                      <span className="text-sm font-bold" style={{ color: theme.primary }}>
-                        {log.training_date.split('-')[2]}
-                      </span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate" style={{ color: theme.text }}>
-                        {log.notes || log.content || 'Training'}
-                      </p>
-                      <div className="flex items-center gap-1 mt-0.5">
-                        <Clock size={10} style={{ color: theme.textMuted }} />
-                        <span className="text-[10px]" style={{ color: theme.textMuted }}>{log.duration_minutes}min</span>
+              {trainingLogs.slice(0, 3).map((log) => {
+                const techniqueNames = log.techniques?.slice(0, 3).map(t => t.name).join('、');
+                const displayContent = techniqueNames || log.content || log.notes || t('home.training');
+                return (
+                  <Card key={log.id} className="!p-3" onClick={() => onOpenDiaryDetail?.(log)}>
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-10 h-10 rounded-lg flex flex-col items-center justify-center"
+                        style={{ background: `${theme.primary}15` }}
+                      >
+                        <span className="text-sm font-bold" style={{ color: theme.primary }}>
+                          {log.training_date.split('-')[2]}
+                        </span>
                       </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate" style={{ color: theme.text }}>
+                          {displayContent}
+                        </p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <div className="flex items-center gap-1">
+                            <Clock size={10} style={{ color: theme.textMuted }} />
+                            <span className="text-[10px]" style={{ color: theme.textMuted }}>{log.duration_minutes}min</span>
+                          </div>
+                          {log.sparring_rounds && log.sparring_rounds > 0 && (
+                            <span className="text-[10px]" style={{ color: theme.textMuted }}>
+                              スパー{log.sparring_rounds}R
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <ChevronRight size={14} style={{ color: theme.textMuted }} />
                     </div>
-                    <ChevronRight size={14} style={{ color: theme.textMuted }} />
-                  </div>
-                </Card>
-              ))}
+                  </Card>
+                );
+              })}
             </div>
           )}
         </div>
