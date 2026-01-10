@@ -95,10 +95,10 @@ export function GroupDetailScreen({ group, onBack, onOpenFlow, onOpenTechnique }
 
       if (error) throw error;
 
-      // ユーザー情報を取得
+      // ユーザー情報を取得（profilesテーブルから）
       const userIds = memberData?.map(m => m.user_id) || [];
       const { data: usersData } = await supabase
-        .from('users')
+        .from('profiles')
         .select('id, display_name, avatar_url')
         .in('id', userIds);
 

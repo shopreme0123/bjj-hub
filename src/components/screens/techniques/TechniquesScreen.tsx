@@ -304,10 +304,10 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
                       </div>
                       <div className="flex items-center gap-2 mt-0.5">
                         <span
-                          className="px-1.5 py-0.5 rounded text-[10px] capitalize"
+                          className="px-1.5 py-0.5 rounded text-[10px]"
                           style={{ background: `${theme.primary}20`, color: theme.primary }}
                         >
-                          {tech.technique_type}
+                          {t(`techniques.type.${tech.technique_type}`)}
                         </span>
                         {tech.tags.slice(0, 1).map((tag, i) => (
                           <span key={i} className="text-[10px]" style={{ color: theme.textMuted }}>
