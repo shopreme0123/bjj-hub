@@ -6,19 +6,18 @@ import { Handle, Position, NodeProps } from 'reactflow';
 interface TechniqueNodeData {
   label: string;
   type?: string;
-  isStartNode?: boolean;
   theme: any;
   techniqueId?: string;
 }
 
 function TechniqueNodeComponent({ data, selected }: NodeProps<TechniqueNodeData>) {
-  const { theme, isStartNode, label, type } = data;
+  const { theme, label, type } = data;
 
   return (
     <div
       className="rounded-xl px-4 py-3 shadow-sm transition-all min-w-[120px] max-w-[180px] text-center"
       style={{
-        background: isStartNode ? theme.gradient : theme.card,
+        background: theme.card,
         border: selected ? `2px solid ${theme.primary}` : `1px solid ${theme.cardBorder}`,
       }}
     >
@@ -34,7 +33,7 @@ function TechniqueNodeComponent({ data, selected }: NodeProps<TechniqueNodeData>
       />
       <p
         className="text-sm font-medium truncate"
-        style={{ color: isStartNode ? 'white' : theme.text }}
+        style={{ color: theme.text }}
       >
         {label}
       </p>
@@ -42,8 +41,8 @@ function TechniqueNodeComponent({ data, selected }: NodeProps<TechniqueNodeData>
         <span
           className="text-[10px] px-2 py-0.5 rounded mt-1 inline-block"
           style={{
-            background: isStartNode ? 'rgba(255,255,255,0.2)' : `${theme.primary}20`,
-            color: isStartNode ? 'white' : theme.primary
+            background: `${theme.primary}20`,
+            color: theme.primary
           }}
         >
           {type}

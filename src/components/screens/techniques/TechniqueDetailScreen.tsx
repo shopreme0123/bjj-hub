@@ -22,32 +22,39 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
   const { t } = useI18n();
   const { showToast } = useToast();
 
+  // 技の状態をローカルで管理（編集後の反映のため）
+  const [currentTechnique, setCurrentTechnique] = useState<Technique>(technique);
+
   // 技の種類の翻訳を取得
   const getTechniqueTypeLabel = (type: TechniqueType): string => {
     return t(`techniques.type.${type}`);
   };
-  const [isFavorite, setIsFavorite] = useState(technique.mastery_level === 'favorite');
-  const [masteryLevel, setMasteryLevel] = useState(technique.mastery_level);
+  const [isFavorite, setIsFavorite] = useState(currentTechnique.mastery_level === 'favorite');
+  const [masteryLevel, setMasteryLevel] = useState(currentTechnique.mastery_level);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
 
   const handleToggleFavorite = () => {
     const newFavorite = !isFavorite;
     setIsFavorite(newFavorite);
-    updateTechnique(technique.id, {
-      mastery_level: newFavorite ? 'favorite' : 'learned'
+    const newMastery = newFavorite ? 'favorite' : 'learned';
+    setMasteryLevel(newMastery);
+    updateTechnique(currentTechnique.id, {
+      mastery_level: newMastery
     });
+    setCurrentTechnique(prev => ({ ...prev, mastery_level: newMastery }));
   };
 
   const handleMasteryChange = (level: 'learning' | 'learned' | 'favorite') => {
     setMasteryLevel(level);
     setIsFavorite(level === 'favorite');
-    updateTechnique(technique.id, { mastery_level: level });
+    updateTechnique(currentTechnique.id, { mastery_level: level });
+    setCurrentTechnique(prev => ({ ...prev, mastery_level: level }));
   };
 
   const handleDelete = () => {
     if (confirm('この技を削除しますか？')) {
-      deleteTechnique(technique.id);
+      deleteTechnique(currentTechnique.id);
       onBack();
     }
   };
@@ -56,9 +63,17 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
     setShowShareModal(true);
   };
 
+  const handleSaveEdit = (data: Partial<Technique>) => {
+    updateTechnique(currentTechnique.id, data);
+    // ローカル状態を更新して画面に反映
+    setCurrentTechnique(prev => ({ ...prev, ...data } as Technique));
+    setShowEditModal(false);
+    showToast('技を更新しました');
+  };
+
   // この技に関連するフロー
   const relatedFlows = flows.filter(f =>
-    f.tags.some(tag => technique.name.includes(tag) || technique.tags.includes(tag))
+    f.tags.some(tag => currentTechnique.name.includes(tag) || currentTechnique.tags.includes(tag))
   );
 
   // YouTubeのURLからIDを抽出
@@ -74,7 +89,7 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
     return null;
   };
 
-  const youtubeId = technique.video_url ? getYouTubeId(technique.video_url) : null;
+  const youtubeId = currentTechnique.video_url ? getYouTubeId(currentTechnique.video_url) : null;
 
   return (
     <div className="flex flex-col h-full" style={{ background: theme.bg }}>
@@ -148,28 +163,28 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
               className="px-2 py-0.5 rounded text-xs font-medium"
               style={{ background: `${theme.primary}30`, color: theme.accent }}
             >
-              {getTechniqueTypeLabel(technique.technique_type)}
+              {getTechniqueTypeLabel(currentTechnique.technique_type)}
             </span>
           </div>
-          <h1 className="text-2xl font-bold" style={{ color: theme.text }}>{technique.name}</h1>
-          {technique.name_en && (
-            <p className="text-sm mt-1" style={{ color: theme.textSecondary }}>{technique.name_en}</p>
+          <h1 className="text-2xl font-bold" style={{ color: theme.text }}>{currentTechnique.name}</h1>
+          {currentTechnique.name_en && (
+            <p className="text-sm mt-1" style={{ color: theme.textSecondary }}>{currentTechnique.name_en}</p>
           )}
         </div>
 
         {/* 説明 */}
-        {technique.description && (
+        {currentTechnique.description && (
           <Card>
             <p className="text-sm leading-relaxed" style={{ color: theme.text }}>
-              {technique.description}
+              {currentTechnique.description}
             </p>
           </Card>
         )}
 
         {/* タグ */}
-        {technique.tags.length > 0 && (
+        {currentTechnique.tags.length > 0 && (
           <div className="flex flex-wrap gap-2">
-            {technique.tags.map((tag, i) => (
+            {currentTechnique.tags.map((tag, i) => (
               <span
                 key={i}
                 className="px-3 py-1.5 rounded-full text-xs"
@@ -248,12 +263,9 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
       {showEditModal && (
         <EditTechniqueModal
           theme={theme}
-          technique={technique}
+          technique={currentTechnique}
           onClose={() => setShowEditModal(false)}
-          onSave={(data) => {
-            updateTechnique(technique.id, data);
-            setShowEditModal(false);
-          }}
+          onSave={handleSaveEdit}
         />
       )}
 
@@ -261,7 +273,7 @@ export function TechniqueDetailScreen({ technique, onBack, onOpenFlow }: Techniq
       {showShareModal && (
         <ShareTechniqueModal
           theme={theme}
-          technique={technique}
+          technique={currentTechnique}
           userId={user?.id}
           onClose={() => setShowShareModal(false)}
         />
