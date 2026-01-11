@@ -148,7 +148,7 @@ export function HomeScreen({
                 />
                 {/* ストライプ部分（黒帯部分） */}
                 <div
-                  className="absolute right-0 top-0 bottom-0 w-10 flex items-center justify-end pr-1.5 gap-1 overflow-hidden"
+                  className="absolute right-0 top-0 bottom-0 w-14 flex items-center justify-end pr-2.5 gap-1.5 overflow-hidden"
                   style={{
                     background: beltColor === 'black'
                       ? 'linear-gradient(180deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%)'

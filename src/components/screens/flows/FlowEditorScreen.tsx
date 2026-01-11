@@ -180,7 +180,6 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
         label: technique.name,
         type: getTechniqueTypeLabel(rawType),
         rawType: rawType, // 翻訳前の値を保存
-        isStartNode: nodes.length === 0,
         techniqueId: 'id' in technique ? technique.id : undefined,
         theme,
       },
@@ -263,7 +262,7 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
         title={flowName}
         showBack
         onBack={onBack}
-        maxTitleLength={10}
+        maxTitleLength={12}
         onTitleClick={() => setShowFlowNameModal(true)}
         rightAction={
           <div className="flex gap-2">
@@ -422,14 +421,6 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
                   </span>
                 )}
               </div>
-              {selectedNode.data.isStartNode && (
-                <span
-                  className="text-xs px-2 py-1 rounded-full"
-                  style={{ background: theme.gradient, color: 'white' }}
-                >
-                  スタート
-                </span>
-              )}
             </div>
 
             {/* アクションボタン */}
@@ -450,26 +441,6 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
                 >
                   <span className="text-lg">📖</span>
                   <span className="text-white font-medium">技の詳細を見る</span>
-                </button>
-              )}
-              {!selectedNode.data.isStartNode && (
-                <button
-                  onClick={() => {
-                    // 全ノードのisStartNodeをfalseに、選択ノードをtrueに
-                    setNodes((nds) =>
-                      nds.map((n) => ({
-                        ...n,
-                        data: { ...n.data, isStartNode: n.id === selectedNode.id },
-                      }))
-                    );
-                    setShowNodeDeleteModal(false);
-                    setSelectedNode(null);
-                  }}
-                  className="w-full py-3 rounded-xl text-left px-4 flex items-center gap-3"
-                  style={{ background: theme.bg }}
-                >
-                  <span className="text-lg">🎯</span>
-                  <span style={{ color: theme.text }}>スタートノードに設定</span>
                 </button>
               )}
               <button
@@ -537,7 +508,7 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
 
             {/* コンテンツ */}
             <div className="p-4 overflow-auto" style={{ maxHeight: 'calc(80vh - 130px)' }}>
-              {/* 英語名・タイプ */}
+              {/* 英語名・タイプ・習得レベル */}
               <div className="flex flex-wrap items-center gap-2 mb-4">
                 {selectedTechnique.name_en && (
                   <span className="text-sm" style={{ color: theme.textSecondary }}>{selectedTechnique.name_en}</span>
@@ -548,58 +519,77 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
                 >
                   {getTechniqueTypeLabel(selectedTechnique.technique_type)}
                 </span>
+                {selectedTechnique.mastery_level && (
+                  <span
+                    className="text-xs px-2 py-0.5 rounded-full"
+                    style={{
+                      background: selectedTechnique.mastery_level === 'favorite'
+                        ? `${theme.accent}20`
+                        : `${theme.textMuted}20`,
+                      color: selectedTechnique.mastery_level === 'favorite'
+                        ? theme.accent
+                        : theme.textMuted
+                    }}
+                  >
+                    {selectedTechnique.mastery_level === 'learning' ? '学習中' :
+                     selectedTechnique.mastery_level === 'learned' ? '習得' : '得意技'}
+                  </span>
+                )}
               </div>
 
-              {/* 動画サムネイル */}
+              {/* 動画（埋め込み表示） */}
               {selectedTechnique.video_url && (
-                <a
-                  href={selectedTechnique.video_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block mb-4 rounded-xl overflow-hidden relative group"
-                >
-                  <div
-                    className="aspect-video flex items-center justify-center"
-                    style={{ background: `${theme.primary}15` }}
-                  >
-                    {selectedTechnique.video_url.includes('youtube') || selectedTechnique.video_url.includes('youtu.be') ? (
-                      <img
-                        src={`https://img.youtube.com/vi/${selectedTechnique.video_url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\s?]+)/)?.[1]}/mqdefault.jpg`}
-                        alt={selectedTechnique.name}
-                        className="w-full h-full object-cover"
+                <div className="mb-4 rounded-xl overflow-hidden">
+                  {(selectedTechnique.video_url.includes('youtube') || selectedTechnique.video_url.includes('youtu.be')) ? (
+                    <div className="aspect-video">
+                      <iframe
+                        src={`https://www.youtube.com/embed/${selectedTechnique.video_url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\s?]+)/)?.[1]}`}
+                        className="w-full h-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
                       />
-                    ) : (
-                      <Play size={32} style={{ color: theme.primary }} />
-                    )}
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
-                      <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
-                        <Play size={20} fill={theme.primary} style={{ color: theme.primary, marginLeft: 2 }} />
-                      </div>
                     </div>
-                  </div>
-                </a>
-              )}
-
-              {/* 説明 */}
-              {selectedTechnique.description && (
-                <div className="mb-4">
-                  <h4 className="text-sm font-medium mb-2" style={{ color: theme.text }}>説明</h4>
-                  <p className="text-sm" style={{ color: theme.textSecondary }}>{selectedTechnique.description}</p>
+                  ) : (
+                    <a
+                      href={selectedTechnique.video_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block"
+                    >
+                      <div
+                        className="aspect-video flex items-center justify-center"
+                        style={{ background: `${theme.primary}15` }}
+                      >
+                        <Play size={32} style={{ color: theme.primary }} />
+                      </div>
+                    </a>
+                  )}
                 </div>
               )}
 
+              {/* 説明 */}
+              <div className="mb-4">
+                <h4 className="text-sm font-medium mb-2" style={{ color: theme.text }}>説明</h4>
+                <p className="text-sm" style={{ color: theme.textSecondary }}>
+                  {selectedTechnique.description || '説明はありません'}
+                </p>
+              </div>
+
               {/* タグ */}
               {selectedTechnique.tags && selectedTechnique.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {selectedTechnique.tags.map((tag, i) => (
-                    <span
-                      key={i}
-                      className="text-xs px-2 py-1 rounded-full"
-                      style={{ background: theme.bg, color: theme.textMuted }}
-                    >
-                      #{tag}
-                    </span>
-                  ))}
+                <div className="mb-4">
+                  <h4 className="text-sm font-medium mb-2" style={{ color: theme.text }}>タグ</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedTechnique.tags.map((tag, i) => (
+                      <span
+                        key={i}
+                        className="text-xs px-2 py-1 rounded-full"
+                        style={{ background: theme.bg, color: theme.textMuted }}
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
