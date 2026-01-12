@@ -220,22 +220,23 @@ export default function LandingPage() {
 
         .lp-hero-content {
           max-width: 1200px;
+          width: 100%;
           display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 4rem;
+          grid-template-columns: 1.2fr 0.8fr;
+          gap: 3rem;
           align-items: center;
           position: relative;
           z-index: 1;
+          padding: 0 2rem;
         }
 
         .lp-hero-text h1 {
           font-family: 'Bebas Neue', sans-serif;
-          font-size: clamp(2.8rem, 6vw, 4.5rem);
+          font-size: clamp(2.5rem, 5vw, 4rem);
           letter-spacing: 2px;
           line-height: 1.15;
           margin-bottom: 1.5rem;
           color: var(--text-primary);
-          white-space: nowrap;
         }
 
         .lp-hero-text h1 span {
@@ -298,19 +299,24 @@ export default function LandingPage() {
 
         .lp-hero-visual {
           position: relative;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          overflow: visible;
         }
 
         .lp-phone-mockup {
           width: 100%;
-          max-width: 260px;
+          max-width: 240px;
           margin: 0 auto;
           position: relative;
           animation: lp-float 6s ease-in-out infinite;
+          flex-shrink: 0;
         }
 
         @keyframes lp-float {
           0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-20px); }
+          50% { transform: translateY(-15px); }
         }
 
         .lp-phone-frame {
@@ -1165,6 +1171,7 @@ export default function LandingPage() {
           .lp-hero-content {
             grid-template-columns: 1fr;
             text-align: center;
+            gap: 2rem;
           }
           .lp-hero-text h1 {
             white-space: normal;
@@ -1177,9 +1184,11 @@ export default function LandingPage() {
           }
           .lp-hero-visual {
             order: -1;
+            margin-bottom: 1rem;
           }
           .lp-phone-mockup {
-            max-width: 200px;
+            max-width: 180px;
+            animation: none;
           }
           .lp-nav-links {
             display: none;
@@ -1219,6 +1228,19 @@ export default function LandingPage() {
           }
           .lp-hero {
             padding: 5.5rem 1.25rem 3rem;
+            min-height: auto;
+          }
+          .lp-hero-content {
+            gap: 1.5rem;
+          }
+          .lp-phone-mockup {
+            max-width: 150px;
+          }
+          .lp-hero-text h1 {
+            font-size: 2.2rem;
+          }
+          .lp-hero-text .lp-tagline {
+            font-size: 0.95rem;
           }
           .lp-features,
           .lp-belt-section,
