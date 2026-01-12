@@ -262,7 +262,7 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
         title={flowName}
         showBack
         onBack={onBack}
-        maxTitleLength={12}
+        maxTitleLength={15}
         onTitleClick={() => setShowFlowNameModal(true)}
         rightAction={
           <div className="flex gap-2">

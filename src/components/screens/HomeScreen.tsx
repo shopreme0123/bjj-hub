@@ -130,10 +130,10 @@ export function HomeScreen({
           {/* 帯を中央配置で大きく表示 */}
           <div className="flex flex-col items-center mb-4 pb-4" style={{ borderBottom: `1px solid ${theme.cardBorder}` }}>
             {/* リアルな帯デザイン（大きめ） */}
-            <div className="relative mb-3">
-              {/* 帯本体 */}
+            <div className="flex mb-3">
+              {/* 帯本体（左側） */}
               <div
-                className="w-48 h-8 rounded-sm relative overflow-hidden"
+                className="w-32 h-8 rounded-l-sm relative overflow-hidden"
                 style={{
                   background: `linear-gradient(180deg, ${belt.light} 0%, ${belt.main} 30%, ${belt.dark} 100%)`,
                   boxShadow: `0 4px 12px ${belt.shadow}, inset 0 2px 0 ${belt.light}`,
@@ -146,48 +146,72 @@ export function HomeScreen({
                     background: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 4px)',
                   }}
                 />
-                {/* ストライプ部分（黒帯部分） */}
+                {/* 光沢効果 */}
                 <div
-                  className="absolute right-0 top-0 bottom-0 w-14 flex items-center justify-end pr-2.5 gap-1.5 overflow-hidden"
+                  className="absolute inset-0"
                   style={{
-                    background: beltColor === 'black'
-                      ? 'linear-gradient(180deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%)'
-                      : 'linear-gradient(180deg, #27272a 0%, #18181b 50%, #09090b 100%)',
-                    borderLeft: beltColor === 'black' ? 'none' : '1px solid rgba(0,0,0,0.2)',
+                    background: 'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 45%)',
                   }}
-                >
-                  {[...Array(stripes)].map((_, i) => (
+                />
+              </div>
+              {/* ストライプ部分（黒帯/赤帯部分） */}
+              <div
+                className="w-16 h-8 flex items-center justify-center px-2 gap-1.5 relative overflow-hidden"
+                style={{
+                  background: beltColor === 'black'
+                    ? 'linear-gradient(180deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%)'
+                    : 'linear-gradient(180deg, #27272a 0%, #18181b 50%, #09090b 100%)',
+                  borderLeft: '1px solid rgba(0,0,0,0.3)',
+                  borderRight: '1px solid rgba(0,0,0,0.3)',
+                }}
+              >
+                {[...Array(stripes)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-1.5 relative"
+                    style={{
+                      height: '100%',
+                    }}
+                  >
+                    {/* ストライプ本体 - 帯を巻くように見せる */}
                     <div
-                      key={i}
-                      className="w-1.5 relative"
+                      className="absolute inset-0"
                       style={{
-                        height: '100%',
+                        background: 'linear-gradient(90deg, #d4d4d4 0%, #ffffff 30%, #ffffff 50%, #f5f5f5 70%, #e5e5e5 100%)',
                       }}
-                    >
-                      {/* ストライプ本体 - 帯を巻くように見せる */}
-                      <div
-                        className="absolute inset-0"
-                        style={{
-                          background: 'linear-gradient(90deg, #d4d4d4 0%, #ffffff 30%, #ffffff 50%, #f5f5f5 70%, #e5e5e5 100%)',
-                        }}
-                      />
-                      {/* 上端の影（巻き込み効果） */}
-                      <div
-                        className="absolute top-0 left-0 right-0 h-1"
-                        style={{
-                          background: 'linear-gradient(180deg, rgba(0,0,0,0.3) 0%, transparent 100%)',
-                        }}
-                      />
-                      {/* 下端の影（巻き込み効果） */}
-                      <div
-                        className="absolute bottom-0 left-0 right-0 h-1"
-                        style={{
-                          background: 'linear-gradient(0deg, rgba(0,0,0,0.3) 0%, transparent 100%)',
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
+                    />
+                    {/* 上端の影（巻き込み効果） */}
+                    <div
+                      className="absolute top-0 left-0 right-0 h-1"
+                      style={{
+                        background: 'linear-gradient(180deg, rgba(0,0,0,0.3) 0%, transparent 100%)',
+                      }}
+                    />
+                    {/* 下端の影（巻き込み効果） */}
+                    <div
+                      className="absolute bottom-0 left-0 right-0 h-1"
+                      style={{
+                        background: 'linear-gradient(0deg, rgba(0,0,0,0.3) 0%, transparent 100%)',
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+              {/* 帯本体（右側・短め） */}
+              <div
+                className="w-6 h-8 rounded-r-sm relative overflow-hidden"
+                style={{
+                  background: `linear-gradient(180deg, ${belt.light} 0%, ${belt.main} 30%, ${belt.dark} 100%)`,
+                  boxShadow: `0 4px 12px ${belt.shadow}, inset 0 2px 0 ${belt.light}`,
+                }}
+              >
+                {/* 帯の質感（横線） */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 4px)',
+                  }}
+                />
                 {/* 光沢効果 */}
                 <div
                   className="absolute inset-0"
