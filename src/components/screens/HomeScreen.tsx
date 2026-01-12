@@ -155,9 +155,14 @@ export function HomeScreen({
                 />
               </div>
               {/* ストライプ部分（黒帯/赤帯部分） */}
+              {/* 黒帯の場合、ストライプ数に応じて幅を動的に調整 */}
               <div
-                className="w-16 h-8 flex items-center justify-center px-2 gap-1.5 relative overflow-hidden"
+                className="h-8 flex items-center justify-center px-2 relative overflow-hidden"
                 style={{
+                  width: beltColor === 'black'
+                    ? stripes >= 5 ? '96px' : '80px'  // 黒帯：5-6本は96px、それ以下は80px
+                    : '64px',  // 他の帯：64px
+                  gap: beltColor === 'black' && stripes >= 5 ? '4px' : '6px',  // 5-6本時はギャップを狭める
                   background: beltColor === 'black'
                     ? 'linear-gradient(180deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%)'
                     : 'linear-gradient(180deg, #27272a 0%, #18181b 50%, #09090b 100%)',
@@ -168,8 +173,9 @@ export function HomeScreen({
                 {[...Array(stripes)].map((_, i) => (
                   <div
                     key={i}
-                    className="w-1.5 relative"
+                    className="relative"
                     style={{
+                      width: beltColor === 'black' ? '8px' : '6px',  // 黒帯のストライプは太めに
                       height: '100%',
                     }}
                   >

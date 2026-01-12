@@ -51,6 +51,8 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
   const [pendingConnection, setPendingConnection] = useState<Connection | null>(null);
   const [showFlowNameModal, setShowFlowNameModal] = useState(false);
   const [flowName, setFlowName] = useState(flow?.name || '新しいフロー');
+  const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   // 技タイプの翻訳ヘルパー
   const getTechniqueTypeLabel = (type: string): string => {
@@ -115,6 +117,17 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  // 変更追跡: ノードやエッジが変更されたかを追跡
+  const [savedNodesCount, setSavedNodesCount] = useState(initialNodes.length);
+  const [savedEdgesCount, setSavedEdgesCount] = useState(initialEdges.length);
+
+  useEffect(() => {
+    // ノード数やエッジ数が変わったら未保存フラグを立てる
+    if (nodes.length !== savedNodesCount || edges.length !== savedEdgesCount) {
+      setHasUnsavedChanges(true);
+    }
+  }, [nodes.length, edges.length, savedNodesCount, savedEdgesCount]);
 
   // ノードタイプとエッジタイプを定義
   const nodeTypes = useMemo(() => ({ technique: TechniqueNode }), []);
@@ -218,11 +231,15 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
     };
     if (currentFlow) {
       await updateFlow(currentFlow.id, { flow_data: flowData });
+      // 保存後、変更フラグをリセット
+      setHasUnsavedChanges(false);
+      setSavedNodesCount(nodes.length);
+      setSavedEdgesCount(edges.length);
       showToast('フローを保存しました');
     } else {
       // 新規フローを作成して戻る
       await addFlow({
-        name: '新しいフロー',
+        name: flowName,
         description: '',
         tags: [],
         is_favorite: false,
@@ -231,6 +248,28 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
       showToast('フローを作成しました');
       onBack();
     }
+  };
+
+  // 戻る処理（未保存確認）
+  const handleBack = () => {
+    if (hasUnsavedChanges) {
+      setShowUnsavedModal(true);
+    } else {
+      onBack();
+    }
+  };
+
+  // 保存して戻る
+  const handleSaveAndBack = async () => {
+    await handleSave();
+    setShowUnsavedModal(false);
+    onBack();
+  };
+
+  // 保存せずに戻る
+  const handleDiscardAndBack = () => {
+    setShowUnsavedModal(false);
+    onBack();
   };
 
   // お気に入り切り替え
@@ -261,7 +300,7 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
       <Header
         title={flowName}
         showBack
-        onBack={onBack}
+        onBack={handleBack}
         maxTitleLength={15}
         onTitleClick={() => setShowFlowNameModal(true)}
         rightAction={
@@ -685,6 +724,60 @@ export function FlowEditorScreen({ flow, onBack, onOpenTechnique }: FlowEditorSc
                 style={{ background: theme.gradient }}
               >
                 保存
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 未保存確認モーダル */}
+      {showUnsavedModal && (
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in px-4"
+          onClick={() => setShowUnsavedModal(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl p-5 animate-slide-up"
+            style={{ background: theme.card }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{ background: 'rgba(239, 68, 68, 0.15)' }}
+              >
+                <Save size={20} className="text-red-500" />
+              </div>
+              <h3 className="font-bold text-lg" style={{ color: theme.text }}>
+                変更が保存されていません
+              </h3>
+            </div>
+
+            <p className="text-sm mb-5" style={{ color: theme.textSecondary }}>
+              フローに未保存の変更があります。保存しますか？
+            </p>
+
+            <div className="space-y-2">
+              <button
+                onClick={handleSaveAndBack}
+                className="w-full py-3 rounded-xl font-medium text-white"
+                style={{ background: theme.gradient }}
+              >
+                保存して戻る
+              </button>
+              <button
+                onClick={handleDiscardAndBack}
+                className="w-full py-3 rounded-xl font-medium text-red-500"
+                style={{ background: 'rgba(239, 68, 68, 0.1)' }}
+              >
+                保存せずに戻る
+              </button>
+              <button
+                onClick={() => setShowUnsavedModal(false)}
+                className="w-full py-3 rounded-xl font-medium"
+                style={{ background: theme.bg, color: theme.textSecondary }}
+              >
+                キャンセル
               </button>
             </div>
           </div>
