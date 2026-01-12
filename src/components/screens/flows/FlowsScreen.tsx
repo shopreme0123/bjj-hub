@@ -8,6 +8,7 @@ import { useToast } from '@/components/ui/Toast';
 import { Card } from '@/components/ui/Card';
 import { Header, IconButton } from '@/components/ui/Header';
 import { Flow } from '@/types';
+import { AdBanner, NativeAd } from '@/components/ui/AdBanner';
 import { AddFlowModal, ImportFlowModal } from './modals';
 
 interface FlowsScreenProps {
@@ -15,7 +16,7 @@ interface FlowsScreenProps {
 }
 
 export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
-  const { theme, flows, addFlow } = useApp();
+  const { theme, flows, addFlow, isPremium } = useApp();
   const { t } = useI18n();
   const { showToast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
@@ -99,6 +100,11 @@ export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
           />
         </div>
 
+        {/* 広告バナー（非プレミアムユーザーのみ） */}
+        {!isPremium && (
+          <AdBanner variant="banner" className="my-2" />
+        )}
+
         {/* フロー一覧 */}
         {sortedFlows.length > 0 ? (
           <div className="space-y-2">
@@ -165,6 +171,11 @@ export function FlowsScreen({ onOpenEditor }: FlowsScreenProps) {
           <Plus size={16} />
           <span className="text-sm">{t('flows.add')}</span>
         </button>
+
+        {/* ネイティブ広告（非プレミアムユーザーのみ） */}
+        {!isPremium && sortedFlows.length >= 2 && (
+          <NativeAd />
+        )}
       </div>
 
       {/* フロー追加モーダル */}

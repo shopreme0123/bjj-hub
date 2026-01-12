@@ -8,6 +8,7 @@ import { useI18n } from '@/lib/i18n';
 import { Card } from '@/components/ui/Card';
 import { IconButton } from '@/components/ui/Header';
 import { Technique, TrainingLog } from '@/types';
+import { AdBanner, NativeAd } from '@/components/ui/AdBanner';
 
 // YouTubeのURLからサムネイルURLを取得
 function getYouTubeThumbnail(url?: string): string | null {
@@ -44,7 +45,7 @@ export function HomeScreen({
   onOpenTechnique,
   onOpenTechniques,
 }: HomeScreenProps) {
-  const { theme, stripes, techniques, trainingLogs, profile, beltColor } = useApp();
+  const { theme, stripes, techniques, trainingLogs, profile, beltColor, isPremium } = useApp();
   const { user } = useAuth();
   const { t, language } = useI18n();
   const [showNotifications, setShowNotifications] = useState(false);
@@ -277,6 +278,11 @@ export function HomeScreen({
           </Card>
         </div>
 
+        {/* 広告バナー（非プレミアムユーザーのみ） */}
+        {!isPremium && (
+          <AdBanner variant="inline" />
+        )}
+
         {/* 最近の練習 */}
         <div>
           <div className="flex justify-between items-center mb-2">
@@ -388,6 +394,11 @@ export function HomeScreen({
             </div>
           )}
         </div>
+
+        {/* ネイティブ広告（非プレミアムユーザーのみ） */}
+        {!isPremium && (
+          <NativeAd />
+        )}
       </div>
 
       {/* 通知モーダル */}

@@ -9,6 +9,7 @@ import { useToast } from '@/components/ui/Toast';
 import { Card } from '@/components/ui/Card';
 import { Header, IconButton } from '@/components/ui/Header';
 import { Technique, TechniqueType } from '@/types';
+import { AdBanner, NativeAd } from '@/components/ui/AdBanner';
 import {
   AddCategoryModal,
   EditCategoryModal,
@@ -27,7 +28,7 @@ interface TechniquesScreenProps {
 }
 
 export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
-  const { theme, techniques, addTechnique, updateTechnique, deleteTechnique } = useApp();
+  const { theme, techniques, addTechnique, updateTechnique, deleteTechnique, isPremium } = useApp();
   const { user } = useAuth();
   const { t } = useI18n();
   const { showToast } = useToast();
@@ -272,6 +273,11 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
           </div>
         </div>
 
+        {/* 広告バナー（非プレミアムユーザーのみ） */}
+        {!isPremium && (
+          <AdBanner variant="banner" className="my-2" />
+        )}
+
         {/* 技一覧 */}
         {sortedTechniques.length > 0 ? (
           <div className="space-y-2">
@@ -339,6 +345,11 @@ export function TechniquesScreen({ onSelectTechnique }: TechniquesScreenProps) {
           <Plus size={16} />
           <span className="text-sm">{t('techniques.add')}</span>
         </button>
+
+        {/* ネイティブ広告（非プレミアムユーザーのみ） */}
+        {!isPremium && sortedTechniques.length >= 3 && (
+          <NativeAd />
+        )}
       </div>
 
       {/* 技追加モーダル */}
