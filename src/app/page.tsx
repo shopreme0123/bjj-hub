@@ -1165,6 +1165,7 @@ export default function LandingPage() {
           .lp-hero-content {
             grid-template-columns: 1fr;
             text-align: center;
+            gap: 2rem;
           }
           .lp-hero-text h1 {
             white-space: normal;
@@ -1177,9 +1178,11 @@ export default function LandingPage() {
           }
           .lp-hero-visual {
             order: -1;
+            margin-bottom: 1rem;
           }
           .lp-phone-mockup {
-            max-width: 200px;
+            max-width: 180px;
+            animation: none;
           }
           .lp-nav-links {
             display: none;
@@ -1219,6 +1222,19 @@ export default function LandingPage() {
           }
           .lp-hero {
             padding: 5.5rem 1.25rem 3rem;
+            min-height: auto;
+          }
+          .lp-hero-content {
+            gap: 1.5rem;
+          }
+          .lp-phone-mockup {
+            max-width: 150px;
+          }
+          .lp-hero-text h1 {
+            font-size: 2.2rem;
+          }
+          .lp-hero-text .lp-tagline {
+            font-size: 0.95rem;
           }
           .lp-features,
           .lp-belt-section,
