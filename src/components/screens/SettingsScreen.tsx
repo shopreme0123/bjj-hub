@@ -317,17 +317,66 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
       {showPrivacyModal && (
         <SettingsModal
           theme={theme}
-          title="プライバシー"
+          title={t('settings.privacy_settings')}
           onClose={() => setShowPrivacyModal(false)}
         >
           <div className="space-y-4">
-            <ToggleSetting label="プロフィールを公開" defaultChecked={false} theme={theme} />
-            <ToggleSetting label="練習記録をグループに共有" defaultChecked={false} theme={theme} />
-            <div className="pt-4 border-t" style={{ borderColor: theme.cardBorder }}>
-              <button className="w-full py-3 rounded-xl text-red-400" style={{ background: 'rgba(239, 68, 68, 0.1)' }}>
+            {/* グループでの公開設定 */}
+            <div className="p-4 rounded-xl" style={{ background: theme.bg }}>
+              <h4 className="font-medium mb-2" style={{ color: theme.text }}>グループでの共有</h4>
+              <p className="text-xs mb-4" style={{ color: theme.textMuted }}>
+                グループメンバーに表示される情報を設定します
+              </p>
+              <div className="space-y-3">
+                <ToggleSetting label="プロフィールを表示" defaultChecked={true} theme={theme} />
+                <ToggleSetting label="練習記録を共有" defaultChecked={false} theme={theme} />
+                <ToggleSetting label="習得した技を共有" defaultChecked={false} theme={theme} />
+              </div>
+            </div>
+
+            {/* データ管理 */}
+            <div className="p-4 rounded-xl" style={{ background: theme.bg }}>
+              <h4 className="font-medium mb-2" style={{ color: theme.text }}>データ管理</h4>
+              <p className="text-xs mb-4" style={{ color: theme.textMuted }}>
+                あなたのデータはデバイスとクラウドに安全に保存されています
+              </p>
+              <div className="space-y-2">
+                <button
+                  onClick={() => setShowExportModal(true)}
+                  className="w-full py-3 rounded-xl text-left px-4 flex items-center gap-3"
+                  style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}
+                >
+                  <Download size={18} style={{ color: theme.primary }} />
+                  <span style={{ color: theme.text }}>データをエクスポート</span>
+                </button>
+              </div>
+            </div>
+
+            {/* 危険ゾーン */}
+            <div className="p-4 rounded-xl" style={{ background: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+              <h4 className="font-medium mb-2 text-red-500">危険ゾーン</h4>
+              <p className="text-xs mb-4" style={{ color: theme.textMuted }}>
+                以下の操作は取り消すことができません
+              </p>
+              <button
+                onClick={async () => {
+                  if (confirm('本当にすべてのデータを削除しますか？\n\n技、フロー、練習記録がすべて削除されます。この操作は取り消せません。')) {
+                    if (confirm('最終確認：すべてのデータが完全に削除されます。続行しますか？')) {
+                      // TODO: 実際のデータ削除処理を実装
+                      showToast('データ削除機能は準備中です');
+                    }
+                  }
+                }}
+                className="w-full py-3 rounded-xl text-red-500 font-medium"
+                style={{ background: 'rgba(239, 68, 68, 0.1)' }}
+              >
                 全データを削除
               </button>
             </div>
+
+            <p className="text-xs text-center pt-2" style={{ color: theme.textMuted }}>
+              ※ 共有設定は将来のバージョンで有効になります
+            </p>
           </div>
         </SettingsModal>
       )}

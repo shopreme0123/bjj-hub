@@ -156,7 +156,7 @@ export function HomeScreen({
               </div>
               {/* ストライプ部分（黒帯/赤帯部分） */}
               <div
-                className="w-16 h-8 flex items-center justify-center px-2 gap-1.5 relative overflow-hidden"
+                className={`${beltColor === 'black' ? 'w-20' : 'w-16'} h-8 flex items-center justify-center px-2 gap-1.5 relative overflow-hidden`}
                 style={{
                   background: beltColor === 'black'
                     ? 'linear-gradient(180deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%)'
