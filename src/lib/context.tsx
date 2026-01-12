@@ -13,6 +13,8 @@ interface Profile {
   belt_stripes: number;
   bjj_start_date: string | null;
   bio: string | null;
+  is_premium?: boolean;
+  premium_until?: string | null;
 }
 
 interface AppContextType {
@@ -24,7 +26,10 @@ interface AppContextType {
   stripes: number;
   setStripes: (stripes: number) => void;
   updateProfile: (updates: Partial<Profile>) => Promise<void>;
-  
+
+  // プレミアム状態
+  isPremium: boolean;
+
   // 初期ロード状態
   initialLoading: boolean;
   
@@ -67,6 +72,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [initialLoading, setInitialLoading] = useState(true);
 
   const theme = beltThemes[beltColor];
+
+  // プレミアム判定（プロフィールから取得、または有効期限チェック）
+  const isPremium = profile?.is_premium === true &&
+    (!profile.premium_until || new Date(profile.premium_until) > new Date());
 
   // プロフィール読み込み
   const loadProfile = useCallback(async () => {
@@ -406,6 +415,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         stripes,
         setStripes,
         updateProfile,
+        isPremium,
         initialLoading,
         techniques,
         loadingTechniques,
