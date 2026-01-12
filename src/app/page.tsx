@@ -4,8 +4,24 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
+declare global {
+  interface Window {
+    adsbygoogle: any[];
+  }
+}
+
 export default function LandingPage() {
   const [activeSection, setActiveSection] = useState('');
+
+  // AdSense初期化
+  useEffect(() => {
+    try {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (err) {
+      console.error('AdSense error:', err);
+    }
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -1184,6 +1200,19 @@ export default function LandingPage() {
           }
         }
 
+        .lp-ad-section {
+          max-width: 1100px;
+          margin: 0 auto;
+          padding: 2rem;
+          text-align: center;
+        }
+
+        .lp-ad-section ins {
+          background: #f8fafc;
+          min-height: 90px;
+          border-radius: 8px;
+        }
+
         @media (max-width: 600px) {
           .lp-header {
             padding: 0.9rem 1rem;
@@ -1381,6 +1410,18 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* 広告セクション */}
+      <div className="lp-ad-section">
+        <ins
+          className="adsbygoogle"
+          style={{ display: 'block' }}
+          data-ad-client="ca-pub-3394335051689473"
+          data-ad-slot="1234567890"
+          data-ad-format="auto"
+          data-full-width-responsive="true"
+        />
+      </div>
+
       {/* Belt Theme */}
       <section className="lp-belt-section" id="belts">
         <div className="lp-belt-display">
@@ -1423,6 +1464,18 @@ export default function LandingPage() {
           ))}
         </div>
       </section>
+
+      {/* 広告セクション2 */}
+      <div className="lp-ad-section">
+        <ins
+          className="adsbygoogle"
+          style={{ display: 'block' }}
+          data-ad-client="ca-pub-3394335051689473"
+          data-ad-slot="2345678901"
+          data-ad-format="horizontal"
+          data-full-width-responsive="true"
+        />
+      </div>
 
       {/* PWA Install */}
       <section className="lp-install-section" id="install">
