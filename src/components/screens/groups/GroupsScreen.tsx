@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase';
 import { generateSecureCode } from '@/lib/security';
 import { Card } from '@/components/ui/Card';
 import { Header, IconButton } from '@/components/ui/Header';
+import { AdBanner, NativeAd } from '@/components/ui/AdBanner';
 import { Group } from '@/types';
 import { CreateGroupModal } from './modals';
 
@@ -27,7 +28,7 @@ interface GroupsScreenProps {
 }
 
 export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
-  const { theme } = useApp();
+  const { theme, isPremium } = useApp();
   const { user } = useAuth();
   const { t } = useI18n();
   const { showToast } = useToast();
@@ -266,6 +267,11 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
           </div>
         </Card>
 
+        {/* 広告バナー（非プレミアムユーザーのみ） */}
+        {!isPremium && (
+          <AdBanner variant="banner" className="my-2" />
+        )}
+
         {/* グループ一覧 */}
         {loading ? (
           <div className="flex justify-center py-12">
@@ -321,6 +327,11 @@ export function GroupsScreen({ onSelectGroup }: GroupsScreenProps) {
           <Plus size={16} />
           <span className="text-sm">新しいグループを作成</span>
         </button>
+
+        {/* ネイティブ広告（非プレミアムユーザーのみ） */}
+        {!isPremium && groups.length >= 1 && (
+          <NativeAd />
+        )}
       </div>
 
       {/* グループ作成モーダル */}

@@ -9,6 +9,7 @@ import { useI18n } from '@/lib/i18n';
 import { useToast } from '@/components/ui/Toast';
 import { Card } from '@/components/ui/Card';
 import { Header, IconButton } from '@/components/ui/Header';
+import { AdBanner } from '@/components/ui/AdBanner';
 import { TrainingLog, Technique, Flow } from '@/types';
 
 // 時間を「HH:mm」形式に変換（秒を除去）
@@ -23,7 +24,7 @@ interface DiaryScreenProps {
 }
 
 export function DiaryScreen({ onOpenDetail }: DiaryScreenProps) {
-  const { theme, trainingLogs, addTrainingLog, getLogsByDate, techniques } = useApp();
+  const { theme, trainingLogs, addTrainingLog, getLogsByDate, techniques, isPremium } = useApp();
   const { t, language } = useI18n();
   const { showToast } = useToast();
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -176,6 +177,11 @@ export function DiaryScreen({ onOpenDetail }: DiaryScreenProps) {
                 })}
               </div>
             </Card>
+
+            {/* 広告バナー（非プレミアムユーザーのみ） */}
+            {!isPremium && (
+              <AdBanner variant="banner" className="my-2" />
+            )}
 
             {/* 選択日の詳細 */}
             {selectedDate && (

@@ -9,6 +9,7 @@ import { supabase } from '@/lib/supabase';
 import { Card } from '@/components/ui/Card';
 import { Header } from '@/components/ui/Header';
 import { useToast } from '@/components/ui/Toast';
+import { AdBanner } from '@/components/ui/AdBanner';
 import { beltThemes, BeltColor } from '@/types';
 
 interface SettingsScreenProps {
@@ -16,7 +17,7 @@ interface SettingsScreenProps {
 }
 
 export function SettingsScreen({ onBack }: SettingsScreenProps) {
-  const { theme, beltColor, setBeltColor, stripes, setStripes, techniques, flows, trainingLogs, profile, updateProfile } = useApp();
+  const { theme, beltColor, setBeltColor, stripes, setStripes, techniques, flows, trainingLogs, profile, updateProfile, isPremium } = useApp();
   const { user, signOut } = useAuth();
   const { t, language, setLanguage } = useI18n();
   const { showToast } = useToast();
@@ -239,6 +240,11 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
           </div>
           <span className="text-red-500 flex-1">{t('settings.logout')}</span>
         </Card>
+
+        {/* 広告バナー（非プレミアムユーザーのみ） */}
+        {!isPremium && (
+          <AdBanner variant="banner" className="my-2" />
+        )}
 
         {/* バージョン情報 */}
         <div className="text-center pt-4">
