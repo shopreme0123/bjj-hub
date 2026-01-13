@@ -6,12 +6,12 @@ import { useApp } from '@/lib/context';
 // AdSense Publisher ID
 const ADSENSE_CLIENT = 'ca-pub-3394335051689473';
 
-// 広告スロットID（AdSenseダッシュボードで作成後に設定）
+// 広告スロットID
 const AD_SLOTS = {
-  banner: '1234567890',      // 横長バナー用スロット
-  rectangle: '2345678901',   // 長方形用スロット
-  inline: '3456789012',      // インフィード用スロット
-  native: '4567890123',      // ネイティブ用スロット
+  banner: '4366548931',      // bjjhub_banner（ディスプレイ）
+  rectangle: '2861895576',   // bjjhub_rectangle（ディスプレイ）
+  inline: '9179891910',      // bjjhub_native（記事内広告をインラインでも使用）
+  native: '9179891910',      // bjjhub_native（記事内）
 };
 
 declare global {

@@ -1438,7 +1438,7 @@ export default function LandingPage() {
           className="adsbygoogle"
           style={{ display: 'block' }}
           data-ad-client="ca-pub-3394335051689473"
-          data-ad-slot="1234567890"
+          data-ad-slot="4366548931"
           data-ad-format="auto"
           data-full-width-responsive="true"
         />
@@ -1493,7 +1493,7 @@ export default function LandingPage() {
           className="adsbygoogle"
           style={{ display: 'block' }}
           data-ad-client="ca-pub-3394335051689473"
-          data-ad-slot="2345678901"
+          data-ad-slot="2861895576"
           data-ad-format="horizontal"
           data-full-width-responsive="true"
         />
