@@ -21,6 +21,7 @@ struct SettingsView: View {
     @State private var restoreMessage: String?
     @State private var showBackupSheet = false
     @State private var showBackupConfirmation = false
+    @State private var showPrivacyPolicy = false
     @State private var loginEmail = ""
     @State private var loginPassword = ""
     @Environment(\.dismiss) private var dismiss
@@ -239,6 +240,9 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showPremium) {
             PremiumView(viewModel: viewModel)
+        }
+        .sheet(isPresented: $showPrivacyPolicy) {
+            PrivacyPolicyView(theme: theme)
         }
         .alert("ログアウト", isPresented: $showLogoutConfirmation) {
             Button("キャンセル", role: .cancel) {}
@@ -925,7 +929,22 @@ private struct AppInfoView: View {
             VStack(spacing: 10) {
                 InfoRow(title: "バージョン", value: appVersion, theme: theme)
                 Divider().background(theme.cardBorder.opacity(0.5))
-                InfoRow(title: "プライバシーポリシー", value: "準備中", theme: theme)
+
+                Button(action: { showPrivacyPolicy = true }) {
+                    HStack {
+                        Text("プライバシーポリシー")
+                            .font(.app(size: 16, weight: .regular))
+                            .foregroundStyle(theme.textPrimary)
+
+                        Spacer()
+
+                        Image(systemName: "chevron.right")
+                            .font(.app(size: 14, weight: .semibold))
+                            .foregroundStyle(theme.textMuted)
+                    }
+                    .contentShape(Rectangle())
+                }
+
                 Divider().background(theme.cardBorder.opacity(0.5))
                 InfoRow(title: "利用規約", value: "準備中", theme: theme)
             }
