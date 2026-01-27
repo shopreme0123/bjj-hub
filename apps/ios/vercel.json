@@ -1,25 +1,23 @@
 {
-  "version": 2,
-  "builds": [
+  "headers": [
     {
-      "src": "privacy-policy.html",
-      "use": "@vercel/static"
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/privacy",
-      "dest": "/privacy-policy.html",
-      "headers": {
-        "Cache-Control": "public, max-age=0, must-revalidate"
-      }
+      "source": "/privacy",
+      "destination": "/privacy-policy.html"
     },
     {
-      "src": "/",
-      "dest": "/privacy-policy.html",
-      "headers": {
-        "Cache-Control": "public, max-age=0, must-revalidate"
-      }
+      "source": "/",
+      "destination": "/privacy-policy.html"
     }
   ]
 }
