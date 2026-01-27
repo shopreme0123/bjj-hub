@@ -9,11 +9,17 @@
   "routes": [
     {
       "src": "/privacy",
-      "dest": "/privacy-policy.html"
+      "dest": "/privacy-policy.html",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      }
     },
     {
       "src": "/",
-      "dest": "/privacy-policy.html"
+      "dest": "/privacy-policy.html",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      }
     }
   ]
 }
