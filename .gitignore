@@ -1,8 +1,65 @@
-node_modules/
-.next/
+# Dependencies
+**/node_modules/
+**/.pnp
+**/.pnp.js
+
+# Build outputs
+apps/web/.next/
+apps/web/out/
+apps/web/build/
+**/dist/
+
+# Environment variables
+.env
 .env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel
 .vercel
 
 # PWA service worker files (auto-generated)
-public/sw.js
-public/workbox-*.js
+apps/web/public/sw.js
+apps/web/public/workbox-*.js
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Xcode
+**/DerivedData/
+**/*.xcworkspace/xcuserdata/
+**/*.xcodeproj/xcuserdata/
+**/*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/
+
+# Swift Package Manager
+**/.swiftpm/
+**/.build/
+
+# Android
+apps/android/build/
+apps/android/.gradle/
+apps/android/local.properties
+apps/android/.idea/
+*.iml
+*.apk
+*.aab
+
+# Temporary files
+*.tmp
+*.temp
+.cache/

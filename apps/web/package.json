@@ -1,0 +1,41 @@
+{
+  "name": "bjj-hub",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "build:ios": "NEXT_PUBLIC_APP_MODE=app next build && npx cap sync ios",
+    "build:android": "NEXT_PUBLIC_APP_MODE=app next build && npx cap sync android",
+    "start": "next start",
+    "lint": "next lint",
+    "cap:ios": "npx cap open ios",
+    "cap:android": "npx cap open android"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/auth-helpers-nextjs": "^0.15.0",
+    "@supabase/supabase-js": "^2.89.0",
+    "@types/node": "^25.0.3",
+    "@types/react": "^19.2.7",
+    "autoprefixer": "^10.4.23",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.562.0",
+    "next": "^14.2.35",
+    "next-pwa": "^5.6.0",
+    "postcss": "^8.5.6",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "reactflow": "^11.11.4",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.0.1",
+    "@capacitor/core": "^8.0.1",
+    "@capacitor/ios": "^8.0.1"
+  }
+}

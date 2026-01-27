@@ -12,25 +12,26 @@
 
 ## 技術スタック
 
-- **フロントエンド**: Next.js 14 + TypeScript + Tailwind CSS
-- **フローエディタ**: React Flow
+- **Web**: Next.js 14 + TypeScript + Tailwind CSS
+- **iOS**: SwiftUI + CoreData
+- **Android（準備中）**: Kotlin + Jetpack Compose
 - **バックエンド**: Supabase (PostgreSQL + Auth + Storage)
-- **ホスティング**: Vercel
+- **ホスティング**: Vercel (Web + 共通ドキュメント)
 
 ## セットアップ
 
-### 1. 依存関係のインストール
+### 1. 依存関係のインストール（Web）
 
 ```bash
-npm install
+npm --prefix apps/web install
 ```
 
 ### 2. 環境変数の設定
 
-`.env.example` を `.env.local` にコピーして、Supabaseの認証情報を設定:
+`apps/web/.env.example` を `apps/web/.env.local` にコピーして、Supabaseの認証情報を設定:
 
 ```bash
-cp .env.example .env.local
+cp apps/web/.env.example apps/web/.env.local
 ```
 
 ```env
@@ -44,10 +45,10 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 2. `docs/db-design.md` のSQLを実行してテーブルを作成
 3. 認証設定でEmail/Passwordを有効化
 
-### 4. 開発サーバーの起動
+### 4. 開発サーバーの起動（Web）
 
 ```bash
-npm run dev
+npm run web:dev
 ```
 
 http://localhost:3000 でアプリが起動します。
@@ -56,33 +57,17 @@ http://localhost:3000 でアプリが起動します。
 
 ```
 bjj-hub/
-├── src/
-│   ├── app/                 # Next.js App Router
-│   │   ├── globals.css      # グローバルスタイル
-│   │   ├── layout.tsx       # ルートレイアウト
-│   │   └── page.tsx         # メインページ
-│   ├── components/
-│   │   ├── screens/         # 画面コンポーネント
-│   │   │   ├── HomeScreen.tsx
-│   │   │   ├── TechniquesScreen.tsx
-│   │   │   ├── FlowsScreen.tsx
-│   │   │   ├── DiaryScreen.tsx
-│   │   │   ├── GroupsScreen.tsx
-│   │   │   └── SettingsScreen.tsx
-│   │   └── ui/              # UIコンポーネント
-│   │       ├── Card.tsx
-│   │       ├── Header.tsx
-│   │       └── BottomNav.tsx
-│   ├── lib/
-│   │   ├── context.tsx      # React Context (テーマ管理)
-│   │   └── supabase.ts      # Supabaseクライアント
-│   └── types/
-│       └── index.ts         # TypeScript型定義
-├── public/
-│   └── manifest.json        # PWA マニフェスト
-├── docs/
-│   ├── requirements.md      # 要件定義書
-│   └── db-design.md         # DB設計書
+├── apps/
+│   ├── web/                 # Next.js Web版
+│   ├── ios/                 # SwiftUI iOS版（開発中）
+│   └── android/             # Android版（準備中）
+├── shared/                  # 全プラットフォーム共通
+│   ├── docs/                # プライバシーポリシー等
+│   └── assets/              # 共通アセット
+├── docs/                    # 開発者向けドキュメント
+│   ├── requirements.md
+│   └── db-design.md
+├── supabase/                # バックエンドスキーマ
 └── README.md
 ```
 
@@ -110,6 +95,27 @@ bjj-hub/
 
 MIT
 
+## プラットフォーム別情報
+
+### iOS版
+- 現在開発中
+- App Storeリリース準備中
+- 詳細: [apps/ios/README.md](apps/ios/README.md)
+
+### Android版
+- iOS版リリース後に開発開始予定
+- 詳細: [apps/android/README.md](apps/android/README.md)
+
+### Web版
+- ランディングページとして機能
+- 詳細: [apps/web/](apps/web/)
+
+## 共通リソース
+
+プライバシーポリシーなど、全プラットフォームで共通のリソースは `shared/` ディレクトリに配置されています。
+
+詳細: [shared/README.md](shared/README.md)
+
 ## 作者
 
-Shogo
+Shogo Nakajima
