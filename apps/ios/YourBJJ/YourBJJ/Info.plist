@@ -6,5 +6,18 @@
     <string>ca-app-pub-3940256099942544~1458002511</string>
     <key>CFBundleDisplayName</key>
     <string>Your BJJ</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLName</key>
+            <string>com.yourbjj.app</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>yourbjj</string>
+            </array>
+        </dict>
+    </array>
 </dict>
 </plist>

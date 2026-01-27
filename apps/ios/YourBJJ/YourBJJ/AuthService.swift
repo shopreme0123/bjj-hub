@@ -120,8 +120,14 @@ final class SupabaseAuthService {
         request.setValue(anonKey, forHTTPHeaderField: "apikey")
         request.setValue("Bearer \(anonKey)", forHTTPHeaderField: "Authorization")
 
-        let payload = ["email": email, "password": password]
-        request.httpBody = try JSONEncoder().encode(payload)
+        let payload: [String: Any] = [
+            "email": email,
+            "password": password,
+            "options": [
+                "emailRedirectTo": "yourbjj://auth/callback"
+            ]
+        ]
+        request.httpBody = try JSONSerialization.data(withJSONObject: payload)
 
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse else {
