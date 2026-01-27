@@ -6,8 +6,12 @@ enum AdPlacement {
     case diary
 
     var adUnitId: String {
-        // TODO: Replace with production Ad Unit IDs.
-        return "ca-app-pub-3940256099942544/2934735716"
+        switch self {
+        case .techniques:
+            return "ca-app-pub-3394335051689473/4947424829"
+        case .diary:
+            return "ca-app-pub-3394335051689473/3101525531"
+        }
     }
 }
 
