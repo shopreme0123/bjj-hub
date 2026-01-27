@@ -18,6 +18,10 @@
     {
       "source": "/",
       "destination": "/privacy-policy.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms.html"
     }
   ]
 }
