@@ -369,14 +369,12 @@ final class AppViewModel: ObservableObject {
             await migrateLocalData(to: newSession.userId)
             await load()
         } catch {
-            if let authError = error as? AuthError {
-                authErrorMessage = authError.message
-                if let statusCode = authError.statusCode {
-                    let body = authError.responseBody ?? ""
-                    authDebugMessage = "status=\(statusCode) body=\(body)"
-                }
+            authErrorMessage = "ログインに失敗しました。メールアドレスまたはパスワードを確認してください。"
+            if let authError = error as? AuthError, let statusCode = authError.statusCode {
+                let body = authError.responseBody ?? ""
+                authDebugMessage = "status=\(statusCode) body=\(body)"
             } else {
-                authErrorMessage = "ログインに失敗しました: \(error.localizedDescription)"
+                authDebugMessage = nil
             }
         }
 
