@@ -22,6 +22,7 @@ struct SettingsView: View {
     @State private var showBackupSheet = false
     @State private var showBackupConfirmation = false
     @State private var showPrivacyPolicy = false
+    @State private var showAuthSheet = false
     @State private var loginEmail = ""
     @State private var loginPassword = ""
     @Environment(\.dismiss) private var dismiss
@@ -168,7 +169,9 @@ struct SettingsView: View {
                     }
                     .padding(.horizontal, 20)
 
-                    AppInfoView(theme: theme)
+                    AppInfoView(theme: theme, onShowPrivacyPolicy: {
+                        showPrivacyPolicy = true
+                    })
 
                     // Login or Logout section
                     if viewModel.isAuthenticated {
@@ -199,7 +202,10 @@ struct SettingsView: View {
                             email: $loginEmail,
                             password: $loginPassword,
                             viewModel: viewModel,
-                            theme: theme
+                            theme: theme,
+                            onShowSignUp: {
+                                showAuthSheet = true
+                            }
                         )
                     }
                 }
@@ -240,6 +246,9 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showPremium) {
             PremiumView(viewModel: viewModel)
+        }
+        .sheet(isPresented: $showAuthSheet) {
+            AuthView(viewModel: viewModel, initiallySignUp: true, allowsModeSwitch: false)
         }
         .sheet(isPresented: $showPrivacyPolicy) {
             PrivacyPolicyView(theme: theme)
@@ -919,6 +928,7 @@ private struct SavedBanner: View {
 
 private struct AppInfoView: View {
     let theme: BeltTheme
+    let onShowPrivacyPolicy: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -930,7 +940,7 @@ private struct AppInfoView: View {
                 InfoRow(title: "バージョン", value: appVersion, theme: theme)
                 Divider().background(theme.cardBorder.opacity(0.5))
 
-                Button(action: { showPrivacyPolicy = true }) {
+                Button(action: onShowPrivacyPolicy) {
                     HStack {
                         Text("プライバシーポリシー")
                             .font(.app(size: 16, weight: .regular))
@@ -1342,6 +1352,7 @@ private struct LoginSectionView: View {
     @Binding var password: String
     @ObservedObject var viewModel: AppViewModel
     let theme: BeltTheme
+    let onShowSignUp: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -1427,6 +1438,17 @@ private struct LoginSectionView: View {
                 .glowEffect(color: theme.primary.opacity(email.isEmpty || password.isEmpty ? 0 : 0.3), radius: 12)
             }
             .disabled(email.isEmpty || password.isEmpty || viewModel.isAuthenticating)
+
+            // Sign up link
+            Button(action: {
+                onShowSignUp()
+            }) {
+                Text("新規登録はこちら")
+                    .font(.caption(12, weight: .semibold))
+                    .foregroundStyle(theme.textMuted)
+                    .padding(.vertical, 4)
+                    .frame(maxWidth: .infinity, alignment: .center)
+            }
         }
         .padding(16)
         .background(theme.card)
