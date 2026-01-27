@@ -94,7 +94,6 @@ private struct AdMobBannerView: UIViewRepresentable {
     }
 
     final class Coordinator: NSObject, GADBannerViewDelegate {
-        private static var didPresentInspector = false
         private let loadState: Binding<LoadState>
 
         init(loadState: Binding<LoadState>) {
@@ -111,19 +110,6 @@ private struct AdMobBannerView: UIViewRepresentable {
             DispatchQueue.main.async {
                 self.loadState.wrappedValue = .loaded
             }
-            #if DEBUG
-            print("📣 [AdMob] Banner received. If you need the test device ID, Ad Inspector will open once.")
-            guard !Self.didPresentInspector else { return }
-            Self.didPresentInspector = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                guard let rootVC = bannerView.rootViewController else { return }
-                GADMobileAds.sharedInstance().presentAdInspector(from: rootVC) { error in
-                    if let error {
-                        print("⚠️ [AdMob] Ad Inspector failed: \(error.localizedDescription)")
-                    }
-                }
-            }
-            #endif
         }
 
         func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: Error) {

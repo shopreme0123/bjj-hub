@@ -16,7 +16,8 @@ struct YourBJJApp: App {
         if let appId = Bundle.main.object(forInfoDictionaryKey: "GADApplicationIdentifier") as? String,
            !appId.isEmpty {
             #if DEBUG
-            GADMobileAds.sharedInstance().requestConfiguration.testDeviceIdentifiers = [GADDeviceID()]
+            // Simulator test ads. For real devices, AdMob will log a test device ID after an ad request.
+            GADMobileAds.sharedInstance().requestConfiguration.testDeviceIdentifiers = [GADSimulatorID]
             #endif
             GADMobileAds.sharedInstance().start(completionHandler: nil)
         } else {
