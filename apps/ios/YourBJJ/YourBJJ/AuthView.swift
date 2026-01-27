@@ -178,7 +178,7 @@ struct AuthView: View {
                     }
 
                     // Success message (email sent)
-                    if let debug = viewModel.authDebugMessage {
+                    if viewModel.authDebugMessage != nil {
                         VStack(spacing: 8) {
                             HStack(spacing: 8) {
                                 Image(systemName: "envelope.circle.fill")
