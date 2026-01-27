@@ -177,11 +177,34 @@ struct AuthView: View {
                             .padding(.top, 4)
                     }
 
+                    // Success message (email sent)
                     if let debug = viewModel.authDebugMessage {
-                        Text(debug)
-                            .font(.caption(10))
-                            .foregroundStyle(theme.textMuted)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                        VStack(spacing: 8) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "envelope.circle.fill")
+                                    .font(.app(size: 16, weight: .semibold))
+                                    .foregroundStyle(theme.primary)
+
+                                Text("確認メールを送信しました")
+                                    .font(.caption(13, weight: .semibold))
+                                    .foregroundStyle(theme.textPrimary)
+                            }
+
+                            Text("メールボックスを確認して、認証リンクをタップしてください。")
+                                .font(.caption(11))
+                                .foregroundStyle(theme.textMuted)
+                                .multilineTextAlignment(.center)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .padding(.horizontal, 16)
+                        .background(theme.primary.opacity(0.08))
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .stroke(theme.primary.opacity(0.2), lineWidth: 1)
+                        )
+                        .padding(.top, 4)
                     }
 
                     // Login button
@@ -218,8 +241,8 @@ struct AuthView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                         .glowEffect(color: theme.primary.opacity(email.isEmpty || password.isEmpty ? 0 : 0.4), radius: 16)
                     }
-                    .disabled(email.isEmpty || password.isEmpty || viewModel.isAuthenticating)
-                    .opacity(email.isEmpty || password.isEmpty ? 0.5 : 1)
+                    .disabled(email.isEmpty || password.isEmpty || viewModel.isAuthenticating || viewModel.authDebugMessage != nil)
+                    .opacity(email.isEmpty || password.isEmpty || viewModel.authDebugMessage != nil ? 0.5 : 1)
                     .scaleEffect(viewModel.isAuthenticating ? 0.98 : 1.0)
                     .animation(.easeInOut(duration: 0.2), value: viewModel.isAuthenticating)
                     .padding(.top, 8)
