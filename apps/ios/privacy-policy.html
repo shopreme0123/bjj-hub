@@ -19,6 +19,32 @@
             padding: 20px;
         }
 
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 8px;
+        }
+
+        .language-selector select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            color: #333;
+            font-size: 14px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .language-selector select:hover {
+            border-color: #007aff;
+        }
+
         .container {
             max-width: 800px;
             margin: 0 auto;
@@ -26,6 +52,14 @@
             padding: 40px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .language-section {
+            display: none;
+        }
+
+        .language-section.active {
+            display: block;
         }
 
         h1 {
@@ -84,6 +118,11 @@
         }
 
         @media (max-width: 768px) {
+            .language-selector {
+                position: static;
+                margin-bottom: 20px;
+            }
+
             .container {
                 padding: 20px;
             }
@@ -103,7 +142,17 @@
     </style>
 </head>
 <body>
+    <div class="language-selector">
+        <select id="languageSelect" onchange="changeLanguage(this.value)">
+            <option value="ja">日本語</option>
+            <option value="en">English</option>
+            <option value="pt">Português</option>
+            <option value="ko">한국어</option>
+        </select>
+    </div>
+
     <div class="container">
+        <div id="ja" class="language-section active">
 <h1>プライバシーポリシー</h1>
 
 <p>最終更新日: 2026年1月27日</p>
@@ -118,35 +167,35 @@
 <p>本アプリのクラウド同期機能を使用する場合、以下の情報を収集します：</p>
 <ul><li>メールアドレス</li>
 <li>表示名</li>
-<li>パスワード（暗号化して保存）</li>
-</ul>
+<li>パスワード（暗号化して保存）</li></ul>
+
 <h3>1.2 プロフィール情報</h3>
 <p>以下のBJJ関連情報を収集します：</p>
 <ul><li>帯の色（白、青、紫、茶、黒）</li>
 <li>帯のストライプ数</li>
 <li>自己紹介文</li>
-<li>プロフィール画像のURL</li>
-</ul>
+<li>プロフィール画像のURL</li></ul>
+
 <h3>1.3 トレーニングデータ</h3>
 <ul><li>技の記録（技名、説明、カテゴリ、タグ、習熟度など）</li>
 <li>稽古日記（日時、内容、体調、スパーリング回数など）</li>
-<li>YouTube動画のURL（埋め込み動画用）</li>
-</ul>
+<li>YouTube動画のURL（埋め込み動画用）</li></ul>
+
 <h3>1.4 利用状況データ</h3>
 <ul><li>最近閲覧した技のリスト</li>
 <li>週間トレーニング活動記録</li>
-<li>プレミアム機能の利用状況</li>
-</ul>
+<li>プレミアム機能の利用状況</li></ul>
+
 <h3>1.5 課金情報</h3>
 <ul><li>App Store経由でのサブスクリプション購入情報</li>
-<li>プレミアムプランの有効期限</li>
-</ul>
+<li>プレミアムプランの有効期限</li></ul>
+
 <h3>1.6 広告関連情報</h3>
 <p>本アプリは広告表示のため、Google AdMobを使用しています。AdMobは以下の情報を収集する場合があります：</p>
 <ul><li>広告識別子（IDFA）</li>
 <li>デバイス情報</li>
-<li>広告表示・クリックデータ</li>
-</ul>
+<li>広告表示・クリックデータ</li></ul>
+
 <h2>2. 収集しない情報</h2>
 
 <p>本アプリは以下の情報を<strong>収集しません</strong>：</p>
@@ -155,84 +204,84 @@
 <li>連絡先</li>
 <li>カメラロール内の写真・動画</li>
 <li>通話履歴</li>
-<li>マイク音声</li>
-</ul>
+<li>マイク音声</li></ul>
+
 <h2>3. 情報の使用目的</h2>
 
 <p>収集した情報は以下の目的で使用します：</p>
 
 <h3>3.1 サービス提供</h3>
 <ul><li>ユーザーアカウントの管理</li>
-<li>トレーニングデータの保存・同期</li>
-</ul>
+<li>トレーニングデータの保存・同期</li></ul>
+
 <h3>3.2 機能改善</h3>
 <ul><li>アプリの機能向上</li>
 <li>バグ修正</li>
-<li>ユーザーエクスペリエンスの改善</li>
-</ul>
+<li>ユーザーエクスペリエンスの改善</li></ul>
+
 <h3>3.3 課金管理</h3>
 <ul><li>プレミアムサブスクリプションの管理</li>
-<li>広告非表示機能の提供</li>
-</ul>
+<li>広告非表示機能の提供</li></ul>
+
 <h3>3.4 広告表示</h3>
-<ul><li>無料ユーザー向けの広告配信（Google AdMob）</li>
-</ul>
+<ul><li>無料ユーザー向けの広告配信（Google AdMob）</li></ul>
+
 <h2>4. 情報の保存方法</h2>
 
 <h3>4.1 ローカルストレージ</h3>
 <p>以下の情報はデバイス内に保存されます：</p>
 <ul><li>CoreDataデータベース（SQLite形式）</li>
 <li>JSON形式のバックアップファイル</li>
-<li>UserDefaultsによる設定情報</li>
-</ul>
-<strong>オフライン使用</strong>: インターネット接続なしでも、すべての基本機能が利用可能です。
+<li>UserDefaultsによる設定情報</li></ul>
+
+<p><strong>オフライン使用</strong>: インターネット接続なしでも、すべての基本機能が利用可能です。</p>
 
 <h3>4.2 クラウドストレージ（Supabase）</h3>
 <p>クラウド同期を有効にした場合、以下のサービスを使用します：</p>
 <ul><li>サービス名: Supabase</li>
 <li>データ保存場所: クラウドデータベース（PostgreSQL）</li>
-<li>暗号化: HTTPS通信による暗号化</li>
-</ul>
-<strong>重要</strong>: クラウド同期は任意であり、手動で実行する必要があります。自動同期は行われません。
+<li>暗号化: HTTPS通信による暗号化</li></ul>
+
+<p><strong>重要</strong>: クラウド同期は任意であり、手動で実行する必要があります。自動同期は行われません。</p>
 
 <h2>5. 情報の共有</h2>
 
 <h3>5.1 第三者への提供</h3>
 <p>本アプリは、以下の場合を除き、個人情報を第三者に提供しません：</p>
 <ul><li>ユーザーの明示的な同意がある場合</li>
-<li>法的要請がある場合</li>
-</ul>
+<li>法的要請がある場合</li></ul>
+
 <h3>5.2 使用する第三者サービス</h3>
 
 <p>#### Google AdMob（広告配信）</p>
 <ul><li>提供元: Google LLC</li>
 <li>用途: 広告表示</li>
-<li>プライバシーポリシー: https://policies.google.com/privacy</li>
-</ul>
+<li>プライバシーポリシー: https://policies.google.com/privacy</li></ul>
+
 <p>#### Supabase（データベース）</p>
 <ul><li>提供元: Supabase Inc.</li>
 <li>用途: クラウドデータ保存・認証</li>
-<li>プライバシーポリシー: https://supabase.com/privacy</li>
-</ul>
+<li>プライバシーポリシー: https://supabase.com/privacy</li></ul>
+
 <p>#### Apple（課金）</p>
 <ul><li>提供元: Apple Inc.</li>
 <li>用途: App内課金の処理</li>
-<li>プライバシーポリシー: https://www.apple.com/legal/privacy/</li>
-</ul>
+<li>プライバシーポリシー: https://www.apple.com/legal/privacy/</li></ul>
+
 <h2>6. データの保持期間</h2>
 
 <ul><li><strong>ローカルデータ</strong>: ユーザーが削除するまで保持されます</li>
 <li><strong>クラウドデータ</strong>: アカウント削除まで保持されます</li>
 <li><strong>広告データ</strong>: Google AdMobのポリシーに準拠します</li>
-<li><strong>課金データ</strong>: 法的要件に基づき保持されます</li>
-</ul>
+<li><strong>課金データ</strong>: 法的要件に基づき保持されます</li></ul>
+
 <h2>7. データの削除</h2>
 
 <h3>7.1 ローカルデータの削除</h3>
 <p>設定画面から以下の操作が可能です：</p>
 <ul><li>個別のデータ削除（技、稽古記録）</li>
-<li>アプリデータの完全削除（アプリをアンインストール）</li>
-</ul>
+<li>アプリデータの完全削除（アプリをアンインストール）</li></ul>
+
 <h3>7.2 クラウドデータの削除</h3>
 <p>設定画面の「クラウドデータを削除」機能を使用することで、サーバー上のデータを削除できます。</p>
 
@@ -246,8 +295,8 @@
 <ul><li>HTTPS通信による暗号化</li>
 <li>JWT（JSON Web Token）による認証</li>
 <li>iOS Keychainによるトークンのセキュアストレージ</li>
-<li>App Store Transaction Verificationによる課金検証</li>
-</ul>
+<li>App Store Transaction Verificationによる課金検証</li></ul>
+
 <p>ただし、インターネット通信には固有のリスクが存在するため、完全なセキュリティを保証するものではありません。</p>
 
 <h2>9. 子供のプライバシー</h2>
@@ -257,8 +306,8 @@
 <h2>10. 広告のオプトアウト</h2>
 
 <p>広告のパーソナライズを制限したい場合は、以下の方法で設定できます：</p>
-<ul><li>iOS設定 > プライバシー > 広告 > 「パーソナライズされた広告を制限」をオン</li>
-</ul>
+<ul><li>iOS設定 > プライバシー > 広告 > 「パーソナライズされた広告を制限」をオン</li></ul>
+
 <p>または、プレミアムプランに登録することで、広告を完全に非表示にできます。</p>
 
 <h2>11. プライバシーポリシーの変更</h2>
@@ -269,12 +318,13 @@
 
 <p>プライバシーに関するご質問や懸念がある場合は、以下までご連絡ください：</p>
 
-<strong>アプリ名</strong>: BJJ Hub
-<strong>開発者</strong>: Shogo Nakajima
-<strong>メールアドレス</strong>: s15790349@gmail.com
+<p><strong>アプリ名</strong>: BJJ Hub</p>
+<p><strong>開発者</strong>: Shogo Nakajima</p>
+<p><strong>メールアドレス</strong>: s15790349@gmail.com</p>
 
-<hr>
 
+        </div>
+        <div id="en" class="language-section">
 <h2>Privacy Policy (English)</h2>
 
 <p>Last Updated: January 27, 2026</p>
@@ -289,34 +339,34 @@
 <p>When using cloud sync features, we collect:</p>
 <ul><li>Email address</li>
 <li>Display name</li>
-<li>Password (encrypted)</li>
-</ul>
+<li>Password (encrypted)</li></ul>
+
 <h3>1.2 Profile Information</h3>
 <ul><li>BJJ belt color (white, blue, purple, brown, black)</li>
 <li>Belt stripes</li>
 <li>Biography</li>
-<li>Profile image URL</li>
-</ul>
+<li>Profile image URL</li></ul>
+
 <h3>1.3 Training Data</h3>
 <ul><li>Techniques (name, description, category, tags, mastery level)</li>
 <li>Training logs (date, time, content, physical condition, sparring rounds)</li>
-<li>YouTube video URLs</li>
-</ul>
+<li>YouTube video URLs</li></ul>
+
 <h3>1.4 Usage Data</h3>
 <ul><li>Recently viewed techniques</li>
 <li>Weekly training activity</li>
-<li>Premium feature usage</li>
-</ul>
+<li>Premium feature usage</li></ul>
+
 <h3>1.5 Payment Information</h3>
 <ul><li>App Store subscription information</li>
-<li>Premium plan expiration date</li>
-</ul>
+<li>Premium plan expiration date</li></ul>
+
 <h3>1.6 Advertising Data</h3>
 <p>We use Google AdMob for ads, which may collect:</p>
 <ul><li>Advertising identifier (IDFA)</li>
 <li>Device information</li>
-<li>Ad impression and click data</li>
-</ul>
+<li>Ad impression and click data</li></ul>
+
 <h2>2. Information We Do NOT Collect</h2>
 
 <p>The App does NOT collect:</p>
@@ -325,82 +375,82 @@
 <li>Contacts</li>
 <li>Photos/videos from camera roll</li>
 <li>Call history</li>
-<li>Microphone audio</li>
-</ul>
+<li>Microphone audio</li></ul>
+
 <h2>3. How We Use Your Information</h2>
 
 <h3>3.1 Service Provision</h3>
 <ul><li>User account management</li>
-<li>Training data storage and sync</li>
-</ul>
+<li>Training data storage and sync</li></ul>
+
 <h3>3.2 Service Improvement</h3>
 <ul><li>App functionality improvements</li>
 <li>Bug fixes</li>
-<li>User experience enhancement</li>
-</ul>
+<li>User experience enhancement</li></ul>
+
 <h3>3.3 Payment Management</h3>
 <ul><li>Premium subscription management</li>
-<li>Ad-free feature delivery</li>
-</ul>
+<li>Ad-free feature delivery</li></ul>
+
 <h3>3.4 Advertising</h3>
-<ul><li>Ad delivery to free users (Google AdMob)</li>
-</ul>
+<ul><li>Ad delivery to free users (Google AdMob)</li></ul>
+
 <h2>4. Data Storage</h2>
 
 <h3>4.1 Local Storage</h3>
 <p>Stored on your device:</p>
 <ul><li>CoreData database (SQLite)</li>
 <li>JSON backup files</li>
-<li>UserDefaults settings</li>
-</ul>
-<strong>Offline Use</strong>: All core features work without internet connection.
+<li>UserDefaults settings</li></ul>
+
+<p><strong>Offline Use</strong>: All core features work without internet connection.</p>
 
 <h3>4.2 Cloud Storage (Supabase)</h3>
 <p>When cloud sync is enabled:</p>
 <ul><li>Service: Supabase</li>
 <li>Location: Cloud database (PostgreSQL)</li>
-<li>Encryption: HTTPS</li>
-</ul>
-<strong>Important</strong>: Cloud sync is optional and must be manually initiated.
+<li>Encryption: HTTPS</li></ul>
+
+<p><strong>Important</strong>: Cloud sync is optional and must be manually initiated.</p>
 
 <h2>5. Information Sharing</h2>
 
 <h3>5.1 Third-Party Disclosure</h3>
 <p>We do not share personal information except:</p>
 <ul><li>With explicit user consent</li>
-<li>When legally required</li>
-</ul>
+<li>When legally required</li></ul>
+
 <h3>5.2 Third-Party Services</h3>
 
 <p>#### Google AdMob (Advertising)</p>
 <ul><li>Provider: Google LLC</li>
 <li>Purpose: Ad delivery</li>
-<li>Privacy Policy: https://policies.google.com/privacy</li>
-</ul>
+<li>Privacy Policy: https://policies.google.com/privacy</li></ul>
+
 <p>#### Supabase (Database)</p>
 <ul><li>Provider: Supabase Inc.</li>
 <li>Purpose: Cloud data storage and authentication</li>
-<li>Privacy Policy: https://supabase.com/privacy</li>
-</ul>
+<li>Privacy Policy: https://supabase.com/privacy</li></ul>
+
 <p>#### Apple (Payments)</p>
 <ul><li>Provider: Apple Inc.</li>
 <li>Purpose: In-app purchase processing</li>
-<li>Privacy Policy: https://www.apple.com/legal/privacy/</li>
-</ul>
+<li>Privacy Policy: https://www.apple.com/legal/privacy/</li></ul>
+
 <h2>6. Data Retention</h2>
 
 <ul><li><strong>Local data</strong>: Retained until user deletion</li>
 <li><strong>Cloud data</strong>: Retained until account deletion</li>
 <li><strong>Ad data</strong>: Per Google AdMob policy</li>
-<li><strong>Payment data</strong>: Per legal requirements</li>
-</ul>
+<li><strong>Payment data</strong>: Per legal requirements</li></ul>
+
 <h2>7. Data Deletion</h2>
 
 <h3>7.1 Local Data</h3>
 <p>From settings screen:</p>
 <ul><li>Delete individual data (techniques, logs)</li>
-<li>Complete deletion (uninstall app)</li>
-</ul>
+<li>Complete deletion (uninstall app)</li></ul>
+
 <h3>7.2 Cloud Data</h3>
 <p>Use "Delete Cloud Data" feature in settings.</p>
 
@@ -413,8 +463,8 @@
 <ul><li>HTTPS encryption</li>
 <li>JWT authentication</li>
 <li>iOS Keychain for token storage</li>
-<li>App Store transaction verification</li>
-</ul>
+<li>App Store transaction verification</li></ul>
+
 <p>However, no internet transmission is completely secure.</p>
 
 <h2>9. Children's Privacy</h2>
@@ -424,8 +474,8 @@
 <h2>10. Ad Opt-Out</h2>
 
 <p>To limit ad personalization:</p>
-<ul><li>iOS Settings > Privacy > Advertising > Enable "Limit Ad Tracking"</li>
-</ul>
+<ul><li>iOS Settings > Privacy > Advertising > Enable "Limit Ad Tracking"</li></ul>
+
 <p>Or subscribe to Premium to remove all ads.</p>
 
 <h2>11. Policy Changes</h2>
@@ -436,12 +486,13 @@
 
 <p>For privacy questions, contact:</p>
 
-<strong>App Name</strong>: BJJ Hub
-<strong>Developer</strong>: Shogo Nakajima
-<strong>Email</strong>: s15790349@gmail.com
+<p><strong>App Name</strong>: BJJ Hub</p>
+<p><strong>Developer</strong>: Shogo Nakajima</p>
+<p><strong>Email</strong>: s15790349@gmail.com</p>
 
-<hr>
 
+        </div>
+        <div id="pt" class="language-section">
 <h2>Política de Privacidade (Português)</h2>
 
 <p>Última atualização: 27 de janeiro de 2026</p>
@@ -456,34 +507,34 @@
 <p>Ao usar os recursos de sincronização na nuvem, coletamos:</p>
 <ul><li>Endereço de e-mail</li>
 <li>Nome de exibição</li>
-<li>Senha (criptografada)</li>
-</ul>
+<li>Senha (criptografada)</li></ul>
+
 <h3>1.2 Informações do Perfil</h3>
 <ul><li>Cor da faixa de BJJ (branca, azul, roxa, marrom, preta)</li>
 <li>Graus da faixa</li>
 <li>Biografia</li>
-<li>URL da imagem de perfil</li>
-</ul>
+<li>URL da imagem de perfil</li></ul>
+
 <h3>1.3 Dados de Treinamento</h3>
 <ul><li>Técnicas (nome, descrição, categoria, tags, nível de domínio)</li>
 <li>Registros de treino (data, hora, conteúdo, condição física, rounds de sparring)</li>
-<li>URLs de vídeos do YouTube</li>
-</ul>
+<li>URLs de vídeos do YouTube</li></ul>
+
 <h3>1.4 Dados de Uso</h3>
 <ul><li>Técnicas visualizadas recentemente</li>
 <li>Atividade de treino semanal</li>
-<li>Uso de recursos premium</li>
-</ul>
+<li>Uso de recursos premium</li></ul>
+
 <h3>1.5 Informações de Pagamento</h3>
 <ul><li>Informações de assinatura da App Store</li>
-<li>Data de expiração do plano premium</li>
-</ul>
+<li>Data de expiração do plano premium</li></ul>
+
 <h3>1.6 Dados de Publicidade</h3>
 <p>Usamos o Google AdMob para anúncios, que pode coletar:</p>
 <ul><li>Identificador de publicidade (IDFA)</li>
 <li>Informações do dispositivo</li>
-<li>Dados de impressão e clique de anúncios</li>
-</ul>
+<li>Dados de impressão e clique de anúncios</li></ul>
+
 <h2>2. Informações que NÃO Coletamos</h2>
 
 <p>O App NÃO coleta:</p>
@@ -492,82 +543,82 @@
 <li>Contatos</li>
 <li>Fotos/vídeos da biblioteca</li>
 <li>Histórico de chamadas</li>
-<li>Áudio do microfone</li>
-</ul>
+<li>Áudio do microfone</li></ul>
+
 <h2>3. Como Usamos Suas Informações</h2>
 
 <h3>3.1 Prestação de Serviço</h3>
 <ul><li>Gerenciamento de conta de usuário</li>
-<li>Armazenamento e sincronização de dados de treino</li>
-</ul>
+<li>Armazenamento e sincronização de dados de treino</li></ul>
+
 <h3>3.2 Melhoria do Serviço</h3>
 <ul><li>Melhorias na funcionalidade do app</li>
 <li>Correção de bugs</li>
-<li>Aprimoramento da experiência do usuário</li>
-</ul>
+<li>Aprimoramento da experiência do usuário</li></ul>
+
 <h3>3.3 Gerenciamento de Pagamento</h3>
 <ul><li>Gerenciamento de assinatura premium</li>
-<li>Entrega de recursos sem anúncios</li>
-</ul>
+<li>Entrega de recursos sem anúncios</li></ul>
+
 <h3>3.4 Publicidade</h3>
-<ul><li>Entrega de anúncios para usuários gratuitos (Google AdMob)</li>
-</ul>
+<ul><li>Entrega de anúncios para usuários gratuitos (Google AdMob)</li></ul>
+
 <h2>4. Armazenamento de Dados</h2>
 
 <h3>4.1 Armazenamento Local</h3>
 <p>Armazenado no seu dispositivo:</p>
 <ul><li>Banco de dados CoreData (SQLite)</li>
 <li>Arquivos de backup JSON</li>
-<li>Configurações UserDefaults</li>
-</ul>
-<strong>Uso Offline</strong>: Todos os recursos principais funcionam sem conexão com a internet.
+<li>Configurações UserDefaults</li></ul>
+
+<p><strong>Uso Offline</strong>: Todos os recursos principais funcionam sem conexão com a internet.</p>
 
 <h3>4.2 Armazenamento na Nuvem (Supabase)</h3>
 <p>Quando a sincronização na nuvem está habilitada:</p>
 <ul><li>Serviço: Supabase</li>
 <li>Localização: Banco de dados na nuvem (PostgreSQL)</li>
-<li>Criptografia: HTTPS</li>
-</ul>
-<strong>Importante</strong>: A sincronização na nuvem é opcional e deve ser iniciada manualmente.
+<li>Criptografia: HTTPS</li></ul>
+
+<p><strong>Importante</strong>: A sincronização na nuvem é opcional e deve ser iniciada manualmente.</p>
 
 <h2>5. Compartilhamento de Informações</h2>
 
 <h3>5.1 Divulgação a Terceiros</h3>
 <p>Não compartilhamos informações pessoais exceto:</p>
 <ul><li>Com consentimento explícito do usuário</li>
-<li>Quando legalmente exigido</li>
-</ul>
+<li>Quando legalmente exigido</li></ul>
+
 <h3>5.2 Serviços de Terceiros</h3>
 
 <p>#### Google AdMob (Publicidade)</p>
 <ul><li>Provedor: Google LLC</li>
 <li>Propósito: Entrega de anúncios</li>
-<li>Política de Privacidade: https://policies.google.com/privacy</li>
-</ul>
+<li>Política de Privacidade: https://policies.google.com/privacy</li></ul>
+
 <p>#### Supabase (Banco de Dados)</p>
 <ul><li>Provedor: Supabase Inc.</li>
 <li>Propósito: Armazenamento de dados na nuvem e autenticação</li>
-<li>Política de Privacidade: https://supabase.com/privacy</li>
-</ul>
+<li>Política de Privacidade: https://supabase.com/privacy</li></ul>
+
 <p>#### Apple (Pagamentos)</p>
 <ul><li>Provedor: Apple Inc.</li>
 <li>Propósito: Processamento de compras no app</li>
-<li>Política de Privacidade: https://www.apple.com/legal/privacy/</li>
-</ul>
+<li>Política de Privacidade: https://www.apple.com/legal/privacy/</li></ul>
+
 <h2>6. Retenção de Dados</h2>
 
 <ul><li><strong>Dados locais</strong>: Retidos até a exclusão pelo usuário</li>
 <li><strong>Dados na nuvem</strong>: Retidos até a exclusão da conta</li>
 <li><strong>Dados de anúncios</strong>: Conforme política do Google AdMob</li>
-<li><strong>Dados de pagamento</strong>: Conforme requisitos legais</li>
-</ul>
+<li><strong>Dados de pagamento</strong>: Conforme requisitos legais</li></ul>
+
 <h2>7. Exclusão de Dados</h2>
 
 <h3>7.1 Dados Locais</h3>
 <p>Na tela de configurações:</p>
 <ul><li>Excluir dados individuais (técnicas, registros)</li>
-<li>Exclusão completa (desinstalar app)</li>
-</ul>
+<li>Exclusão completa (desinstalar app)</li></ul>
+
 <h3>7.2 Dados na Nuvem</h3>
 <p>Use o recurso "Excluir Dados da Nuvem" nas configurações.</p>
 
@@ -580,8 +631,8 @@
 <ul><li>Criptografia HTTPS</li>
 <li>Autenticação JWT</li>
 <li>iOS Keychain para armazenamento de tokens</li>
-<li>Verificação de transação da App Store</li>
-</ul>
+<li>Verificação de transação da App Store</li></ul>
+
 <p>No entanto, nenhuma transmissão pela internet é completamente segura.</p>
 
 <h2>9. Privacidade de Crianças</h2>
@@ -591,8 +642,8 @@
 <h2>10. Desativação de Anúncios</h2>
 
 <p>Para limitar a personalização de anúncios:</p>
-<ul><li>Configurações do iOS > Privacidade > Publicidade > Ativar "Limitar Rastreamento de Anúncios"</li>
-</ul>
+<ul><li>Configurações do iOS > Privacidade > Publicidade > Ativar "Limitar Rastreamento de Anúncios"</li></ul>
+
 <p>Ou assine o Premium para remover todos os anúncios.</p>
 
 <h2>11. Alterações na Política</h2>
@@ -603,12 +654,13 @@
 
 <p>Para questões de privacidade, contate:</p>
 
-<strong>Nome do App</strong>: BJJ Hub
-<strong>Desenvolvedor</strong>: Shogo Nakajima
-<strong>E-mail</strong>: s15790349@gmail.com
+<p><strong>Nome do App</strong>: BJJ Hub</p>
+<p><strong>Desenvolvedor</strong>: Shogo Nakajima</p>
+<p><strong>E-mail</strong>: s15790349@gmail.com</p>
 
-<hr>
 
+        </div>
+        <div id="ko" class="language-section">
 <h2>개인정보 처리방침 (한국어)</h2>
 
 <p>최종 업데이트: 2026년 1월 27일</p>
@@ -623,34 +675,34 @@
 <p>클라우드 동기화 기능 사용 시 다음을 수집합니다:</p>
 <ul><li>이메일 주소</li>
 <li>표시 이름</li>
-<li>비밀번호 (암호화됨)</li>
-</ul>
+<li>비밀번호 (암호화됨)</li></ul>
+
 <h3>1.2 프로필 정보</h3>
 <ul><li>주짓수 벨트 색상 (흰색, 파란색, 보라색, 갈색, 검은색)</li>
 <li>벨트 스트라이프</li>
 <li>자기소개</li>
-<li>프로필 이미지 URL</li>
-</ul>
+<li>프로필 이미지 URL</li></ul>
+
 <h3>1.3 훈련 데이터</h3>
 <ul><li>기술 (이름, 설명, 카테고리, 태그, 숙련도)</li>
 <li>훈련 기록 (날짜, 시간, 내용, 신체 상태, 스파링 라운드)</li>
-<li>YouTube 동영상 URL</li>
-</ul>
+<li>YouTube 동영상 URL</li></ul>
+
 <h3>1.4 사용 데이터</h3>
 <ul><li>최근 조회한 기술</li>
 <li>주간 훈련 활동</li>
-<li>프리미엄 기능 사용</li>
-</ul>
+<li>프리미엄 기능 사용</li></ul>
+
 <h3>1.5 결제 정보</h3>
 <ul><li>App Store 구독 정보</li>
-<li>프리미엄 플랜 만료일</li>
-</ul>
+<li>프리미엄 플랜 만료일</li></ul>
+
 <h3>1.6 광고 데이터</h3>
 <p>광고를 위해 Google AdMob을 사용하며 다음을 수집할 수 있습니다:</p>
 <ul><li>광고 식별자 (IDFA)</li>
 <li>기기 정보</li>
-<li>광고 노출 및 클릭 데이터</li>
-</ul>
+<li>광고 노출 및 클릭 데이터</li></ul>
+
 <h2>2. 수집하지 않는 정보</h2>
 
 <p>본 앱은 다음을 수집하지 않습니다:</p>
@@ -659,82 +711,82 @@
 <li>연락처</li>
 <li>사진첩의 사진/동영상</li>
 <li>통화 기록</li>
-<li>마이크 오디오</li>
-</ul>
+<li>마이크 오디오</li></ul>
+
 <h2>3. 정보 사용 방법</h2>
 
 <h3>3.1 서비스 제공</h3>
 <ul><li>사용자 계정 관리</li>
-<li>훈련 데이터 저장 및 동기화</li>
-</ul>
+<li>훈련 데이터 저장 및 동기화</li></ul>
+
 <h3>3.2 서비스 개선</h3>
 <ul><li>앱 기능 개선</li>
 <li>버그 수정</li>
-<li>사용자 경험 향상</li>
-</ul>
+<li>사용자 경험 향상</li></ul>
+
 <h3>3.3 결제 관리</h3>
 <ul><li>프리미엄 구독 관리</li>
-<li>광고 없는 기능 제공</li>
-</ul>
+<li>광고 없는 기능 제공</li></ul>
+
 <h3>3.4 광고</h3>
-<ul><li>무료 사용자 대상 광고 게재 (Google AdMob)</li>
-</ul>
+<ul><li>무료 사용자 대상 광고 게재 (Google AdMob)</li></ul>
+
 <h2>4. 데이터 저장</h2>
 
 <h3>4.1 로컬 저장소</h3>
 <p>기기에 저장됨:</p>
 <ul><li>CoreData 데이터베이스 (SQLite)</li>
 <li>JSON 백업 파일</li>
-<li>UserDefaults 설정</li>
-</ul>
-<strong>오프라인 사용</strong>: 인터넷 연결 없이 모든 핵심 기능 사용 가능.
+<li>UserDefaults 설정</li></ul>
+
+<p><strong>오프라인 사용</strong>: 인터넷 연결 없이 모든 핵심 기능 사용 가능.</p>
 
 <h3>4.2 클라우드 저장소 (Supabase)</h3>
 <p>클라우드 동기화 활성화 시:</p>
 <ul><li>서비스: Supabase</li>
 <li>위치: 클라우드 데이터베이스 (PostgreSQL)</li>
-<li>암호화: HTTPS</li>
-</ul>
-<strong>중요</strong>: 클라우드 동기화는 선택 사항이며 수동으로 시작해야 합니다.
+<li>암호화: HTTPS</li></ul>
+
+<p><strong>중요</strong>: 클라우드 동기화는 선택 사항이며 수동으로 시작해야 합니다.</p>
 
 <h2>5. 정보 공유</h2>
 
 <h3>5.1 제3자 공개</h3>
 <p>다음의 경우를 제외하고 개인정보를 공유하지 않습니다:</p>
 <ul><li>명시적인 사용자 동의가 있는 경우</li>
-<li>법적으로 요구되는 경우</li>
-</ul>
+<li>법적으로 요구되는 경우</li></ul>
+
 <h3>5.2 제3자 서비스</h3>
 
 <p>#### Google AdMob (광고)</p>
 <ul><li>제공자: Google LLC</li>
 <li>목적: 광고 게재</li>
-<li>개인정보 처리방침: https://policies.google.com/privacy</li>
-</ul>
+<li>개인정보 처리방침: https://policies.google.com/privacy</li></ul>
+
 <p>#### Supabase (데이터베이스)</p>
 <ul><li>제공자: Supabase Inc.</li>
 <li>목적: 클라우드 데이터 저장 및 인증</li>
-<li>개인정보 처리방침: https://supabase.com/privacy</li>
-</ul>
+<li>개인정보 처리방침: https://supabase.com/privacy</li></ul>
+
 <p>#### Apple (결제)</p>
 <ul><li>제공자: Apple Inc.</li>
 <li>목적: 인앱 구매 처리</li>
-<li>개인정보 처리방침: https://www.apple.com/legal/privacy/</li>
-</ul>
+<li>개인정보 처리방침: https://www.apple.com/legal/privacy/</li></ul>
+
 <h2>6. 데이터 보존</h2>
 
 <ul><li><strong>로컬 데이터</strong>: 사용자가 삭제할 때까지 보존</li>
 <li><strong>클라우드 데이터</strong>: 계정 삭제 시까지 보존</li>
 <li><strong>광고 데이터</strong>: Google AdMob 정책에 따름</li>
-<li><strong>결제 데이터</strong>: 법적 요구 사항에 따름</li>
-</ul>
+<li><strong>결제 데이터</strong>: 법적 요구 사항에 따름</li></ul>
+
 <h2>7. 데이터 삭제</h2>
 
 <h3>7.1 로컬 데이터</h3>
 <p>설정 화면에서:</p>
 <ul><li>개별 데이터 삭제 (기술, 기록)</li>
-<li>완전 삭제 (앱 제거)</li>
-</ul>
+<li>완전 삭제 (앱 제거)</li></ul>
+
 <h3>7.2 클라우드 데이터</h3>
 <p>설정에서 "클라우드 데이터 삭제" 기능 사용.</p>
 
@@ -747,8 +799,8 @@
 <ul><li>HTTPS 암호화</li>
 <li>JWT 인증</li>
 <li>iOS Keychain을 통한 토큰 저장</li>
-<li>App Store 거래 검증</li>
-</ul>
+<li>App Store 거래 검증</li></ul>
+
 <p>그러나 인터넷 전송은 완전히 안전하지 않습니다.</p>
 
 <h2>9. 어린이 개인정보 보호</h2>
@@ -758,8 +810,8 @@
 <h2>10. 광고 옵트아웃</h2>
 
 <p>광고 개인화를 제한하려면:</p>
-<ul><li>iOS 설정 > 개인정보 보호 > 광고 > "광고 추적 제한" 활성화</li>
-</ul>
+<ul><li>iOS 설정 > 개인정보 보호 > 광고 > "광고 추적 제한" 활성화</li></ul>
+
 <p>또는 프리미엄을 구독하여 모든 광고를 제거하세요.</p>
 
 <h2>11. 정책 변경</h2>
@@ -770,20 +822,36 @@
 
 <p>개인정보 관련 문의:</p>
 
-<strong>앱 이름</strong>: BJJ Hub
-<strong>개발자</strong>: Shogo Nakajima
-<strong>이메일</strong>: s15790349@gmail.com
+<p><strong>앱 이름</strong>: BJJ Hub</p>
+<p><strong>개발자</strong>: Shogo Nakajima</p>
+<p><strong>이메일</strong>: s15790349@gmail.com</p>
 
-<hr>
 
-<p>本プライバシーポリシーに同意いただくことで、本アプリをご利用いただけます。</p>
-
-<p>By agreeing to this Privacy Policy, you may use this App.</p>
-
-<p>Ao concordar com esta Política de Privacidade, você pode usar este App.</p>
-
-<p>본 개인정보 처리방침에 동의함으로써 본 앱을 사용할 수 있습니다.</p>
-
+        </div>
     </div>
+
+    <script>
+        function changeLanguage(lang) {
+            // Hide all sections
+            document.querySelectorAll('.language-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(lang).classList.add('active');
+
+            // Save preference
+            localStorage.setItem('preferredLanguage', lang);
+        }
+
+        // Load saved language preference
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('preferredLanguage');
+            if (savedLang) {
+                document.getElementById('languageSelect').value = savedLang;
+                changeLanguage(savedLang);
+            }
+        });
+    </script>
 </body>
 </html>
