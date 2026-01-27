@@ -250,6 +250,12 @@ struct SettingsView: View {
         .sheet(isPresented: $showAuthSheet) {
             AuthView(viewModel: viewModel, initiallySignUp: true, allowsModeSwitch: false)
         }
+        .onChange(of: viewModel.session) { _, newSession in
+            // セッションが更新されたら認証モーダルを閉じる
+            if newSession != nil {
+                showAuthSheet = false
+            }
+        }
         .sheet(isPresented: $showPrivacyPolicy) {
             PrivacyPolicyView(theme: theme)
         }
