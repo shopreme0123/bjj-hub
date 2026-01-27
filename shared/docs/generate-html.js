@@ -52,8 +52,16 @@ function markdownToHtml(md) {
       continue;
     }
 
-    // Headers (must be processed before other patterns)
-    if (trimmed.startsWith('### ')) {
+    // Headers (must be processed before other patterns, check longer patterns first)
+    if (trimmed.startsWith('#### ')) {
+      if (inList) {
+        processed.push('<ul>' + listItems.join('\n') + '</ul>');
+        listItems = [];
+        inList = false;
+      }
+      processed.push('<h4>' + trimmed.substring(5) + '</h4>');
+      continue;
+    } else if (trimmed.startsWith('### ')) {
       if (inList) {
         processed.push('<ul>' + listItems.join('\n') + '</ul>');
         listItems = [];
@@ -214,6 +222,14 @@ const htmlTemplate = `<!DOCTYPE html>
             color: #34495e;
         }
 
+        h4 {
+            font-size: 1.1em;
+            margin-top: 1em;
+            margin-bottom: 0.5em;
+            color: #555;
+            font-weight: 600;
+        }
+
         p {
             margin-bottom: 1em;
         }
@@ -267,6 +283,10 @@ const htmlTemplate = `<!DOCTYPE html>
 
             h3 {
                 font-size: 1.1em;
+            }
+
+            h4 {
+                font-size: 1.05em;
             }
         }
     </style>
