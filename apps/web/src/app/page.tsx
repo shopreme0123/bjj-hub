@@ -1295,7 +1295,7 @@ function LandingPage() {
             <div className="lp-logo-icon">
               <Image
                 src="/bjj-logo.png"
-                alt="BJJ Hub Logo"
+                alt="Your BJJ Logo"
                 width={40}
                 height={40}
                 className="object-contain"
@@ -1572,7 +1572,7 @@ function LandingPage() {
       <section className="lp-cta-section">
         <div className="lp-cta-content">
           <h2 className="lp-cta-title">マットの外でも、強くなろう。</h2>
-          <p className="lp-cta-desc">BJJ Hubで、あなたの柔術を次のレベルへ。無料で今すぐ始められます。</p>
+          <p className="lp-cta-desc">Your BJJで、あなたの柔術を次のレベルへ。無料で今すぐ始められます。</p>
           <div className="lp-cta-buttons">
             <Link href="/home" className="lp-cta-main">
               <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
@@ -1590,7 +1590,7 @@ function LandingPage() {
               <div className="lp-logo-icon">
                 <Image
                   src="/bjj-logo.png"
-                  alt="BJJ Hub Logo"
+                  alt="Your BJJ Logo"
                   width={40}
                   height={40}
                   className="object-contain"
@@ -1619,7 +1619,7 @@ function LandingPage() {
           </div>
         </div>
         <div className="lp-footer-bottom">
-          <p>© 2026 BJJ Hub. All rights reserved.</p>
+          <p>© 2026 Your BJJ. All rights reserved.</p>
           <div className="lp-social-links">
             <a href="https://x.com/bjjshopreme" target="_blank" rel="noopener noreferrer" title="X (Twitter)">
               <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>

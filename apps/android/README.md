@@ -1,4 +1,4 @@
-# BJJ Hub - Android版（準備中）
+# Your BJJ - Android版（準備中）
 
 このディレクトリは、将来のAndroid版アプリ開発用に予約されています。
 
@@ -21,10 +21,10 @@
 Android版の実装時は、以下を参考にしてください:
 
 ### iOS版の実装
-- ディレクトリ: `../ios/BJJHub/`
-- データモデル: `../ios/BJJHub/BJJHub/Models.swift`
-- API通信: `../ios/BJJHub/BJJHub/SupabaseService.swift`
-- ローカルストレージ: `../ios/BJJHub/BJJHub/LocalStorageManager.swift`
+- ディレクトリ: `../ios/YourBJJ/`
+- データモデル: `../ios/YourBJJ/YourBJJ/Models.swift`
+- API通信: `../ios/YourBJJ/YourBJJ/SupabaseService.swift`
+- ローカルストレージ: `../ios/YourBJJ/YourBJJ/LocalStorageManager.swift`
 
 ### 共通リソース
 - プライバシーポリシー: `../../shared/docs/PRIVACY_POLICY.md`
@@ -129,7 +129,7 @@ android/
 ## デプロイ予定
 
 ### Google Play Console
-- **アプリ名**: BJJ Hub
+- **アプリ名**: Your BJJ
 - **パッケージ名**: com.bjjhub.android
 - **カテゴリ**: スポーツ
 - **プライバシーポリシーURL**: `https://your-domain.vercel.app/privacy-policy.html`

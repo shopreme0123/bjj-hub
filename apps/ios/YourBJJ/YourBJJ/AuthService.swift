@@ -16,6 +16,19 @@ struct AuthResponse: Decodable {
     let user: AuthUser
 }
 
+struct SignUpResponse: Decodable {
+    let user: AuthUser?
+    let session: SignUpSession?
+}
+
+struct SignUpSession: Decodable {
+    let accessToken: String
+    let refreshToken: String
+    let expiresIn: Int
+    let tokenType: String
+    let user: AuthUser?
+}
+
 struct AuthUser: Decodable {
     let id: String
     let email: String
@@ -91,6 +104,64 @@ final class SupabaseAuthService {
             refreshToken: authResponse.refreshToken,
             userId: authResponse.user.id,
             email: authResponse.user.email,
+            expiresAt: expiresAt
+        )
+    }
+
+    func signUp(email: String, password: String) async throws -> AuthSession? {
+        guard let url = URL(string: "auth/v1/signup", relativeTo: baseURL) else {
+            throw URLError(.badURL)
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue(anonKey, forHTTPHeaderField: "apikey")
+        request.setValue("Bearer \(anonKey)", forHTTPHeaderField: "Authorization")
+
+        let payload = ["email": email, "password": password]
+        request.httpBody = try JSONEncoder().encode(payload)
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw AuthError(message: "登録に失敗しました (無効なレスポンス)", statusCode: nil, responseBody: nil)
+        }
+
+        if !(200...299).contains(httpResponse.statusCode) {
+            let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
+            if let errorPayload = try? decoder.decode(AuthErrorResponse.self, from: data) {
+                let baseMessage = errorPayload.errorDescription ?? errorPayload.message ?? errorPayload.error ?? "登録に失敗しました"
+                let body = String(data: data, encoding: .utf8)
+                let detail = body?.isEmpty == false ? " \(body ?? "")" : ""
+                let message = "\(baseMessage) (status \(httpResponse.statusCode))\(detail)"
+                throw AuthError(message: message, statusCode: httpResponse.statusCode, responseBody: body)
+            }
+            let body = String(data: data, encoding: .utf8) ?? ""
+            let detail = body.isEmpty ? "" : " \(body)"
+            throw AuthError(message: "登録に失敗しました (\(httpResponse.statusCode))\(detail)", statusCode: httpResponse.statusCode, responseBody: body)
+        }
+
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        let signUpResponse = try decoder.decode(SignUpResponse.self, from: data)
+
+        guard let session = signUpResponse.session else {
+            return nil
+        }
+
+        let user = session.user ?? signUpResponse.user
+        guard let authUser = user else {
+            throw AuthError(message: "登録に失敗しました (ユーザー情報がありません)", statusCode: httpResponse.statusCode, responseBody: String(data: data, encoding: .utf8))
+        }
+
+        let expiresAt = Date().addingTimeInterval(TimeInterval(session.expiresIn))
+        return AuthSession(
+            accessToken: session.accessToken,
+            refreshToken: session.refreshToken,
+            userId: authUser.id,
+            email: authUser.email,
             expiresAt: expiresAt
         )
     }

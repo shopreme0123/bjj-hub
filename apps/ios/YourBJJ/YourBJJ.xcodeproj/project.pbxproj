@@ -7,10 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		10AC3B03F6974CE6851AD458 /* LaunchScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09D15D348176408CBBE5F5FE /* LaunchScreen.swift */; };
 		64C6F3562F17AC090019AC77 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 64C6F3382F17AC090019AC77 /* Assets.xcassets */; };
 		64C6F3572F17AC090019AC77 /* FlowImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C6F3422F17AC090019AC77 /* FlowImportView.swift */; };
 		64C6F3582F17AC090019AC77 /* DiaryFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C6F33E2F17AC090019AC77 /* DiaryFormView.swift */; };
-		64C6F3592F17AC090019AC77 /* BJJHubApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C6F33B2F17AC090019AC77 /* BJJHubApp.swift */; };
+		64C6F3592F17AC090019AC77 /* YourBJJApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C6F33B2F17AC090019AC77 /* YourBJJApp.swift */; };
 		64C6F35A2F17AC090019AC77 /* FlowsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C6F3442F17AC090019AC77 /* FlowsView.swift */; };
 		64C6F35B2F17AC090019AC77 /* TechniqueDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C6F34E2F17AC090019AC77 /* TechniqueDetailView.swift */; };
 		64C6F35C2F17AC090019AC77 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C6F3522F17AC090019AC77 /* Theme.swift */; };
@@ -37,8 +38,6 @@
 		64C6F3712F17AC090019AC77 /* AdBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C6F3362F17AC090019AC77 /* AdBannerView.swift */; };
 		64C6F3722F17AC090019AC77 /* FlowShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C6F3432F17AC090019AC77 /* FlowShareView.swift */; };
 		64C6F3732F17AC090019AC77 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C6F3462F17AC090019AC77 /* HomeView.swift */; };
-		10AC3B03F6974CE6851AD458 /* LaunchScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09D15D348176408CBBE5F5FE /* LaunchScreen.swift */; };
-
 		64C6F3742F17AC090019AC77 /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C6F3372F17AC090019AC77 /* AppViewModel.swift */; };
 		64C6F3772F17C8980019AC77 /* MediaHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C6F3762F17C8980019AC77 /* MediaHelpers.swift */; };
 		64C6F3792F17CA200019AC77 /* NotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C6F3782F17CA200019AC77 /* NotificationView.swift */; };
@@ -51,29 +50,29 @@
 			containerPortal = 64C6F2CC2F1685C30019AC77 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 64C6F2D32F1685C30019AC77;
-			remoteInfo = BJJHub;
+			remoteInfo = YourBJJ;
 		};
 		64C6F2EC2F1685C40019AC77 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 64C6F2CC2F1685C30019AC77 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 64C6F2D32F1685C30019AC77;
-			remoteInfo = BJJHub;
+			remoteInfo = YourBJJ;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		64C6F2D42F1685C30019AC77 /* BJJHub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BJJHub.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		64C6F2E12F1685C40019AC77 /* BJJHubTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BJJHubTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		64C6F2EB2F1685C40019AC77 /* BJJHubUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BJJHubUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		09D15D348176408CBBE5F5FE /* LaunchScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreen.swift; sourceTree = "<group>"; };
+		64C6F2D42F1685C30019AC77 /* YourBJJ.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YourBJJ.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		64C6F2E12F1685C40019AC77 /* YourBJJTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YourBJJTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		64C6F2EB2F1685C40019AC77 /* YourBJJUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YourBJJUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		64C6F3362F17AC090019AC77 /* AdBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdBannerView.swift; sourceTree = "<group>"; };
 		64C6F3372F17AC090019AC77 /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
 		64C6F3382F17AC090019AC77 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		64C6F3392F17AC090019AC77 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		64C6F33A2F17AC090019AC77 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
-		64C6F33B2F17AC090019AC77 /* BJJHubApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BJJHubApp.swift; sourceTree = "<group>"; };
+		64C6F33B2F17AC090019AC77 /* YourBJJApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourBJJApp.swift; sourceTree = "<group>"; };
 		64C6F33C2F17AC090019AC77 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F60718293A4B5F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		64C6F33D2F17AC090019AC77 /* DiaryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryDetailView.swift; sourceTree = "<group>"; };
 		64C6F33E2F17AC090019AC77 /* DiaryFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryFormView.swift; sourceTree = "<group>"; };
 		64C6F33F2F17AC090019AC77 /* DiaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryView.swift; sourceTree = "<group>"; };
@@ -84,8 +83,6 @@
 		64C6F3442F17AC090019AC77 /* FlowsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowsView.swift; sourceTree = "<group>"; };
 		64C6F3452F17AC090019AC77 /* GroupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsView.swift; sourceTree = "<group>"; };
 		64C6F3462F17AC090019AC77 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
-		09D15D348176408CBBE5F5FE /* LaunchScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreen.swift; sourceTree = "<group>"; };
-
 		64C6F3472F17AC090019AC77 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		64C6F3482F17AC090019AC77 /* NotificationsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsManager.swift; sourceTree = "<group>"; };
 		64C6F3492F17AC090019AC77 /* PremiumManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumManager.swift; sourceTree = "<group>"; };
@@ -102,17 +99,18 @@
 		64C6F3542F17AC090019AC77 /* UIHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIHelpers.swift; sourceTree = "<group>"; };
 		64C6F3762F17C8980019AC77 /* MediaHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaHelpers.swift; sourceTree = "<group>"; };
 		64C6F3782F17CA200019AC77 /* NotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B5F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		64C6F2E42F1685C40019AC77 /* BJJHubTests */ = {
+		64C6F2E42F1685C40019AC77 /* YourBJJTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = BJJHubTests;
+			path = YourBJJTests;
 			sourceTree = "<group>";
 		};
-		64C6F2EE2F1685C40019AC77 /* BJJHubUITests */ = {
+		64C6F2EE2F1685C40019AC77 /* YourBJJUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = BJJHubUITests;
+			path = YourBJJUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -146,9 +144,9 @@
 		64C6F2CB2F1685C30019AC77 = {
 			isa = PBXGroup;
 			children = (
-				64C6F3552F17AC090019AC77 /* BJJHub */,
-				64C6F2E42F1685C40019AC77 /* BJJHubTests */,
-				64C6F2EE2F1685C40019AC77 /* BJJHubUITests */,
+				64C6F3552F17AC090019AC77 /* YourBJJ */,
+				64C6F2E42F1685C40019AC77 /* YourBJJTests */,
+				64C6F2EE2F1685C40019AC77 /* YourBJJUITests */,
 				64C6F2D52F1685C30019AC77 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -156,14 +154,14 @@
 		64C6F2D52F1685C30019AC77 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				64C6F2D42F1685C30019AC77 /* BJJHub.app */,
-				64C6F2E12F1685C40019AC77 /* BJJHubTests.xctest */,
-				64C6F2EB2F1685C40019AC77 /* BJJHubUITests.xctest */,
+				64C6F2D42F1685C30019AC77 /* YourBJJ.app */,
+				64C6F2E12F1685C40019AC77 /* YourBJJTests.xctest */,
+				64C6F2EB2F1685C40019AC77 /* YourBJJUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		64C6F3552F17AC090019AC77 /* BJJHub */ = {
+		64C6F3552F17AC090019AC77 /* YourBJJ */ = {
 			isa = PBXGroup;
 			children = (
 				A1B2C3D4E5F60718293A4B5F /* Info.plist */,
@@ -174,7 +172,7 @@
 				64C6F3382F17AC090019AC77 /* Assets.xcassets */,
 				64C6F3392F17AC090019AC77 /* AuthService.swift */,
 				64C6F33A2F17AC090019AC77 /* AuthView.swift */,
-				64C6F33B2F17AC090019AC77 /* BJJHubApp.swift */,
+				64C6F33B2F17AC090019AC77 /* YourBJJApp.swift */,
 				64C6F33C2F17AC090019AC77 /* ContentView.swift */,
 				64C6F33D2F17AC090019AC77 /* DiaryDetailView.swift */,
 				64C6F33E2F17AC090019AC77 /* DiaryFormView.swift */,
@@ -202,15 +200,15 @@
 				64C6F3532F17AC090019AC77 /* TrainingLogForm.swift */,
 				64C6F3542F17AC090019AC77 /* UIHelpers.swift */,
 			);
-			path = BJJHub;
+			path = YourBJJ;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		64C6F2D32F1685C30019AC77 /* BJJHub */ = {
+		64C6F2D32F1685C30019AC77 /* YourBJJ */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 64C6F2F52F1685C40019AC77 /* Build configuration list for PBXNativeTarget "BJJHub" */;
+			buildConfigurationList = 64C6F2F52F1685C40019AC77 /* Build configuration list for PBXNativeTarget "YourBJJ" */;
 			buildPhases = (
 				64C6F2D02F1685C30019AC77 /* Sources */,
 				64C6F2D12F1685C30019AC77 /* Frameworks */,
@@ -220,17 +218,17 @@
 			);
 			dependencies = (
 			);
-			name = BJJHub;
+			name = YourBJJ;
 			packageProductDependencies = (
 				A1B2C3D4E5F60718293A4B5D /* GoogleMobileAds */,
 			);
-			productName = BJJHub;
-			productReference = 64C6F2D42F1685C30019AC77 /* BJJHub.app */;
+			productName = YourBJJ;
+			productReference = 64C6F2D42F1685C30019AC77 /* YourBJJ.app */;
 			productType = "com.apple.product-type.application";
 		};
-		64C6F2E02F1685C40019AC77 /* BJJHubTests */ = {
+		64C6F2E02F1685C40019AC77 /* YourBJJTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 64C6F2F82F1685C40019AC77 /* Build configuration list for PBXNativeTarget "BJJHubTests" */;
+			buildConfigurationList = 64C6F2F82F1685C40019AC77 /* Build configuration list for PBXNativeTarget "YourBJJTests" */;
 			buildPhases = (
 				64C6F2DD2F1685C40019AC77 /* Sources */,
 				64C6F2DE2F1685C40019AC77 /* Frameworks */,
@@ -242,18 +240,18 @@
 				64C6F2E32F1685C40019AC77 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				64C6F2E42F1685C40019AC77 /* BJJHubTests */,
+				64C6F2E42F1685C40019AC77 /* YourBJJTests */,
 			);
-			name = BJJHubTests;
+			name = YourBJJTests;
 			packageProductDependencies = (
 			);
-			productName = BJJHubTests;
-			productReference = 64C6F2E12F1685C40019AC77 /* BJJHubTests.xctest */;
+			productName = YourBJJTests;
+			productReference = 64C6F2E12F1685C40019AC77 /* YourBJJTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		64C6F2EA2F1685C40019AC77 /* BJJHubUITests */ = {
+		64C6F2EA2F1685C40019AC77 /* YourBJJUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 64C6F2FB2F1685C40019AC77 /* Build configuration list for PBXNativeTarget "BJJHubUITests" */;
+			buildConfigurationList = 64C6F2FB2F1685C40019AC77 /* Build configuration list for PBXNativeTarget "YourBJJUITests" */;
 			buildPhases = (
 				64C6F2E72F1685C40019AC77 /* Sources */,
 				64C6F2E82F1685C40019AC77 /* Frameworks */,
@@ -265,13 +263,13 @@
 				64C6F2ED2F1685C40019AC77 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				64C6F2EE2F1685C40019AC77 /* BJJHubUITests */,
+				64C6F2EE2F1685C40019AC77 /* YourBJJUITests */,
 			);
-			name = BJJHubUITests;
+			name = YourBJJUITests;
 			packageProductDependencies = (
 			);
-			productName = BJJHubUITests;
-			productReference = 64C6F2EB2F1685C40019AC77 /* BJJHubUITests.xctest */;
+			productName = YourBJJUITests;
+			productReference = 64C6F2EB2F1685C40019AC77 /* YourBJJUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -297,7 +295,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 64C6F2CF2F1685C30019AC77 /* Build configuration list for PBXProject "BJJHub" */;
+			buildConfigurationList = 64C6F2CF2F1685C30019AC77 /* Build configuration list for PBXProject "YourBJJ" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -307,16 +305,16 @@
 			mainGroup = 64C6F2CB2F1685C30019AC77;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				A1B2C3D4E5F60718293A4B5C /* XCRemoteSwiftPackageReference "GoogleMobileAds" */,
+				A1B2C3D4E5F60718293A4B5C /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 64C6F2D52F1685C30019AC77 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				64C6F2D32F1685C30019AC77 /* BJJHub */,
-				64C6F2E02F1685C40019AC77 /* BJJHubTests */,
-				64C6F2EA2F1685C40019AC77 /* BJJHubUITests */,
+				64C6F2D32F1685C30019AC77 /* YourBJJ */,
+				64C6F2E02F1685C40019AC77 /* YourBJJTests */,
+				64C6F2EA2F1685C40019AC77 /* YourBJJUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -353,7 +351,7 @@
 			files = (
 				64C6F3572F17AC090019AC77 /* FlowImportView.swift in Sources */,
 				64C6F3582F17AC090019AC77 /* DiaryFormView.swift in Sources */,
-				64C6F3592F17AC090019AC77 /* BJJHubApp.swift in Sources */,
+				64C6F3592F17AC090019AC77 /* YourBJJApp.swift in Sources */,
 				64C6F35A2F17AC090019AC77 /* FlowsView.swift in Sources */,
 				64C6F35B2F17AC090019AC77 /* TechniqueDetailView.swift in Sources */,
 				64C6F35C2F17AC090019AC77 /* Theme.swift in Sources */,
@@ -406,34 +404,15 @@
 /* Begin PBXTargetDependency section */
 		64C6F2E32F1685C40019AC77 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 64C6F2D32F1685C30019AC77 /* BJJHub */;
+			target = 64C6F2D32F1685C30019AC77 /* YourBJJ */;
 			targetProxy = 64C6F2E22F1685C40019AC77 /* PBXContainerItemProxy */;
 		};
 		64C6F2ED2F1685C40019AC77 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 64C6F2D32F1685C30019AC77 /* BJJHub */;
+			target = 64C6F2D32F1685C30019AC77 /* YourBJJ */;
 			targetProxy = 64C6F2EC2F1685C40019AC77 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		A1B2C3D4E5F60718293A4B5C /* XCRemoteSwiftPackageReference "GoogleMobileAds" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 11.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		A1B2C3D4E5F60718293A4B5D /* GoogleMobileAds */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A1B2C3D4E5F60718293A4B5C /* XCRemoteSwiftPackageReference "GoogleMobileAds" */;
-			productName = GoogleMobileAds;
-		};
-/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCBuildConfiguration section */
 		64C6F2F32F1685C40019AC77 /* Debug */ = {
@@ -567,7 +546,7 @@
 				DEVELOPMENT_TEAM = QATVT6D69Q;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = BJJHub/Info.plist;
+				INFOPLIST_FILE = YourBJJ/Info.plist;
 				INFOPLIST_KEY_GADApplicationIdentifier = "ca-app-pub-3940256099942544~1458002511";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "トレーニング動画を保存・表示するために写真ライブラリへのアクセスが必要です";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -580,7 +559,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = shopreme.BJJHub;
+				PRODUCT_BUNDLE_IDENTIFIER = shopreme.YourBJJ;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -602,7 +581,7 @@
 				DEVELOPMENT_TEAM = QATVT6D69Q;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = BJJHub/Info.plist;
+				INFOPLIST_FILE = YourBJJ/Info.plist;
 				INFOPLIST_KEY_GADApplicationIdentifier = "ca-app-pub-3940256099942544~1458002511";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "トレーニング動画を保存・表示するために写真ライブラリへのアクセスが必要です";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -615,7 +594,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = shopreme.BJJHub;
+				PRODUCT_BUNDLE_IDENTIFIER = shopreme.YourBJJ;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -637,7 +616,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = shopreme.BJJHubTests;
+				PRODUCT_BUNDLE_IDENTIFIER = shopreme.YourBJJTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -645,7 +624,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BJJHub.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BJJHub";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/YourBJJ.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/YourBJJ";
 			};
 			name = Debug;
 		};
@@ -659,7 +638,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = shopreme.BJJHubTests;
+				PRODUCT_BUNDLE_IDENTIFIER = shopreme.YourBJJTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -667,7 +646,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BJJHub.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BJJHub";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/YourBJJ.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/YourBJJ";
 			};
 			name = Release;
 		};
@@ -679,7 +658,7 @@
 				DEVELOPMENT_TEAM = QATVT6D69Q;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = shopreme.BJJHubUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = shopreme.YourBJJUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -687,7 +666,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = BJJHub;
+				TEST_TARGET_NAME = YourBJJ;
 			};
 			name = Debug;
 		};
@@ -699,7 +678,7 @@
 				DEVELOPMENT_TEAM = QATVT6D69Q;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = shopreme.BJJHubUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = shopreme.YourBJJUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -707,14 +686,14 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = BJJHub;
+				TEST_TARGET_NAME = YourBJJ;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		64C6F2CF2F1685C30019AC77 /* Build configuration list for PBXProject "BJJHub" */ = {
+		64C6F2CF2F1685C30019AC77 /* Build configuration list for PBXProject "YourBJJ" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				64C6F2F32F1685C40019AC77 /* Debug */,
@@ -723,7 +702,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		64C6F2F52F1685C40019AC77 /* Build configuration list for PBXNativeTarget "BJJHub" */ = {
+		64C6F2F52F1685C40019AC77 /* Build configuration list for PBXNativeTarget "YourBJJ" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				64C6F2F62F1685C40019AC77 /* Debug */,
@@ -732,7 +711,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		64C6F2F82F1685C40019AC77 /* Build configuration list for PBXNativeTarget "BJJHubTests" */ = {
+		64C6F2F82F1685C40019AC77 /* Build configuration list for PBXNativeTarget "YourBJJTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				64C6F2F92F1685C40019AC77 /* Debug */,
@@ -741,7 +720,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		64C6F2FB2F1685C40019AC77 /* Build configuration list for PBXNativeTarget "BJJHubUITests" */ = {
+		64C6F2FB2F1685C40019AC77 /* Build configuration list for PBXNativeTarget "YourBJJUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				64C6F2FC2F1685C40019AC77 /* Debug */,
@@ -751,6 +730,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A1B2C3D4E5F60718293A4B5C /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A1B2C3D4E5F60718293A4B5D /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1B2C3D4E5F60718293A4B5C /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 64C6F2CC2F1685C30019AC77 /* Project object */;
 }

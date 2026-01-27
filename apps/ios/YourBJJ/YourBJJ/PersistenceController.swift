@@ -7,7 +7,7 @@ class PersistenceController {
     let container: NSPersistentContainer
 
     private init() {
-        container = NSPersistentContainer(name: "BJJHub")
+        container = NSPersistentContainer(name: "YourBJJ")
 
         // Create the Core Data model programmatically
         let model = NSManagedObjectModel()
@@ -151,7 +151,7 @@ class PersistenceController {
         description.shouldMigrateStoreAutomatically = true
         description.shouldInferMappingModelAutomatically = true
 
-        let newContainer = NSPersistentContainer(name: "BJJHub", managedObjectModel: model)
+        let newContainer = NSPersistentContainer(name: "YourBJJ", managedObjectModel: model)
         newContainer.persistentStoreDescriptions = [description]
 
         newContainer.loadPersistentStores { _, error in

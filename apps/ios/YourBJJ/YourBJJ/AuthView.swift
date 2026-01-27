@@ -1,14 +1,21 @@
 import SwiftUI
 
 struct AuthView: View {
+    private enum AuthMode {
+        case signIn
+        case signUp
+    }
+
     @ObservedObject var viewModel: AppViewModel
 
     @State private var email = ""
     @State private var password = ""
     @State private var isAppearing = false
+    @State private var mode: AuthMode = .signIn
 
     var body: some View {
         let theme = BeltTheme(belt: .white)
+        let isSignUp = mode == .signUp
 
         ZStack {
             // Elegant gradient background
@@ -24,7 +31,7 @@ struct AuthView: View {
 
                 // Logo and title section
                 VStack(spacing: 12) {
-                    // BJJ Hub Logo with glow effect
+                    // Your BJJ Logo with glow effect
                     ZStack {
                         Circle()
                             .fill(theme.meshGradient)
@@ -40,11 +47,11 @@ struct AuthView: View {
                     .animation(.spring(response: 0.8, dampingFraction: 0.7).delay(0.1), value: isAppearing)
 
                     VStack(spacing: 6) {
-                        Text("BJJ Hub")
+                        Text("Your BJJ")
                             .font(.display(32, weight: .heavy))
                             .foregroundStyle(theme.textPrimary)
 
-                        Text("サインインして続ける")
+                        Text(isSignUp ? "新規登録して続ける" : "サインインして続ける")
                             .font(.body(14, weight: .medium))
                             .foregroundStyle(theme.textMuted)
                     }
@@ -56,6 +63,48 @@ struct AuthView: View {
 
                 // Form section
                 VStack(spacing: 16) {
+                    // Mode toggle
+                    HStack(spacing: 8) {
+                        Button(action: {
+                            mode = .signIn
+                        }) {
+                            Text("ログイン")
+                                .font(.caption(12, weight: .semibold))
+                                .foregroundStyle(mode == .signIn ? theme.textPrimary : theme.textMuted)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                        .fill(mode == .signIn ? theme.card : theme.card.opacity(0.3))
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                        .stroke(mode == .signIn ? theme.cardBorder : theme.cardBorder.opacity(0.4), lineWidth: 1)
+                                )
+                        }
+
+                        Button(action: {
+                            mode = .signUp
+                        }) {
+                            Text("新規登録")
+                                .font(.caption(12, weight: .semibold))
+                                .foregroundStyle(mode == .signUp ? theme.textPrimary : theme.textMuted)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                        .fill(mode == .signUp ? theme.card : theme.card.opacity(0.3))
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                        .stroke(mode == .signUp ? theme.cardBorder : theme.cardBorder.opacity(0.4), lineWidth: 1)
+                                )
+                        }
+                    }
+                    .opacity(isAppearing ? 1 : 0)
+                    .offset(y: isAppearing ? 0 : 20)
+                    .animation(.easeOut(duration: 0.5).delay(0.35), value: isAppearing)
+
                     // Email field
                     VStack(alignment: .leading, spacing: 8) {
                         Text("メールアドレス")
@@ -122,7 +171,11 @@ struct AuthView: View {
                     // Login button
                     Button(action: {
                         Task {
-                            await viewModel.signIn(email: email, password: password)
+                            if isSignUp {
+                                await viewModel.signUp(email: email, password: password)
+                            } else {
+                                await viewModel.signIn(email: email, password: password)
+                            }
                         }
                     }) {
                         ZStack {
@@ -130,7 +183,7 @@ struct AuthView: View {
                                 ProgressView()
                                     .tint(.white)
                             } else {
-                                Text("ログイン")
+                                Text(isSignUp ? "新規登録" : "ログイン")
                                     .font(.title(16, weight: .bold))
                                     .tracking(0.5)
                             }
@@ -159,6 +212,19 @@ struct AuthView: View {
                     .animation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.6), value: isAppearing)
                 }
                 .padding(.horizontal, 28)
+
+                // Secondary action
+                Button(action: {
+                    mode = isSignUp ? .signIn : .signUp
+                }) {
+                    Text(isSignUp ? "ログインはこちら" : "新規登録はこちら")
+                        .font(.caption(12, weight: .semibold))
+                        .foregroundStyle(theme.textMuted)
+                        .padding(.vertical, 8)
+                }
+                .opacity(isAppearing ? 1 : 0)
+                .offset(y: isAppearing ? 0 : 10)
+                .animation(.easeOut(duration: 0.4).delay(0.7), value: isAppearing)
 
                 Spacer()
                 Spacer()

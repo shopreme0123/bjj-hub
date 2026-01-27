@@ -3,7 +3,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.yourname.bjjhub',  // ← あなたの逆ドメインに変更してください
-  appName: 'BJJ Hub',
+  appName: 'Your BJJ',
   webDir: 'out',
   server: {
     androidScheme: 'https',

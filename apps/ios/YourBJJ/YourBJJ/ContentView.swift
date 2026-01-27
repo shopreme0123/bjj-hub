@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  BJJHub
+//  YourBJJ
 //
 //  Created by Shogo Nakajima on 2026/01/13.
 //

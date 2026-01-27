@@ -1,13 +1,13 @@
 //
-//  BJJHubUITestsLaunchTests.swift
-//  BJJHubUITests
+//  YourBJJUITestsLaunchTests.swift
+//  YourBJJUITests
 //
 //  Created by Shogo Nakajima on 2026/01/13.
 //
 
 import XCTest
 
-final class BJJHubUITestsLaunchTests: XCTestCase {
+final class YourBJJUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

@@ -251,8 +251,8 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
 
         {/* バージョン情報 */}
         <div className="text-center pt-4">
-          <p className="text-xs" style={{ color: theme.textMuted }}>BJJ Hub v1.0.0</p>
-          <p className="text-xs mt-1" style={{ color: theme.textMuted }}>© 2025 BJJ Hub</p>
+          <p className="text-xs" style={{ color: theme.textMuted }}>Your BJJ v1.0.0</p>
+          <p className="text-xs mt-1" style={{ color: theme.textMuted }}>© 2025 Your BJJ</p>
         </div>
       </div>
 

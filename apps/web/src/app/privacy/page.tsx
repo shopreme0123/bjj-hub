@@ -18,7 +18,7 @@ export default function PrivacyPolicy() {
           <section>
             <h2 className="text-xl font-semibold text-gray-900 mb-3">1. はじめに</h2>
             <p>
-              BJJ Hub（以下「当サービス」）は、ユーザーの皆様のプライバシーを尊重し、個人情報の保護に努めます。
+              Your BJJ（以下「当サービス」）は、ユーザーの皆様のプライバシーを尊重し、個人情報の保護に努めます。
               本プライバシーポリシーは、当サービスがどのような情報を収集し、どのように使用・保護するかを説明するものです。
             </p>
           </section>

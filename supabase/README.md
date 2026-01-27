@@ -1,6 +1,6 @@
 # Supabase Backend
 
-このディレクトリには、BJJ Hubのバックエンド（Supabase）に関連するファイルを配置します。
+このディレクトリには、Your BJJのバックエンド（Supabase）に関連するファイルを配置します。
 
 ## ディレクトリ構造
 

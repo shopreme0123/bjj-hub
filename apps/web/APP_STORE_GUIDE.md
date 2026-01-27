@@ -30,7 +30,7 @@ npx cap init
 ```
 
 **設定内容**:
-- App name: `BJJ Hub`
+- App name: `Your BJJ`
 - App ID: `com.yourname.bjjhub`（逆ドメイン形式）
 - Web directory: `out`（Next.js のエクスポート先）
 
@@ -80,7 +80,7 @@ npx cap open ios
    - 各サイズのアイコンを追加
 
 4. **Info.plist を編集**
-   - Display Name: `BJJ Hub`
+   - Display Name: `Your BJJ`
    - Version: `1.0.0`
    - Build: `1`
 
@@ -132,7 +132,7 @@ npx cap run ios
 2. 「マイApp」→「＋」→「新規App」
 3. 情報を入力:
    - プラットフォーム: iOS
-   - 名前: BJJ Hub
+   - 名前: Your BJJ
    - 主言語: 日本語
    - Bundle ID: `com.yourname.bjjhub`
    - SKU: `bjj-hub-001`（任意のユニークID）
@@ -162,7 +162,7 @@ npx cap run ios
 <!DOCTYPE html>
 <html>
 <head>
-  <title>BJJ Hub - プライバシーポリシー</title>
+  <title>Your BJJ - プライバシーポリシー</title>
   <meta charset="utf-8">
 </head>
 <body>
@@ -285,7 +285,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.yourname.bjjhub',
-  appName: 'BJJ Hub',
+  appName: 'Your BJJ',
   webDir: 'out',
   server: {
     androidScheme: 'https',

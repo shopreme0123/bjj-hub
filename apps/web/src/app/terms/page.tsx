@@ -18,7 +18,7 @@ export default function TermsOfService() {
           <section>
             <h2 className="text-xl font-semibold text-gray-900 mb-3">1. はじめに</h2>
             <p>
-              本利用規約（以下「本規約」）は、BJJ Hub（以下「当サービス」）の利用条件を定めるものです。
+              本利用規約（以下「本規約」）は、Your BJJ（以下「当サービス」）の利用条件を定めるものです。
               当サービスをご利用いただくには、本規約に同意いただく必要があります。
             </p>
           </section>

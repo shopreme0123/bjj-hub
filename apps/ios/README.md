@@ -10,7 +10,7 @@
 
 ## Supabase設定
 
-`apps/ios/BJJHub/BJJHub/SupabaseService.swift` の `SupabaseConfig` を編集して、
+`apps/ios/YourBJJ/YourBJJ/SupabaseService.swift` の `SupabaseConfig` を編集して、
 `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_USER_ID` を入力してください。
 
 ## 予定

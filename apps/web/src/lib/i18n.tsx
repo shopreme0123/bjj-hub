@@ -216,7 +216,7 @@ const translations: Record<Language, Record<string, string>> = {
     'auth.forgot_password': 'パスワードを忘れた方',
     'auth.no_account': 'アカウントをお持ちでない方',
     'auth.have_account': 'すでにアカウントをお持ちの方',
-    'auth.welcome': 'BJJ Hubへようこそ',
+    'auth.welcome': 'Your BJJへようこそ',
     'auth.welcome_back': 'おかえりなさい',
 
     // トースト
@@ -430,7 +430,7 @@ const translations: Record<Language, Record<string, string>> = {
     'auth.forgot_password': 'Forgot password?',
     'auth.no_account': "Don't have an account?",
     'auth.have_account': 'Already have an account?',
-    'auth.welcome': 'Welcome to BJJ Hub',
+    'auth.welcome': 'Welcome to Your BJJ',
     'auth.welcome_back': 'Welcome back',
 
     // Toast
@@ -644,7 +644,7 @@ const translations: Record<Language, Record<string, string>> = {
     'auth.forgot_password': 'Esqueceu a senha?',
     'auth.no_account': 'Não tem uma conta?',
     'auth.have_account': 'Já tem uma conta?',
-    'auth.welcome': 'Bem-vindo ao BJJ Hub',
+    'auth.welcome': 'Bem-vindo ao Your BJJ',
     'auth.welcome_back': 'Bem-vindo de volta',
 
     // Toast

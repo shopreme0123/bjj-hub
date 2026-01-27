@@ -1,6 +1,6 @@
 {
-  "name": "BJJ Hub - 柔術テクニック管理",
-  "short_name": "BJJ Hub",
+  "name": "Your BJJ - 柔術テクニック管理",
+  "short_name": "Your BJJ",
   "description": "柔術の技とコンビネーションを管理・記録するアプリ",
   "start_url": "/home",
   "display": "standalone",

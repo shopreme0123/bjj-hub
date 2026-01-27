@@ -1,13 +1,13 @@
 //
-//  BJJHubUITests.swift
-//  BJJHubUITests
+//  YourBJJUITests.swift
+//  YourBJJUITests
 //
 //  Created by Shogo Nakajima on 2026/01/13.
 //
 
 import XCTest
 
-final class BJJHubUITests: XCTestCase {
+final class YourBJJUITests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

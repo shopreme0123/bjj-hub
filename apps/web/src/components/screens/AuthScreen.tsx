@@ -102,13 +102,13 @@ export function AuthScreen({ onSuccess }: AuthScreenProps) {
           <div className="w-20 h-20 relative">
             <Image
               src="/bjj-logo.png"
-              alt="BJJ Hub"
+              alt="Your BJJ"
               fill
               className="object-contain"
             />
           </div>
         </div>
-        <h1 className="text-2xl font-bold text-slate-800">BJJ Hub</h1>
+        <h1 className="text-2xl font-bold text-slate-800">Your BJJ</h1>
         <p className="text-slate-500 text-sm mt-1">{t('auth.welcome')}</p>
       </div>
 

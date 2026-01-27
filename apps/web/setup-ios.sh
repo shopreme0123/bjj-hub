@@ -4,7 +4,7 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR"
 
-echo "📱 BJJ Hub - iOS App Store セットアップ"
+echo "📱 Your BJJ - iOS App Store セットアップ"
 echo "========================================="
 echo ""
 

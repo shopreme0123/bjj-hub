@@ -1,6 +1,6 @@
 //
-//  BJJHubApp.swift
-//  BJJHub
+//  YourBJJApp.swift
+//  YourBJJ
 //
 //  Created by Shogo Nakajima on 2026/01/13.
 //
@@ -9,7 +9,7 @@ import SwiftUI
 import GoogleMobileAds
 
 @main
-struct BJJHubApp: App {
+struct YourBJJApp: App {
     init() {
         if let appId = Bundle.main.object(forInfoDictionaryKey: "GADApplicationIdentifier") as? String,
            !appId.isEmpty {
