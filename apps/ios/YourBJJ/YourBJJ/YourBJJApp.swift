@@ -91,7 +91,6 @@ struct YourBJJApp: App {
                                 await MainActor.run {
                                     SessionStore.save(session)
                                     viewModel.session = session
-                                    viewModel.userId = userId
                                     print("✅ [DEBUG] Session saved and view model updated")
                                 }
                             }
