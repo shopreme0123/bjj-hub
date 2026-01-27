@@ -22,6 +22,7 @@ struct SettingsView: View {
     @State private var showBackupSheet = false
     @State private var showBackupConfirmation = false
     @State private var showPrivacyPolicy = false
+    @State private var showTerms = false
     @State private var showAuthSheet = false
     @State private var loginEmail = ""
     @State private var loginPassword = ""
@@ -169,9 +170,15 @@ struct SettingsView: View {
                     }
                     .padding(.horizontal, 20)
 
-                    AppInfoView(theme: theme, onShowPrivacyPolicy: {
-                        showPrivacyPolicy = true
-                    })
+                    AppInfoView(
+                        theme: theme,
+                        onShowPrivacyPolicy: {
+                            showPrivacyPolicy = true
+                        },
+                        onShowTerms: {
+                            showTerms = true
+                        }
+                    )
 
                     // Login or Logout section
                     if viewModel.isAuthenticated {
@@ -258,6 +265,9 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showPrivacyPolicy) {
             PrivacyPolicyView(theme: theme)
+        }
+        .sheet(isPresented: $showTerms) {
+            TermsView(theme: theme)
         }
         .alert("ログアウト", isPresented: $showLogoutConfirmation) {
             Button("キャンセル", role: .cancel) {}
@@ -935,6 +945,7 @@ private struct SavedBanner: View {
 private struct AppInfoView: View {
     let theme: BeltTheme
     let onShowPrivacyPolicy: () -> Void
+    let onShowTerms: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -962,7 +973,20 @@ private struct AppInfoView: View {
                 }
 
                 Divider().background(theme.cardBorder.opacity(0.5))
-                InfoRow(title: "利用規約", value: "準備中", theme: theme)
+                Button(action: onShowTerms) {
+                    HStack {
+                        Text("利用規約")
+                            .font(.body(13, weight: .medium))
+                            .foregroundStyle(theme.textPrimary)
+
+                        Spacer()
+
+                        Image(systemName: "chevron.right")
+                            .font(.app(size: 14, weight: .semibold))
+                            .foregroundStyle(theme.textMuted)
+                    }
+                    .contentShape(Rectangle())
+                }
             }
         }
         .padding(16)
@@ -1006,6 +1030,7 @@ struct PremiumView: View {
     @ObservedObject var premiumManager: PremiumManager
     @Environment(\.dismiss) private var dismiss
     @State private var showPrivacyPolicy = false
+    @State private var showTerms = false
     @State private var selectedPlan: PremiumPlan = .monthly
     @State private var isPurchasing = false
 
@@ -1156,7 +1181,7 @@ struct PremiumView: View {
 
                             HStack(spacing: 16) {
                                 Button("利用規約") {
-                                    // TODO: Show terms
+                                    showTerms = true
                                 }
                                 .font(.caption(12, weight: .semibold))
                                 .foregroundStyle(theme.primary)
@@ -1176,6 +1201,9 @@ struct PremiumView: View {
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $showPrivacyPolicy) {
                 PrivacyPolicyView(theme: theme)
+            }
+            .sheet(isPresented: $showTerms) {
+                TermsView(theme: theme)
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

@@ -12,7 +12,7 @@ export default function TermsOfService() {
         </Link>
 
         <h1 className="text-3xl font-bold text-gray-900 mb-2">利用規約</h1>
-        <p className="text-gray-600 mb-8">最終更新日: 2026年1月3日</p>
+        <p className="text-gray-600 mb-8">最終更新日: 2026年1月27日</p>
 
         <div className="space-y-6 text-gray-700">
           <section>
