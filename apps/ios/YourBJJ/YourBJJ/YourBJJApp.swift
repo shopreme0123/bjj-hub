@@ -15,6 +15,9 @@ struct YourBJJApp: App {
     init() {
         if let appId = Bundle.main.object(forInfoDictionaryKey: "GADApplicationIdentifier") as? String,
            !appId.isEmpty {
+            #if DEBUG
+            GADMobileAds.sharedInstance().requestConfiguration.testDeviceIdentifiers = [GADDeviceID()]
+            #endif
             GADMobileAds.sharedInstance().start(completionHandler: nil)
         } else {
             print("⚠️ [DEBUG] Missing GADApplicationIdentifier in Info.plist")
