@@ -4,7 +4,7 @@
 
 ## はじめに
 
-BJJ Hub（以下「本アプリ」）は、ユーザーの皆様のプライバシーを尊重し、個人情報の保護に努めています。本プライバシーポリシーは、本アプリがどのような情報を収集し、どのように使用・保護するかを説明するものです。
+Your BJJ（以下「本アプリ」）は、ユーザーの皆様のプライバシーを尊重し、個人情報の保護に努めています。本プライバシーポリシーは、本アプリがどのような情報を収集し、どのように使用・保護するかを説明するものです。
 
 ## 1. 収集する情報
 
@@ -163,7 +163,7 @@ s15790349@gmail.com
 
 プライバシーに関するご質問や懸念がある場合は、以下までご連絡ください：
 
-**アプリ名**: BJJ Hub
+**アプリ名**: Your BJJ
 **開発者**: Shogo Nakajima
 **メールアドレス**: s15790349@gmail.com
 
@@ -175,7 +175,7 @@ Last Updated: January 27, 2026
 
 ## Introduction
 
-BJJ Hub ("the App") respects your privacy and is committed to protecting your personal information. This Privacy Policy explains what information we collect, how we use it, and how we protect it.
+Your BJJ ("the App") respects your privacy and is committed to protecting your personal information. This Privacy Policy explains what information we collect, how we use it, and how we protect it.
 
 ## 1. Information We Collect
 
@@ -330,7 +330,7 @@ This Privacy Policy may be updated. Significant changes will be communicated via
 
 For privacy questions, contact:
 
-**App Name**: BJJ Hub
+**App Name**: Your BJJ
 **Developer**: Shogo Nakajima
 **Email**: s15790349@gmail.com
 
@@ -342,7 +342,7 @@ For privacy questions, contact:
 
 ## Introdução
 
-BJJ Hub ("o App") respeita sua privacidade e está comprometido em proteger suas informações pessoais. Esta Política de Privacidade explica quais informações coletamos, como as usamos e como as protegemos.
+Your BJJ ("o App") respeita sua privacidade e está comprometido em proteger suas informações pessoais. Esta Política de Privacidade explica quais informações coletamos, como as usamos e como as protegemos.
 
 ## 1. Informações que Coletamos
 
@@ -497,7 +497,7 @@ Esta Política de Privacidade pode ser atualizada. Mudanças significativas ser�
 
 Para questões de privacidade, contate:
 
-**Nome do App**: BJJ Hub
+**Nome do App**: Your BJJ
 **Desenvolvedor**: Shogo Nakajima
 **E-mail**: s15790349@gmail.com
 
@@ -509,7 +509,7 @@ Para questões de privacidade, contate:
 
 ## 소개
 
-BJJ Hub("본 앱")는 귀하의 개인정보를 존중하며 개인정보 보호에 최선을 다하고 있습니다. 본 개인정보 처리방침은 우리가 수집하는 정보, 사용 방법 및 보호 방법을 설명합니다.
+Your BJJ("본 앱")는 귀하의 개인정보를 존중하며 개인정보 보호에 최선을 다하고 있습니다. 본 개인정보 처리방침은 우리가 수집하는 정보, 사용 방법 및 보호 방법을 설명합니다.
 
 ## 1. 수집하는 정보
 
@@ -664,7 +664,7 @@ BJJ Hub("본 앱")는 귀하의 개인정보를 존중하며 개인정보 보호
 
 개인정보 관련 문의:
 
-**앱 이름**: BJJ Hub
+**앱 이름**: Your BJJ
 **개발자**: Shogo Nakajima
 **이메일**: s15790349@gmail.com
 
