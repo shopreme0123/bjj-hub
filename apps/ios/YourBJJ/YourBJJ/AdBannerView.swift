@@ -2,6 +2,7 @@ import SwiftUI
 import GoogleMobileAds
 
 enum AdPlacement {
+    case home
     case techniques
     case diary
 
@@ -11,6 +12,8 @@ enum AdPlacement {
         return "ca-app-pub-3940256099942544/2934735716"
         #else
         switch self {
+        case .home:
+            return "ca-app-pub-3394335051689473/5420507040"
         case .techniques:
             return "ca-app-pub-3394335051689473/4947424829"
         case .diary:
