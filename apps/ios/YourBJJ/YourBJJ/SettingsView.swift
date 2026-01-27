@@ -949,7 +949,7 @@ private struct AppInfoView: View {
                 Button(action: onShowPrivacyPolicy) {
                     HStack {
                         Text("プライバシーポリシー")
-                            .font(.app(size: 16, weight: .regular))
+                            .font(.body(13, weight: .medium))
                             .foregroundStyle(theme.textPrimary)
 
                         Spacer()
@@ -1005,6 +1005,7 @@ struct PremiumView: View {
     @ObservedObject var viewModel: AppViewModel
     @ObservedObject var premiumManager: PremiumManager
     @Environment(\.dismiss) private var dismiss
+    @State private var showPrivacyPolicy = false
     @State private var selectedPlan: PremiumPlan = .monthly
     @State private var isPurchasing = false
 
@@ -1161,7 +1162,7 @@ struct PremiumView: View {
                                 .foregroundStyle(theme.primary)
 
                                 Button("プライバシーポリシー") {
-                                    // TODO: Show privacy policy
+                                    showPrivacyPolicy = true
                                 }
                                 .font(.caption(12, weight: .semibold))
                                 .foregroundStyle(theme.primary)
@@ -1173,6 +1174,9 @@ struct PremiumView: View {
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
+            .sheet(isPresented: $showPrivacyPolicy) {
+                PrivacyPolicyView(theme: theme)
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: { dismiss() }) {
