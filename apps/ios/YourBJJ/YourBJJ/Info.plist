@@ -205,6 +205,8 @@
     </array>
     <key>CFBundleDisplayName</key>
     <string>Your BJJ</string>
+    <key>UIRequiresFullScreen</key>
+    <true/>
     <key>CFBundleURLTypes</key>
     <array>
         <dict>
