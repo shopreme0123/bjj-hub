@@ -19,6 +19,15 @@ import { SettingsScreen } from '@/components/screens/SettingsScreen';
 import { AuthScreen } from '@/components/screens/AuthScreen';
 import { Technique, Flow, Group, TrainingLog } from '@/types';
 
+declare global {
+  interface Window {
+    Capacitor?: {
+      isNativePlatform?: () => boolean;
+      getPlatform?: () => string;
+    };
+  }
+}
+
 // スプラッシュスクリーン
 function SplashScreen() {
   return (
