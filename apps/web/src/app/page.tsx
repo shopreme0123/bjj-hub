@@ -3,31 +3,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import HomePage from '@/app/home/page';
 
 declare global {
   interface Window {
     adsbygoogle: any[];
-    Capacitor?: {
-      isNativePlatform?: () => boolean;
-      getPlatform?: () => string;
-    };
   }
-}
-
-const IS_NATIVE_BUILD = process.env.NEXT_PUBLIC_APP_MODE === 'app';
-
-function isNativeRuntime(): boolean {
-  if (typeof window === 'undefined') return false;
-  const capacitor = window.Capacitor;
-  if (!capacitor) return false;
-  if (typeof capacitor.isNativePlatform === 'function') {
-    return capacitor.isNativePlatform();
-  }
-  if (typeof capacitor.getPlatform === 'function') {
-    return capacitor.getPlatform() !== 'web';
-  }
-  return true;
 }
 
 function LandingPage() {
@@ -1632,12 +1612,5 @@ function LandingPage() {
 }
 
 export default function RootPage() {
-  const [isNativeApp, setIsNativeApp] = useState(IS_NATIVE_BUILD);
-
-  useEffect(() => {
-    if (IS_NATIVE_BUILD) return;
-    setIsNativeApp(isNativeRuntime());
-  }, []);
-
-  return isNativeApp ? <HomePage /> : <LandingPage />;
+  return <LandingPage />;
 }
