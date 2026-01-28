@@ -31,8 +31,8 @@ enum PremiumPlan: String, CaseIterable, Identifiable {
 
     var productId: String {
         switch self {
-        case .monthly: return "bjjhub_premium_monthly"
-        case .yearly: return "bjjhub_premium_yearly"
+        case .monthly: return "com.yourbjj.app.premium.onemonthly"
+        case .yearly: return "com.yourbjj.app.premium.yearly"
         }
     }
 }
