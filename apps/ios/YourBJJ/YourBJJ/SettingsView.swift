@@ -1031,6 +1031,8 @@ struct PremiumView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var showPrivacyPolicy = false
     @State private var showTerms = false
+    @State private var showPurchaseError = false
+    @State private var purchaseErrorMessage: String?
     @State private var selectedPlan: PremiumPlan = .monthly
     @State private var isPurchasing = false
 
@@ -1146,7 +1148,8 @@ struct PremiumView: View {
                                 if success {
                                     dismiss()
                                 } else if let message = premiumManager.lastErrorMessage {
-                                    viewModel.showError(message)
+                                    purchaseErrorMessage = message
+                                    showPurchaseError = true
                                 }
                             }
                         }) {
@@ -1205,6 +1208,11 @@ struct PremiumView: View {
             .sheet(isPresented: $showTerms) {
                 TermsView(theme: theme)
             }
+            .alert("購入エラー", isPresented: $showPurchaseError) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(purchaseErrorMessage ?? "購入に失敗しました。")
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: { dismiss() }) {
@@ -1220,6 +1228,11 @@ struct PremiumView: View {
         }
         .task {
             await premiumManager.refresh()
+        }
+        .onChange(of: premiumManager.lastErrorMessage) { _, newValue in
+            guard let newValue else { return }
+            purchaseErrorMessage = newValue
+            showPurchaseError = true
         }
     }
 }
