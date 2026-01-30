@@ -156,10 +156,8 @@ export default function RootPage() {
 
         .landing {
           min-height: 100vh;
-          background:
-            radial-gradient(1200px 600px at 80% -10%, rgba(43, 111, 246, 0.06), transparent 60%),
-            radial-gradient(900px 500px at -10% 10%, rgba(14, 165, 233, 0.05), transparent 60%),
-            var(--bg);
+          background: var(--bg);
+          transition: background 0.5s ease;
         }
 
         .nav {
@@ -167,8 +165,9 @@ export default function RootPage() {
           top: 0;
           z-index: 20;
           backdrop-filter: blur(18px);
-          background: rgba(255, 255, 255, 0.85);
+          background: var(--bg-soft);
           border-bottom: 1px solid var(--stroke);
+          transition: all 0.5s ease;
         }
 
         .nav-inner {
@@ -321,8 +320,8 @@ export default function RootPage() {
           padding: 0.7rem 1.6rem;
           border-radius: 999px;
           font-weight: 600;
-          background: white;
-          transition: all 0.2s ease;
+          background: var(--bg-card);
+          transition: all 0.5s ease;
         }
 
         .ghost:hover {
@@ -331,13 +330,14 @@ export default function RootPage() {
         }
 
         .hero-card {
-          background: linear-gradient(180deg, rgba(248, 250, 252, 0.95), rgba(241, 245, 249, 0.95));
+          background: var(--bg-soft);
           border: 1px solid var(--stroke);
           border-radius: 28px;
           padding: 2rem;
           box-shadow: var(--shadow);
           position: relative;
           overflow: hidden;
+          transition: all 0.5s ease;
         }
 
         .hero-card::after {
@@ -345,8 +345,9 @@ export default function RootPage() {
           position: absolute;
           inset: -30% 40% auto -20%;
           height: 200px;
-          background: radial-gradient(circle, rgba(43, 111, 246, 0.08), transparent 70%);
+          background: radial-gradient(circle, var(--glow), transparent 70%);
           opacity: 0.6;
+          transition: all 0.5s ease;
         }
 
         .hero-card h3 {
@@ -365,9 +366,10 @@ export default function RootPage() {
         .hero-pill {
           padding: 1rem 1.2rem;
           border-radius: 16px;
-          background: white;
+          background: var(--bg-card);
           border: 1px solid var(--stroke);
           box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+          transition: all 0.5s ease;
         }
 
         .hero-pill strong {
@@ -406,12 +408,12 @@ export default function RootPage() {
         }
 
         .feature-card {
-          background: white;
+          background: var(--bg-card);
           border: 1px solid var(--stroke);
           border-radius: 20px;
           padding: 1.8rem;
           box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
-          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
           position: relative;
           overflow: hidden;
         }
@@ -472,9 +474,10 @@ export default function RootPage() {
         .mock {
           border-radius: 28px;
           padding: 2rem;
-          background: linear-gradient(160deg, rgba(43, 111, 246, 0.08), rgba(14, 165, 233, 0.05));
+          background: var(--bg-soft);
           border: 1px solid var(--stroke);
           box-shadow: var(--shadow);
+          transition: all 0.5s ease;
         }
 
         .mock h5 {
@@ -492,13 +495,13 @@ export default function RootPage() {
         }
 
         .stat {
-          background: white;
+          background: var(--bg-card);
           border: 1px solid var(--stroke);
           border-radius: 16px;
           padding: 1rem 1.2rem;
           min-width: 120px;
           box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
-          transition: all 0.3s ease;
+          transition: all 0.5s ease;
         }
 
         .stat:hover {
@@ -574,12 +577,12 @@ export default function RootPage() {
           align-items: center;
           gap: 14px;
           padding: 14px;
-          background: white;
+          background: var(--bg-card);
           border: 1px solid var(--stroke);
           border-radius: 18px;
           box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
           cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
           opacity: 0;
           transform: translateY(20px);
         }
@@ -598,12 +601,12 @@ export default function RootPage() {
           width: 56px;
           height: 56px;
           border-radius: 14px;
-          background: linear-gradient(135deg, rgba(43, 111, 246, 0.15), rgba(43, 111, 246, 0.08));
+          background: var(--accent-3);
           display: grid;
           place-items: center;
           font-size: 24px;
           flex-shrink: 0;
-          transition: all 0.3s ease;
+          transition: all 0.5s ease;
         }
 
         .technique-card:hover .technique-icon {
@@ -685,9 +688,10 @@ export default function RootPage() {
 
         .cta-section {
           text-align: center;
-          background: linear-gradient(140deg, rgba(43, 111, 246, 0.06), rgba(14, 165, 233, 0.04));
+          background: var(--bg-soft);
           border-top: 1px solid var(--stroke);
           border-bottom: 1px solid var(--stroke);
+          transition: all 0.5s ease;
         }
 
         .ios-cta {
@@ -705,7 +709,8 @@ export default function RootPage() {
           border-radius: 999px;
           font-weight: 600;
           font-size: 0.85rem;
-          background: white;
+          background: var(--bg-card);
+          transition: all 0.5s ease;
         }
 
         .ios-note {
