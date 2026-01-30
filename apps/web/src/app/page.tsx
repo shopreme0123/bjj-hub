@@ -843,10 +843,6 @@ export default function RootPage() {
               <strong>技ライブラリ</strong>
               <span>技を保存して整理。復習が速くなる。</span>
             </div>
-            <div className="hero-pill">
-              <strong>成長を可視化</strong>
-              <span>継続と伸びが数字でわかる。</span>
-            </div>
           </div>
         </div>
       </section>
