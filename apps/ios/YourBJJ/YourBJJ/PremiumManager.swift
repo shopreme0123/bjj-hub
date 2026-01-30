@@ -47,6 +47,7 @@ final class PremiumManager: ObservableObject {
     @Published var products: [PremiumPlan: Product] = [:]
     @Published var isLoading = false
     @Published var lastErrorMessage: String?
+    @Published var expirationDate: Date?
 
     private var updatesTask: Task<Void, Never>?
 
@@ -128,18 +129,23 @@ final class PremiumManager: ObservableObject {
 
     private func updatePremiumStatus() async {
         var hasActiveSubscription = false
+        var latestExpiration: Date?
         for await result in Transaction.currentEntitlements {
             guard let transaction = try? checkVerified(result) else { continue }
             guard PremiumPlan.allCases.contains(where: { $0.productId == transaction.productID }) else { continue }
             if let expiration = transaction.expirationDate {
                 if expiration > Date() {
                     hasActiveSubscription = true
+                    if latestExpiration == nil || expiration > latestExpiration! {
+                        latestExpiration = expiration
+                    }
                 }
             } else {
                 hasActiveSubscription = true
             }
         }
         isPremium = hasActiveSubscription
+        expirationDate = latestExpiration
     }
 
     private func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {

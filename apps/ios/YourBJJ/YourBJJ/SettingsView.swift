@@ -111,10 +111,22 @@ struct SettingsView: View {
                         .padding(.horizontal, 20)
                     }
 
-                    Button(action: { showPremium = true }) {
-                        PremiumStatusView(isPremium: viewModel.isPremium, theme: theme)
+                    if viewModel.isPremium {
+                        PremiumStatusView(
+                            isPremium: viewModel.isPremium,
+                            expirationDate: viewModel.premiumManager.expirationDate,
+                            theme: theme
+                        )
+                    } else {
+                        Button(action: { showPremium = true }) {
+                            PremiumStatusView(
+                                isPremium: viewModel.isPremium,
+                                expirationDate: nil,
+                                theme: theme
+                            )
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
 
                     BeltSelectionView(selected: $beltSelection, theme: theme)
                         .onChange(of: beltSelection) { oldValue, newValue in
@@ -873,6 +885,7 @@ private struct NotificationToggleView: View {
 
 private struct PremiumStatusView: View {
     let isPremium: Bool
+    let expirationDate: Date?
     let theme: BeltTheme
 
     var body: some View {
@@ -889,9 +902,21 @@ private struct PremiumStatusView: View {
                     Text("プレミアム")
                         .font(.title(15, weight: .bold))
                         .foregroundStyle(theme.textPrimary)
-                    Text(isPremium ? "有効" : "未加入")
-                        .font(.caption(12))
-                        .foregroundStyle(theme.textMuted)
+                    if isPremium {
+                        if let expirationDate {
+                            Text("有効期限: \(formattedDate(expirationDate))")
+                                .font(.caption(12))
+                                .foregroundStyle(theme.textMuted)
+                        } else {
+                            Text("有効")
+                                .font(.caption(12))
+                                .foregroundStyle(theme.textMuted)
+                        }
+                    } else {
+                        Text("未加入")
+                            .font(.caption(12))
+                            .foregroundStyle(theme.textMuted)
+                    }
                 }
             }
 
@@ -920,6 +945,13 @@ private struct PremiumStatusView: View {
         )
         .cardShadow(radius: 16, y: 6)
         .padding(.horizontal, 20)
+    }
+
+    private func formattedDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy年M月d日"
+        formatter.locale = Locale(identifier: "ja_JP")
+        return formatter.string(from: date)
     }
 }
 

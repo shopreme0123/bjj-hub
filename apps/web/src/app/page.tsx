@@ -27,17 +27,17 @@ export default function RootPage() {
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap');
 
         :root {
-          --bg: #0b0e12;
-          --bg-soft: #11161d;
-          --bg-card: #141b24;
-          --text: #e6edf6;
-          --muted: #9aa4b2;
+          --bg: #ffffff;
+          --bg-soft: #f8fafc;
+          --bg-card: #ffffff;
+          --text: #1e293b;
+          --muted: #64748b;
           --accent: #2b6ff6;
-          --accent-2: #33c3ff;
-          --accent-3: #0f172a;
-          --stroke: #232c39;
-          --glow: rgba(43, 111, 246, 0.35);
-          --shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+          --accent-2: #0ea5e9;
+          --accent-3: #f1f5f9;
+          --stroke: #e2e8f0;
+          --glow: rgba(43, 111, 246, 0.2);
+          --shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
         }
 
         * {
@@ -55,8 +55,8 @@ export default function RootPage() {
         .landing {
           min-height: 100vh;
           background:
-            radial-gradient(1200px 600px at 80% -10%, rgba(51, 195, 255, 0.18), transparent 60%),
-            radial-gradient(900px 500px at -10% 10%, rgba(43, 111, 246, 0.22), transparent 60%),
+            radial-gradient(1200px 600px at 80% -10%, rgba(43, 111, 246, 0.06), transparent 60%),
+            radial-gradient(900px 500px at -10% 10%, rgba(14, 165, 233, 0.05), transparent 60%),
             var(--bg);
         }
 
@@ -65,8 +65,8 @@ export default function RootPage() {
           top: 0;
           z-index: 20;
           backdrop-filter: blur(18px);
-          background: rgba(11, 14, 18, 0.7);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+          background: rgba(255, 255, 255, 0.85);
+          border-bottom: 1px solid var(--stroke);
         }
 
         .nav-inner {
@@ -143,7 +143,13 @@ export default function RootPage() {
           border-radius: 999px;
           font-weight: 700;
           font-size: 0.9rem;
-          box-shadow: 0 12px 30px var(--glow);
+          box-shadow: 0 8px 20px var(--glow);
+          transition: all 0.2s ease;
+        }
+
+        .cta:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 12px 28px var(--glow);
         }
 
         .hero {
@@ -184,18 +190,24 @@ export default function RootPage() {
         }
 
         .ghost {
-          border: 1px solid rgba(255, 255, 255, 0.15);
+          border: 1px solid var(--stroke);
           color: var(--text);
           text-decoration: none;
           padding: 0.7rem 1.6rem;
           border-radius: 999px;
           font-weight: 600;
-          background: rgba(255, 255, 255, 0.03);
+          background: white;
+          transition: all 0.2s ease;
+        }
+
+        .ghost:hover {
+          background: var(--bg-soft);
+          border-color: var(--accent);
         }
 
         .hero-card {
-          background: linear-gradient(180deg, rgba(20, 27, 36, 0.9), rgba(13, 18, 26, 0.9));
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: linear-gradient(180deg, rgba(248, 250, 252, 0.95), rgba(241, 245, 249, 0.95));
+          border: 1px solid var(--stroke);
           border-radius: 28px;
           padding: 2rem;
           box-shadow: var(--shadow);
@@ -208,7 +220,7 @@ export default function RootPage() {
           position: absolute;
           inset: -30% 40% auto -20%;
           height: 200px;
-          background: radial-gradient(circle, rgba(51, 195, 255, 0.3), transparent 70%);
+          background: radial-gradient(circle, rgba(43, 111, 246, 0.08), transparent 70%);
           opacity: 0.6;
         }
 
@@ -228,8 +240,9 @@ export default function RootPage() {
         .hero-pill {
           padding: 1rem 1.2rem;
           border-radius: 16px;
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.06);
+          background: white;
+          border: 1px solid var(--stroke);
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
         }
 
         .hero-pill strong {
@@ -268,10 +281,17 @@ export default function RootPage() {
         }
 
         .feature-card {
-          background: var(--bg-card);
+          background: white;
           border: 1px solid var(--stroke);
           border-radius: 20px;
           padding: 1.8rem;
+          box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+          transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+          box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+          transform: translateY(-2px);
         }
 
         .feature-card h4 {
@@ -292,9 +312,9 @@ export default function RootPage() {
         }
 
         .ad-shell {
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          border: 1px solid var(--stroke);
           border-radius: 18px;
-          background: rgba(255, 255, 255, 0.02);
+          background: var(--bg-soft);
           padding: 1.2rem;
         }
 
@@ -308,8 +328,9 @@ export default function RootPage() {
         .mock {
           border-radius: 28px;
           padding: 2rem;
-          background: linear-gradient(160deg, rgba(43, 111, 246, 0.16), rgba(51, 195, 255, 0.08));
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: linear-gradient(160deg, rgba(43, 111, 246, 0.08), rgba(14, 165, 233, 0.05));
+          border: 1px solid var(--stroke);
+          box-shadow: var(--shadow);
         }
 
         .mock h5 {
@@ -327,11 +348,12 @@ export default function RootPage() {
         }
 
         .stat {
-          background: rgba(0, 0, 0, 0.3);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: white;
+          border: 1px solid var(--stroke);
           border-radius: 16px;
           padding: 1rem 1.2rem;
           min-width: 120px;
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
         }
 
         .stat strong {
@@ -374,9 +396,9 @@ export default function RootPage() {
 
         .cta-section {
           text-align: center;
-          background: linear-gradient(140deg, rgba(43, 111, 246, 0.22), rgba(0, 0, 0, 0.2));
-          border-top: 1px solid rgba(255, 255, 255, 0.08);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          background: linear-gradient(140deg, rgba(43, 111, 246, 0.06), rgba(14, 165, 233, 0.04));
+          border-top: 1px solid var(--stroke);
+          border-bottom: 1px solid var(--stroke);
         }
 
         .ios-cta {
@@ -388,13 +410,13 @@ export default function RootPage() {
         }
 
         .ios-badge {
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          border: 1px solid var(--stroke);
           color: var(--muted);
           padding: 0.6rem 1.4rem;
           border-radius: 999px;
           font-weight: 600;
           font-size: 0.85rem;
-          background: rgba(255, 255, 255, 0.04);
+          background: white;
         }
 
         .ios-note {

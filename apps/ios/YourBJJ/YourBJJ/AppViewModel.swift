@@ -296,6 +296,11 @@ final class AppViewModel: ObservableObject {
                     }
                 }
             }
+
+            // Sync premium status to Supabase if authenticated and premium
+            if premiumManager.isPremium {
+                await syncPremiumStatusToSupabase()
+            }
         }
 
         isLoading = false
@@ -368,6 +373,11 @@ final class AppViewModel: ObservableObject {
 
             await migrateLocalData(to: newSession.userId)
             await load()
+
+            // Sync premium status to Supabase after login
+            if premiumManager.isPremium {
+                await syncPremiumStatusToSupabase()
+            }
         } catch {
             authErrorMessage = "ログインに失敗しました。メールアドレスまたはパスワードを確認してください。"
             if let authError = error as? AuthError, let statusCode = authError.statusCode {
@@ -1403,6 +1413,13 @@ final class AppViewModel: ObservableObject {
         if isPremium != combined {
             isPremium = combined
         }
+
+        // Sync StoreKit premium status to Supabase if authenticated
+        if storePremium && isAuthenticated {
+            Task {
+                await syncPremiumStatusToSupabase()
+            }
+        }
     }
 
     private func isServerPremium() -> Bool {
@@ -1414,6 +1431,44 @@ final class AppViewModel: ObservableObject {
             return false
         }
         return date > Date()
+    }
+
+    private func syncPremiumStatusToSupabase() async {
+        guard SupabaseConfig.isConfigured,
+              let userId = session?.userId,
+              let accessToken = session?.accessToken else {
+            print("⚠️ [DEBUG] Cannot sync premium: Not authenticated")
+            return
+        }
+
+        let isPremium = premiumManager.isPremium
+        let premiumUntil: String? = {
+            if let expirationDate = premiumManager.expirationDate {
+                return ISO8601DateFormatter().string(from: expirationDate)
+            }
+            return nil
+        }()
+
+        print("🔄 [DEBUG] Syncing premium status to Supabase: isPremium=\(isPremium), until=\(premiumUntil ?? "nil")")
+
+        do {
+            var updates: [String: Any] = ["is_premium": isPremium]
+            if let premiumUntil {
+                updates["premium_until"] = premiumUntil
+            } else {
+                updates["premium_until"] = NSNull()
+            }
+
+            try await supabaseService.updateProfile(
+                userId: userId,
+                accessToken: accessToken,
+                updates: updates
+            )
+
+            print("✅ [DEBUG] Premium status synced to Supabase successfully")
+        } catch {
+            print("❌ [DEBUG] Failed to sync premium status: \(error.localizedDescription)")
+        }
     }
 
     // MARK: - Sync Functions

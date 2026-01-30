@@ -1,0 +1,120 @@
+{
+  "identifier" : "YourBJJ",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "ja_JP",
+    "_storefront" : "JPN",
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21484441",
+      "localizations" : [
+        {
+          "description" : "プレミアム機能",
+          "displayName" : "Your BJJ Premium",
+          "locale" : "ja_JP"
+        }
+      ],
+      "name" : "Your BJJ Premium",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "500",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6738389974",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "いつでもキャンセル可能",
+              "displayName" : "月額プラン",
+              "locale" : "ja_JP"
+            }
+          ],
+          "productID" : "com.yourbjj.app.premium.onemonthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Premium Monthly",
+          "subscriptionGroupID" : "21484441",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "5000",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6738389975",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "2ヶ月分お得",
+              "displayName" : "年額プラン",
+              "locale" : "ja_JP"
+            }
+          ],
+          "productID" : "com.yourbjj.app.premium.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Premium Yearly",
+          "subscriptionGroupID" : "21484441",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

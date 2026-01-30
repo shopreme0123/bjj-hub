@@ -65,10 +65,12 @@ struct HomeView: View {
                         .offset(y: isAppearing ? 0 : 30)
                         .animation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.5), value: isAppearing)
 
-                        AdBannerView(theme: theme, placement: .home)
-                            .opacity(isAppearing ? 1 : 0)
-                            .offset(y: isAppearing ? 0 : 30)
-                            .animation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.55), value: isAppearing)
+                        if !viewModel.isPremium {
+                            AdBannerView(theme: theme, placement: .home)
+                                .opacity(isAppearing ? 1 : 0)
+                                .offset(y: isAppearing ? 0 : 30)
+                                .animation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.55), value: isAppearing)
+                        }
 
                         RecentTrainingView(
                             logs: viewModel.recentLogs,

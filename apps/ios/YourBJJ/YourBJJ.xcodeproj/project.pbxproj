@@ -66,6 +66,7 @@
 /* Begin PBXFileReference section */
 		09D15D348176408CBBE5F5FE /* LaunchScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreen.swift; sourceTree = "<group>"; };
 		5C47D0EDC65769007DE9DE43 /* PrivacyPolicyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyView.swift; sourceTree = "<group>"; };
+		6462402C2F2C6DB8000890FA /* YourBJJ.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = YourBJJ.storekit; sourceTree = "<group>"; };
 		64C6F2D42F1685C30019AC77 /* YourBJJ.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YourBJJ.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		64C6F2E12F1685C40019AC77 /* YourBJJTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YourBJJTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		64C6F2EB2F1685C40019AC77 /* YourBJJUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YourBJJUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -148,6 +149,7 @@
 		64C6F2CB2F1685C30019AC77 = {
 			isa = PBXGroup;
 			children = (
+				6462402C2F2C6DB8000890FA /* YourBJJ.storekit */,
 				64C6F3552F17AC090019AC77 /* YourBJJ */,
 				64C6F2E42F1685C40019AC77 /* YourBJJTests */,
 				64C6F2EE2F1685C40019AC77 /* YourBJJUITests */,

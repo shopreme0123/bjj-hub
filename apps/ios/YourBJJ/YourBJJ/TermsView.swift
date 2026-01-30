@@ -30,7 +30,7 @@ struct TermsView: View {
                 .padding(.horizontal, 20)
                 .padding(.vertical, 16)
 
-                WebView(url: URL(string: "https://your-bjj-docs.vercel.app/terms")!)
+                WebView(url: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!)
                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                     .padding(.horizontal, 20)
                     .padding(.bottom, 20)
