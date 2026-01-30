@@ -488,6 +488,174 @@ export default function RootPage() {
           margin-bottom: 1rem;
         }
 
+        .diary-mock {
+          border-radius: 28px;
+          padding: 1.5rem;
+          background: var(--bg-card);
+          border: 1px solid var(--stroke);
+          box-shadow: var(--shadow);
+          transition: all 0.5s ease;
+        }
+
+        .diary-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 1.2rem;
+        }
+
+        .diary-header h5 {
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: var(--text);
+          letter-spacing: 0.02em;
+        }
+
+        .add-button {
+          width: 32px;
+          height: 32px;
+          border-radius: 10px;
+          background: var(--accent-3);
+          display: grid;
+          place-items: center;
+          font-size: 18px;
+          font-weight: 600;
+          color: var(--accent);
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .add-button:hover {
+          transform: scale(1.1);
+          background: var(--accent);
+          color: white;
+        }
+
+        .calendar-mini {
+          background: var(--bg-soft);
+          border-radius: 16px;
+          padding: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .calendar-row {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          gap: 4px;
+          margin-bottom: 6px;
+        }
+
+        .calendar-row:last-child {
+          margin-bottom: 0;
+        }
+
+        .calendar-day {
+          text-align: center;
+          font-size: 10px;
+          font-weight: 600;
+          color: var(--muted);
+          padding: 4px 0;
+        }
+
+        .calendar-date {
+          aspect-ratio: 1;
+          display: grid;
+          place-items: center;
+          font-size: 12px;
+          font-weight: 600;
+          color: var(--text);
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .calendar-date:hover {
+          background: var(--accent-3);
+        }
+
+        .calendar-date.active {
+          background: var(--accent);
+          color: white;
+          box-shadow: 0 2px 8px var(--glow);
+        }
+
+        .diary-entries {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .diary-entry {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px;
+          background: var(--bg-soft);
+          border: 1px solid var(--stroke);
+          border-radius: 16px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .diary-entry:hover {
+          background: var(--bg-card);
+          border-color: var(--accent);
+          transform: translateX(4px);
+          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+        }
+
+        .entry-date {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          min-width: 48px;
+        }
+
+        .entry-day {
+          font-size: 20px;
+          font-weight: 700;
+          color: var(--text);
+          line-height: 1;
+        }
+
+        .entry-month {
+          font-size: 11px;
+          font-weight: 600;
+          color: var(--muted);
+          margin-top: 2px;
+        }
+
+        .entry-content {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .entry-title {
+          font-size: 14px;
+          font-weight: 700;
+          color: var(--text);
+        }
+
+        .entry-meta {
+          font-size: 12px;
+          color: var(--muted);
+        }
+
+        .entry-arrow {
+          font-size: 20px;
+          color: var(--muted);
+          opacity: 0.5;
+          transition: all 0.3s ease;
+        }
+
+        .diary-entry:hover .entry-arrow {
+          opacity: 1;
+          transform: translateX(4px);
+          color: var(--accent);
+        }
+
         .stat-row {
           display: flex;
           gap: 1rem;
@@ -899,20 +1067,62 @@ export default function RootPage() {
               </div>
             </div>
           </div>
-          <div className="mock">
-            <h5>Weekly Summary</h5>
-            <div className="stat-row">
-              <div className="stat">
-                <strong>3</strong>
-                <span>練習回数</span>
+          <div className="diary-mock">
+            <div className="diary-header">
+              <h5>日記</h5>
+              <div className="add-button">+</div>
+            </div>
+            <div className="calendar-mini">
+              <div className="calendar-row">
+                <div className="calendar-day">月</div>
+                <div className="calendar-day">火</div>
+                <div className="calendar-day">水</div>
+                <div className="calendar-day">木</div>
+                <div className="calendar-day">金</div>
+                <div className="calendar-day">土</div>
+                <div className="calendar-day">日</div>
               </div>
-              <div className="stat">
-                <strong>5</strong>
-                <span>復習した技</span>
+              <div className="calendar-row">
+                <div className="calendar-date"></div>
+                <div className="calendar-date"></div>
+                <div className="calendar-date active">1</div>
+                <div className="calendar-date">2</div>
+                <div className="calendar-date">3</div>
+                <div className="calendar-date active">4</div>
+                <div className="calendar-date">5</div>
               </div>
-              <div className="stat">
-                <strong>90</strong>
-                <span>集中スコア</span>
+              <div className="calendar-row">
+                <div className="calendar-date">6</div>
+                <div className="calendar-date active">7</div>
+                <div className="calendar-date">8</div>
+                <div className="calendar-date">9</div>
+                <div className="calendar-date">10</div>
+                <div className="calendar-date">11</div>
+                <div className="calendar-date">12</div>
+              </div>
+            </div>
+            <div className="diary-entries">
+              <div className="diary-entry">
+                <div className="entry-date">
+                  <div className="entry-day">07</div>
+                  <div className="entry-month">1月</div>
+                </div>
+                <div className="entry-content">
+                  <div className="entry-title">スパーリング練習</div>
+                  <div className="entry-meta">90分 · 技術向上</div>
+                </div>
+                <div className="entry-arrow">›</div>
+              </div>
+              <div className="diary-entry">
+                <div className="entry-date">
+                  <div className="entry-day">04</div>
+                  <div className="entry-month">1月</div>
+                </div>
+                <div className="entry-content">
+                  <div className="entry-title">基本練習</div>
+                  <div className="entry-meta">60分 · 復習</div>
+                </div>
+                <div className="entry-arrow">›</div>
               </div>
             </div>
           </div>
