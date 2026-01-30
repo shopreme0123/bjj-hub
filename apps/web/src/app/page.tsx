@@ -95,6 +95,12 @@ export default function RootPage() {
           display: grid;
           place-items: center;
           box-shadow: 0 10px 30px var(--glow);
+          transition: all 0.3s ease;
+        }
+
+        .logo:hover .logo-badge {
+          transform: rotate(5deg) scale(1.05);
+          box-shadow: 0 12px 36px var(--glow);
         }
 
         .logo-text {
@@ -128,11 +134,28 @@ export default function RootPage() {
           text-decoration: none;
           font-size: 0.9rem;
           font-weight: 600;
-          transition: color 0.2s ease;
+          transition: all 0.3s ease;
+          position: relative;
+        }
+
+        .nav-links a::after {
+          content: '';
+          position: absolute;
+          bottom: -4px;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background: linear-gradient(90deg, var(--accent), var(--accent-2));
+          transform: scaleX(0);
+          transition: transform 0.3s ease;
         }
 
         .nav-links a:hover {
-          color: var(--text);
+          color: var(--accent);
+        }
+
+        .nav-links a:hover::after {
+          transform: scaleX(1);
         }
 
         .cta {
@@ -286,12 +309,31 @@ export default function RootPage() {
           border-radius: 20px;
           padding: 1.8rem;
           box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
-          transition: all 0.3s ease;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .feature-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 3px;
+          background: linear-gradient(90deg, var(--accent), var(--accent-2));
+          transform: scaleX(0);
+          transition: transform 0.4s ease;
         }
 
         .feature-card:hover {
-          box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-          transform: translateY(-2px);
+          box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+          transform: translateY(-6px);
+          border-color: var(--accent);
+        }
+
+        .feature-card:hover::before {
+          transform: scaleX(1);
         }
 
         .feature-card h4 {
@@ -354,6 +396,13 @@ export default function RootPage() {
           padding: 1rem 1.2rem;
           min-width: 120px;
           box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+          transition: all 0.3s ease;
+        }
+
+        .stat:hover {
+          transform: translateY(-4px) scale(1.05);
+          box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+          border-color: var(--accent);
         }
 
         .stat strong {
@@ -394,6 +443,126 @@ export default function RootPage() {
         .belt.brown { background: #92400e; }
         .belt.black { background: #111827; }
 
+        .technique-cards-container {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .technique-card {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          padding: 14px;
+          background: white;
+          border: 1px solid var(--stroke);
+          border-radius: 18px;
+          box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          opacity: 0;
+          transform: translateY(20px);
+        }
+
+        .technique-card:hover {
+          box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+          transform: translateY(-4px) scale(1.02);
+          border-color: var(--accent);
+        }
+
+        .technique-card:active {
+          transform: translateY(-2px) scale(0.98);
+        }
+
+        .technique-icon {
+          width: 56px;
+          height: 56px;
+          border-radius: 14px;
+          background: linear-gradient(135deg, rgba(43, 111, 246, 0.15), rgba(43, 111, 246, 0.08));
+          display: grid;
+          place-items: center;
+          font-size: 24px;
+          flex-shrink: 0;
+          transition: all 0.3s ease;
+        }
+
+        .technique-card:hover .technique-icon {
+          transform: rotate(5deg) scale(1.1);
+        }
+
+        .technique-content {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .technique-name {
+          font-size: 15px;
+          font-weight: 700;
+          color: var(--text);
+          line-height: 1.3;
+        }
+
+        .technique-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          padding: 4px 8px;
+          background: var(--bg-soft);
+          border-radius: 999px;
+          width: fit-content;
+        }
+
+        .technique-badge span {
+          font-size: 11px;
+          font-weight: 600;
+          color: var(--text);
+        }
+
+        .badge-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: var(--accent);
+        }
+
+        .technique-arrow {
+          font-size: 20px;
+          color: var(--muted);
+          opacity: 0.5;
+          transition: all 0.3s ease;
+        }
+
+        .technique-card:hover .technique-arrow {
+          opacity: 1;
+          transform: translateX(4px);
+          color: var(--accent);
+        }
+
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .technique-card-1 {
+          animation: fadeInUp 0.6s ease forwards 0.1s;
+        }
+
+        .technique-card-2 {
+          animation: fadeInUp 0.6s ease forwards 0.2s;
+        }
+
+        .technique-card-3 {
+          animation: fadeInUp 0.6s ease forwards 0.3s;
+        }
+
         .cta-section {
           text-align: center;
           background: linear-gradient(140deg, rgba(43, 111, 246, 0.06), rgba(14, 165, 233, 0.04));
@@ -432,9 +601,64 @@ export default function RootPage() {
           text-align: center;
         }
 
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes slideInLeft {
+          from {
+            opacity: 0;
+            transform: translateX(-30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes slideInRight {
+          from {
+            opacity: 0;
+            transform: translateX(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        .animate-on-scroll {
+          opacity: 0;
+          animation: fadeIn 0.8s ease forwards;
+        }
+
+        .hero > div:first-child {
+          animation: slideInLeft 0.8s ease forwards;
+        }
+
+        .hero-card {
+          animation: slideInRight 0.8s ease forwards 0.2s;
+          opacity: 0;
+        }
+
+        .section-title, .section-desc {
+          animation: fadeIn 0.8s ease forwards;
+        }
+
         @media (max-width: 720px) {
           .nav-links {
             display: none;
+          }
+
+          .technique-cards-container {
+            margin-top: 2rem;
           }
         }
       `}</style>
@@ -589,29 +813,12 @@ export default function RootPage() {
 
       <section id="techniques" className="section">
         <div className="split">
-          <div className="mock">
-            <h5>Technique Library</h5>
-            <div className="hero-card-grid">
-              <div className="hero-pill">
-                <strong>ガード</strong>
-                <span>基本から展開まで整理。</span>
-              </div>
-              <div className="hero-pill">
-                <strong>スイープ</strong>
-                <span>自分の型を貯める。</span>
-              </div>
-              <div className="hero-pill">
-                <strong>サブミッション</strong>
-                <span>試合で使える型へ。</span>
-              </div>
-            </div>
-          </div>
           <div>
             <h2 className="section-title">技は「資産」。</h2>
             <p className="section-desc">
               習った技をためて、整理して、使える形に。自分の技セットが育つ感覚が続きます。
             </p>
-            <div className="grid-3">
+            <div className="grid-3" style={{ marginTop: '1.5rem' }}>
               <div className="feature-card">
                 <h4>カテゴリで分類</h4>
                 <p>体勢・技種別でサクッと整理。</p>
@@ -620,6 +827,41 @@ export default function RootPage() {
                 <h4>復習の導線</h4>
                 <p>迷わず見返せる構造。</p>
               </div>
+            </div>
+          </div>
+          <div className="technique-cards-container">
+            <div className="technique-card technique-card-1">
+              <div className="technique-icon">🛡️</div>
+              <div className="technique-content">
+                <div className="technique-name">クローズドガード</div>
+                <div className="technique-badge">
+                  <span className="badge-dot"></span>
+                  <span>ガード</span>
+                </div>
+              </div>
+              <div className="technique-arrow">›</div>
+            </div>
+            <div className="technique-card technique-card-2">
+              <div className="technique-icon">🔄</div>
+              <div className="technique-content">
+                <div className="technique-name">シザースイープ</div>
+                <div className="technique-badge">
+                  <span className="badge-dot"></span>
+                  <span>スイープ</span>
+                </div>
+              </div>
+              <div className="technique-arrow">›</div>
+            </div>
+            <div className="technique-card technique-card-3">
+              <div className="technique-icon">⚔️</div>
+              <div className="technique-content">
+                <div className="technique-name">アームバー</div>
+                <div className="technique-badge">
+                  <span className="badge-dot"></span>
+                  <span>サブミッション</span>
+                </div>
+              </div>
+              <div className="technique-arrow">›</div>
             </div>
           </div>
         </div>
