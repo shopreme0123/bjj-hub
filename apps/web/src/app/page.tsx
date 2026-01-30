@@ -97,6 +97,8 @@ const beltThemes: Record<BeltColor, BeltTheme> = {
 
 export default function RootPage() {
   const [currentBelt, setCurrentBelt] = useState<BeltColor>('blue');
+  const [showDiaryModal, setShowDiaryModal] = useState(false);
+  const [showTechniqueModal, setShowTechniqueModal] = useState(false);
 
   useEffect(() => {
     try {
@@ -656,6 +658,137 @@ export default function RootPage() {
           color: var(--accent);
         }
 
+        .modal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.5);
+          backdrop-filter: blur(8px);
+          z-index: 100;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 1.5rem;
+          animation: fadeIn 0.2s ease;
+        }
+
+        .modal-content {
+          background: var(--bg-card);
+          border: 1px solid var(--stroke);
+          border-radius: 24px;
+          max-width: 500px;
+          width: 100%;
+          max-height: 80vh;
+          overflow-y: auto;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+          animation: slideUp 0.3s ease;
+        }
+
+        .modal-header {
+          padding: 1.5rem;
+          border-bottom: 1px solid var(--stroke);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .modal-header h3 {
+          font-size: 1.3rem;
+          font-weight: 700;
+          color: var(--text);
+        }
+
+        .modal-close {
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          background: var(--bg-soft);
+          border: 1px solid var(--stroke);
+          display: grid;
+          place-items: center;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          font-size: 20px;
+          color: var(--muted);
+        }
+
+        .modal-close:hover {
+          background: var(--accent);
+          color: white;
+          border-color: var(--accent);
+        }
+
+        .modal-body {
+          padding: 1.5rem;
+        }
+
+        .modal-section {
+          margin-bottom: 1.5rem;
+        }
+
+        .modal-section:last-child {
+          margin-bottom: 0;
+        }
+
+        .modal-label {
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: var(--muted);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 0.5rem;
+        }
+
+        .modal-info {
+          font-size: 1rem;
+          color: var(--text);
+          line-height: 1.6;
+        }
+
+        .modal-video {
+          aspect-ratio: 16 / 9;
+          background: var(--bg-soft);
+          border: 1px solid var(--stroke);
+          border-radius: 12px;
+          display: grid;
+          place-items: center;
+          color: var(--muted);
+          font-size: 0.9rem;
+          margin-top: 0.5rem;
+        }
+
+        .modal-video-icon {
+          font-size: 3rem;
+          margin-bottom: 0.5rem;
+          opacity: 0.5;
+        }
+
+        .modal-tags {
+          display: flex;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+          margin-top: 0.5rem;
+        }
+
+        .modal-tag {
+          padding: 0.4rem 0.8rem;
+          background: var(--accent-3);
+          color: var(--accent);
+          border-radius: 999px;
+          font-size: 0.85rem;
+          font-weight: 600;
+        }
+
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
         .stat-row {
           display: flex;
           gap: 1rem;
@@ -1054,7 +1187,7 @@ export default function RootPage() {
           <div>
             <h2 className="section-title">日記は「質のフィードバック」。</h2>
             <p className="section-desc">
-              何をやったか、どこで詰まったか。毎回の記録が次の練習を強くします。
+              何をやったか、どこで詰まったか。毎回の記録が次の練習を強くします。動画も登録可能で、後から見返して復習できます。
             </p>
             <div className="grid-3">
               <div className="feature-card">
@@ -1102,7 +1235,7 @@ export default function RootPage() {
               </div>
             </div>
             <div className="diary-entries">
-              <div className="diary-entry">
+              <div className="diary-entry" onClick={() => setShowDiaryModal(true)}>
                 <div className="entry-date">
                   <div className="entry-day">07</div>
                   <div className="entry-month">1月</div>
@@ -1113,7 +1246,7 @@ export default function RootPage() {
                 </div>
                 <div className="entry-arrow">›</div>
               </div>
-              <div className="diary-entry">
+              <div className="diary-entry" onClick={() => setShowDiaryModal(true)}>
                 <div className="entry-date">
                   <div className="entry-day">04</div>
                   <div className="entry-month">1月</div>
@@ -1147,7 +1280,7 @@ export default function RootPage() {
           <div>
             <h2 className="section-title">技は「資産」。</h2>
             <p className="section-desc">
-              習った技をためて、整理して、使える形に。自分の技セットが育つ感覚が続きます。
+              習った技をためて、整理して、使える形に。動画URLやメモを残せるので、自分だけの技ライブラリが育ちます。
             </p>
             <div className="grid-3" style={{ marginTop: '1.5rem' }}>
               <div className="feature-card">
@@ -1161,7 +1294,7 @@ export default function RootPage() {
             </div>
           </div>
           <div className="technique-cards-container">
-            <div className="technique-card technique-card-1">
+            <div className="technique-card technique-card-1" onClick={() => setShowTechniqueModal(true)}>
               <div className="technique-icon">🛡️</div>
               <div className="technique-content">
                 <div className="technique-name">クローズドガード</div>
@@ -1172,7 +1305,7 @@ export default function RootPage() {
               </div>
               <div className="technique-arrow">›</div>
             </div>
-            <div className="technique-card technique-card-2">
+            <div className="technique-card technique-card-2" onClick={() => setShowTechniqueModal(true)}>
               <div className="technique-icon">🔄</div>
               <div className="technique-content">
                 <div className="technique-name">シザースイープ</div>
@@ -1183,7 +1316,7 @@ export default function RootPage() {
               </div>
               <div className="technique-arrow">›</div>
             </div>
-            <div className="technique-card technique-card-3">
+            <div className="technique-card technique-card-3" onClick={() => setShowTechniqueModal(true)}>
               <div className="technique-icon">⚔️</div>
               <div className="technique-content">
                 <div className="technique-name">アームバー</div>
@@ -1250,6 +1383,91 @@ export default function RootPage() {
       <footer className="footer">
         <p>© 2026 Your BJJ. All rights reserved.</p>
       </footer>
+
+      {showDiaryModal && (
+        <div className="modal-overlay" onClick={() => setShowDiaryModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>スパーリング練習</h3>
+              <button className="modal-close" onClick={() => setShowDiaryModal(false)}>×</button>
+            </div>
+            <div className="modal-body">
+              <div className="modal-section">
+                <div className="modal-label">日付</div>
+                <div className="modal-info">2026年1月7日</div>
+              </div>
+              <div className="modal-section">
+                <div className="modal-label">時間</div>
+                <div className="modal-info">90分</div>
+              </div>
+              <div className="modal-section">
+                <div className="modal-label">目的</div>
+                <div className="modal-tags">
+                  <div className="modal-tag">技術向上</div>
+                  <div className="modal-tag">スパーリング</div>
+                </div>
+              </div>
+              <div className="modal-section">
+                <div className="modal-label">メモ</div>
+                <div className="modal-info">
+                  今日はガードからのスイープを重点的に練習。相手の重心移動を感じ取るタイミングが少しずつ掴めてきた。次回はパスガード対策も意識したい。
+                </div>
+              </div>
+              <div className="modal-section">
+                <div className="modal-label">動画</div>
+                <div className="modal-video">
+                  <div>
+                    <div className="modal-video-icon">🎥</div>
+                    <div>練習動画を登録可能</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showTechniqueModal && (
+        <div className="modal-overlay" onClick={() => setShowTechniqueModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>クローズドガード</h3>
+              <button className="modal-close" onClick={() => setShowTechniqueModal(false)}>×</button>
+            </div>
+            <div className="modal-body">
+              <div className="modal-section">
+                <div className="modal-label">カテゴリ</div>
+                <div className="modal-tags">
+                  <div className="modal-tag">ガード</div>
+                </div>
+              </div>
+              <div className="modal-section">
+                <div className="modal-label">説明</div>
+                <div className="modal-info">
+                  相手を両脚で挟み込み、コントロールする基本的なガードポジション。攻撃と守備の両方で使える重要な技術。
+                </div>
+              </div>
+              <div className="modal-section">
+                <div className="modal-label">キーポイント</div>
+                <div className="modal-info">
+                  • 足首をしっかりロック<br />
+                  • 腰を使って相手を引き寄せる<br />
+                  • 姿勢を崩してコントロール
+                </div>
+              </div>
+              <div className="modal-section">
+                <div className="modal-label">参考動画</div>
+                <div className="modal-video">
+                  <div>
+                    <div className="modal-video-icon">🎥</div>
+                    <div>YouTube等の動画URLを保存可能</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
