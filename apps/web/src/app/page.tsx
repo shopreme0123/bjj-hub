@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import Script from 'next/script';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 declare global {
   interface Window {
@@ -11,7 +11,93 @@ declare global {
   }
 }
 
+type BeltColor = 'white' | 'blue' | 'purple' | 'brown' | 'black';
+
+interface BeltTheme {
+  primary: string;
+  primaryLight: string;
+  gradientStart: string;
+  gradientEnd: string;
+  bg: string;
+  bgGradient: string;
+  card: string;
+  cardBorder: string;
+  text: string;
+  textMuted: string;
+  glow: string;
+}
+
+const beltThemes: Record<BeltColor, BeltTheme> = {
+  white: {
+    primary: '#475569',
+    primaryLight: '#64748b',
+    gradientStart: '#64748b',
+    gradientEnd: '#94a3b8',
+    bg: '#ffffff',
+    bgGradient: '#f8fafc',
+    card: '#ffffff',
+    cardBorder: '#e2e8f0',
+    text: '#0f172a',
+    textMuted: '#64748b',
+    glow: 'rgba(71, 85, 105, 0.2)',
+  },
+  blue: {
+    primary: '#2563eb',
+    primaryLight: '#3b82f6',
+    gradientStart: '#3b82f6',
+    gradientEnd: '#60a5fa',
+    bg: '#f8fafc',
+    bgGradient: '#eff6ff',
+    card: '#ffffff',
+    cardBorder: '#dbeafe',
+    text: '#0f172a',
+    textMuted: '#64748b',
+    glow: 'rgba(43, 111, 246, 0.2)',
+  },
+  purple: {
+    primary: '#7c3aed',
+    primaryLight: '#8b5cf6',
+    gradientStart: '#8b5cf6',
+    gradientEnd: '#a78bfa',
+    bg: '#fefefe',
+    bgGradient: '#faf5ff',
+    card: '#ffffff',
+    cardBorder: '#e9d5ff',
+    text: '#0f172a',
+    textMuted: '#64748b',
+    glow: 'rgba(124, 58, 237, 0.2)',
+  },
+  brown: {
+    primary: '#92400e',
+    primaryLight: '#b45309',
+    gradientStart: '#b45309',
+    gradientEnd: '#d97706',
+    bg: '#fefefe',
+    bgGradient: '#fffbeb',
+    card: '#ffffff',
+    cardBorder: '#fde68a',
+    text: '#0f172a',
+    textMuted: '#64748b',
+    glow: 'rgba(146, 64, 14, 0.2)',
+  },
+  black: {
+    primary: '#09090b',
+    primaryLight: '#18181b',
+    gradientStart: '#18181b',
+    gradientEnd: '#3f3f46',
+    bg: '#fafafa',
+    bgGradient: '#f4f4f5',
+    card: '#ffffff',
+    cardBorder: '#e4e4e7',
+    text: '#09090b',
+    textMuted: '#71717a',
+    glow: 'rgba(9, 9, 11, 0.2)',
+  },
+};
+
 export default function RootPage() {
+  const [currentBelt, setCurrentBelt] = useState<BeltColor>('blue');
+
   useEffect(() => {
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
@@ -20,6 +106,22 @@ export default function RootPage() {
       console.error('AdSense error:', err);
     }
   }, []);
+
+  useEffect(() => {
+    const theme = beltThemes[currentBelt];
+    const root = document.documentElement;
+
+    root.style.setProperty('--bg', theme.bg);
+    root.style.setProperty('--bg-soft', theme.bgGradient);
+    root.style.setProperty('--bg-card', theme.card);
+    root.style.setProperty('--text', theme.text);
+    root.style.setProperty('--muted', theme.textMuted);
+    root.style.setProperty('--accent', theme.primary);
+    root.style.setProperty('--accent-2', theme.primaryLight);
+    root.style.setProperty('--accent-3', theme.bgGradient);
+    root.style.setProperty('--stroke', theme.cardBorder);
+    root.style.setProperty('--glow', theme.glow);
+  }, [currentBelt]);
 
   return (
     <div className="landing">
@@ -429,6 +531,23 @@ export default function RootPage() {
           border-radius: 6px;
           background: #e2e8f0;
           position: relative;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+        }
+
+        .belt:hover {
+          transform: translateY(-4px) scale(1.05);
+          box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
+        }
+
+        .belt:active {
+          transform: translateY(-2px) scale(1.02);
+        }
+
+        .belt.active {
+          box-shadow: 0 0 0 3px var(--bg), 0 0 0 6px var(--accent);
+          transform: scale(1.1);
         }
 
         .belt::after {
@@ -436,6 +555,7 @@ export default function RootPage() {
           position: absolute;
           inset: 0 40% 0 40%;
           background: rgba(0, 0, 0, 0.2);
+          pointer-events: none;
         }
 
         .belt.blue { background: #2563eb; }
@@ -870,14 +990,34 @@ export default function RootPage() {
       <section id="theme" className="section">
         <h2 className="section-title">ベルトカラーに合わせたテーマ。</h2>
         <p className="section-desc">
-          iOSアプリの世界観に合わせた配色。自分の帯に合わせたモチベーションを維持できます。
+          iOSアプリの世界観に合わせた配色。自分の帯に合わせたモチベーションを維持できます。帯をクリックして、テーマを切り替えてみてください。
         </p>
         <div className="belt-row">
-          <div className="belt" title="white" />
-          <div className="belt blue" title="blue" />
-          <div className="belt purple" title="purple" />
-          <div className="belt brown" title="brown" />
-          <div className="belt black" title="black" />
+          <div
+            className={`belt ${currentBelt === 'white' ? 'active' : ''}`}
+            title="白帯"
+            onClick={() => setCurrentBelt('white')}
+          />
+          <div
+            className={`belt blue ${currentBelt === 'blue' ? 'active' : ''}`}
+            title="青帯"
+            onClick={() => setCurrentBelt('blue')}
+          />
+          <div
+            className={`belt purple ${currentBelt === 'purple' ? 'active' : ''}`}
+            title="紫帯"
+            onClick={() => setCurrentBelt('purple')}
+          />
+          <div
+            className={`belt brown ${currentBelt === 'brown' ? 'active' : ''}`}
+            title="茶帯"
+            onClick={() => setCurrentBelt('brown')}
+          />
+          <div
+            className={`belt black ${currentBelt === 'black' ? 'active' : ''}`}
+            title="黒帯"
+            onClick={() => setCurrentBelt('black')}
+          />
         </div>
       </section>
 
