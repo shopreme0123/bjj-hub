@@ -100,50 +100,93 @@ export default function RootPage() {
   const [selectedDiary, setSelectedDiary] = useState<number | null>(null);
   const [selectedTechnique, setSelectedTechnique] = useState<number | null>(null);
 
+  // iOS版TrainingLogモデルに準拠した日記データ
   const diaryEntries = [
     {
       day: '07',
       month: '1月',
       title: 'スパーリング練習',
-      meta: '90分 · 技術向上',
+      meta: '90分 · コンディション 4/5',
       fullDate: '2026年1月7日',
-      duration: '90分',
-      tags: ['技術向上', 'スパーリング'],
-      memo: '今日はガードからのスイープを重点的に練習。相手の重心移動を感じ取るタイミングが少しずつ掴めてきた。次回はパスガード対策も意識したい。',
+      startTime: '19:00',
+      endTime: '20:30',
+      durationMinutes: 90,
+      condition: 4,
+      sparringRounds: 5,
+      content: 'ウォームアップ → テクニックドリル → スパーリング5本',
+      notes: '今日はガードからのスイープを重点的に練習。相手の重心移動を感じ取るタイミングが少しずつ掴めてきた。次回はパスガード対策も意識したい。',
+      techniques: ['シザースイープ', 'ヒップスイープ'],
     },
     {
       day: '04',
       month: '1月',
       title: '基本練習',
-      meta: '60分 · 復習',
+      meta: '60分 · コンディション 3/5',
       fullDate: '2026年1月4日',
-      duration: '60分',
-      tags: ['復習', '基本練習'],
-      memo: 'エビやブリッジなどの基本動作を復習。地味だけど大切な練習。足回しの動きがスムーズになってきた気がする。',
+      startTime: '10:00',
+      endTime: '11:00',
+      durationMinutes: 60,
+      condition: 3,
+      sparringRounds: 0,
+      content: 'ムーブメントドリル → 基本動作の反復',
+      notes: 'エビやブリッジなどの基本動作を復習。地味だけど大切な練習。足回しの動きがスムーズになってきた気がする。',
+      techniques: ['エビ', 'ブリッジ', '足回し'],
     },
   ];
 
+  // iOS版デフォルトカテゴリ（6種類）
+  const defaultCategories = [
+    { id: 'guard', name: 'ガード（ボトム）', icon: '🛡️' },
+    { id: 'top', name: 'トップポジション', icon: '⬆️' },
+    { id: 'stand', name: 'スタンド', icon: '🧍' },
+    { id: 'leglock', name: 'レッグロック', icon: '🦵' },
+    { id: 'turtle', name: 'タートル', icon: '🐢' },
+    { id: 'back', name: 'バック', icon: '🔙' },
+  ];
+
+  // iOS版Techniqueモデルに準拠した技データ
   const techniques = [
     {
       icon: '🛡️',
       name: 'クローズドガード',
-      category: 'ガード',
+      nameEn: 'Closed Guard',
+      category: 'ガード（ボトム）',
+      categoryId: 'guard',
+      techniqueType: 'guard',
+      techniqueTypeLabel: 'ガード',
+      masteryLevel: 'learned',
+      masteryLevelLabel: '習得',
       description: '相手を両脚で挟み込み、コントロールする基本的なガードポジション。攻撃と守備の両方で使える重要な技術。',
       keyPoints: '• 足首をしっかりロック\n• 腰を使って相手を引き寄せる\n• 姿勢を崩してコントロール',
+      tags: ['基本', 'コントロール'],
     },
     {
-      icon: '🔄',
+      icon: '🛡️',
       name: 'シザースイープ',
-      category: 'スイープ',
+      nameEn: 'Scissor Sweep',
+      category: 'ガード（ボトム）',
+      categoryId: 'guard',
+      techniqueType: 'sweep',
+      techniqueTypeLabel: 'スイープ',
+      masteryLevel: 'learning',
+      masteryLevelLabel: '学習中',
       description: '相手の片足を刈り、ハサミの動きで相手を転がすスイープ技。タイミングと体重移動がポイント。',
       keyPoints: '• 相手のバランスを崩す\n• 足でハサミのように刈る\n• 上半身で方向をコントロール',
+      tags: ['スイープ', 'クローズドガード'],
     },
     {
-      icon: '⚔️',
+      icon: '🛡️',
       name: 'アームバー',
-      category: 'サブミッション',
+      nameEn: 'Armbar',
+      category: 'ガード（ボトム）',
+      categoryId: 'guard',
+      techniqueType: 'submission',
+      techniqueTypeLabel: 'サブミッション',
+      masteryLevel: 'favorite',
+      masteryLevelLabel: '得意技',
       description: '相手の腕を両脚で固定し、肘関節を極める技。マウントやガードから狙える万能技。',
       keyPoints: '• 腕をしっかりグリップ\n• 膝で相手の頭をブロック\n• 腰を上げて極める',
+      tags: ['サブミッション', '関節技'],
     },
   ];
 
@@ -826,6 +869,54 @@ export default function RootPage() {
           font-weight: 600;
         }
 
+        .condition-bar {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .condition-dot {
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: var(--stroke);
+          transition: all 0.3s ease;
+        }
+
+        .condition-dot.active {
+          background: var(--accent);
+          box-shadow: 0 2px 8px var(--glow);
+        }
+
+        .condition-text {
+          margin-left: 8px;
+          font-weight: 600;
+          color: var(--text);
+        }
+
+        .mastery-badge {
+          display: inline-block;
+          padding: 0.4rem 1rem;
+          border-radius: 999px;
+          font-size: 0.85rem;
+          font-weight: 700;
+        }
+
+        .mastery-learning {
+          background: #fef3c7;
+          color: #92400e;
+        }
+
+        .mastery-learned {
+          background: #d1fae5;
+          color: #065f46;
+        }
+
+        .mastery-favorite {
+          background: #ede9fe;
+          color: #7c3aed;
+        }
+
         @keyframes slideUp {
           from {
             opacity: 0;
@@ -984,6 +1075,35 @@ export default function RootPage() {
           background: var(--bg-soft);
           border-radius: 999px;
           width: fit-content;
+        }
+
+        .technique-meta {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+
+        .mastery-indicator {
+          font-size: 10px;
+          font-weight: 700;
+          padding: 3px 8px;
+          border-radius: 999px;
+        }
+
+        .mastery-indicator.mastery-learning {
+          background: #fef3c7;
+          color: #92400e;
+        }
+
+        .mastery-indicator.mastery-learned {
+          background: #d1fae5;
+          color: #065f46;
+        }
+
+        .mastery-indicator.mastery-favorite {
+          background: #ede9fe;
+          color: #7c3aed;
         }
 
         .technique-badge span {
@@ -1338,9 +1458,12 @@ export default function RootPage() {
                 <div className="technique-icon">{technique.icon}</div>
                 <div className="technique-content">
                   <div className="technique-name">{technique.name}</div>
-                  <div className="technique-badge">
-                    <span className="badge-dot"></span>
-                    <span>{technique.category}</span>
+                  <div className="technique-meta">
+                    <div className="technique-badge">
+                      <span className="badge-dot"></span>
+                      <span>{technique.techniqueTypeLabel}</span>
+                    </div>
+                    <span className={`mastery-indicator mastery-${technique.masteryLevel}`}>{technique.masteryLevelLabel}</span>
                   </div>
                 </div>
                 <div className="technique-arrow">›</div>
@@ -1416,29 +1539,53 @@ export default function RootPage() {
                 <div className="modal-info">{diaryEntries[selectedDiary].fullDate}</div>
               </div>
               <div className="modal-section">
-                <div className="modal-label">時間</div>
-                <div className="modal-info">{diaryEntries[selectedDiary].duration}</div>
+                <div className="modal-label">時刻</div>
+                <div className="modal-info">{diaryEntries[selectedDiary].startTime} 〜 {diaryEntries[selectedDiary].endTime}（{diaryEntries[selectedDiary].durationMinutes}分）</div>
               </div>
               <div className="modal-section">
-                <div className="modal-label">目的</div>
-                <div className="modal-tags">
-                  {diaryEntries[selectedDiary].tags.map((tag, i) => (
-                    <div key={i} className="modal-tag">{tag}</div>
-                  ))}
+                <div className="modal-label">コンディション</div>
+                <div className="modal-info">
+                  <div className="condition-bar">
+                    {[1, 2, 3, 4, 5].map((level) => (
+                      <div
+                        key={level}
+                        className={`condition-dot ${level <= diaryEntries[selectedDiary].condition ? 'active' : ''}`}
+                      />
+                    ))}
+                    <span className="condition-text">{diaryEntries[selectedDiary].condition}/5</span>
+                  </div>
                 </div>
+              </div>
+              {diaryEntries[selectedDiary].sparringRounds > 0 && (
+                <div className="modal-section">
+                  <div className="modal-label">スパーリング</div>
+                  <div className="modal-info">{diaryEntries[selectedDiary].sparringRounds}ラウンド</div>
+                </div>
+              )}
+              <div className="modal-section">
+                <div className="modal-label">練習内容</div>
+                <div className="modal-info">{diaryEntries[selectedDiary].content}</div>
               </div>
               <div className="modal-section">
                 <div className="modal-label">メモ</div>
-                <div className="modal-info">
-                  {diaryEntries[selectedDiary].memo}
-                </div>
+                <div className="modal-info">{diaryEntries[selectedDiary].notes}</div>
               </div>
+              {diaryEntries[selectedDiary].techniques.length > 0 && (
+                <div className="modal-section">
+                  <div className="modal-label">習った技</div>
+                  <div className="modal-tags">
+                    {diaryEntries[selectedDiary].techniques.map((tech, i) => (
+                      <div key={i} className="modal-tag">{tech}</div>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="modal-section">
                 <div className="modal-label">動画</div>
                 <div className="modal-video">
                   <div>
                     <div className="modal-video-icon">🎥</div>
-                    <div>練習動画を登録可能</div>
+                    <div>練習動画を登録可能（最大10件）</div>
                   </div>
                 </div>
               </div>
@@ -1456,21 +1603,45 @@ export default function RootPage() {
             </div>
             <div className="modal-body">
               <div className="modal-section">
+                <div className="modal-label">英語名</div>
+                <div className="modal-info">{techniques[selectedTechnique].nameEn}</div>
+              </div>
+              <div className="modal-section">
                 <div className="modal-label">カテゴリ</div>
                 <div className="modal-tags">
-                  <div className="modal-tag">{techniques[selectedTechnique].category}</div>
+                  <div className="modal-tag">{techniques[selectedTechnique].icon} {techniques[selectedTechnique].category}</div>
+                </div>
+              </div>
+              <div className="modal-section">
+                <div className="modal-label">タイプ</div>
+                <div className="modal-tags">
+                  <div className="modal-tag">{techniques[selectedTechnique].techniqueTypeLabel}</div>
+                </div>
+              </div>
+              <div className="modal-section">
+                <div className="modal-label">習得レベル</div>
+                <div className="modal-info">
+                  <span className={`mastery-badge mastery-${techniques[selectedTechnique].masteryLevel}`}>
+                    {techniques[selectedTechnique].masteryLevelLabel}
+                  </span>
                 </div>
               </div>
               <div className="modal-section">
                 <div className="modal-label">説明</div>
-                <div className="modal-info">
-                  {techniques[selectedTechnique].description}
-                </div>
+                <div className="modal-info">{techniques[selectedTechnique].description}</div>
               </div>
               <div className="modal-section">
                 <div className="modal-label">キーポイント</div>
                 <div className="modal-info" style={{ whiteSpace: 'pre-line' }}>
                   {techniques[selectedTechnique].keyPoints}
+                </div>
+              </div>
+              <div className="modal-section">
+                <div className="modal-label">タグ</div>
+                <div className="modal-tags">
+                  {techniques[selectedTechnique].tags.map((tag, i) => (
+                    <div key={i} className="modal-tag">{tag}</div>
+                  ))}
                 </div>
               </div>
               <div className="modal-section">
