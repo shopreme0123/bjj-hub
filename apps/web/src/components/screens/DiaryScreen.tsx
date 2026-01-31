@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, ChevronLeft, ChevronRight, Clock, X, GitBranch, BookOpen, Trash2, Pencil, Loader2 } from 'lucide-react';
+import { Plus, ChevronLeft, ChevronRight, Clock, X, GitBranch, BookOpen, Trash2, Pencil, Loader2, Video, Play } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isToday, getDay, addMonths, subMonths } from 'date-fns';
 import { ja, enUS, ptBR } from 'date-fns/locale';
 import { useApp } from '@/lib/context';
@@ -10,6 +10,8 @@ import { useToast } from '@/components/ui/Toast';
 import { Card } from '@/components/ui/Card';
 import { Header, IconButton } from '@/components/ui/Header';
 import { TrainingLog, Technique, Flow } from '@/types';
+import { AddTrainingModal } from './diary/modals/AddTrainingModal';
+import { EditLogModal } from './diary/modals/EditLogModal';
 
 // 時間を「HH:mm」形式に変換（秒を除去）
 const formatTime = (time: string | null | undefined): string => {
@@ -660,6 +662,31 @@ export function DiaryDetailScreen({ log, onBack, onOpenTechnique, onOpenFlow }: 
           <Card>
             <h3 className="text-sm mb-2" style={{ color: theme.textSecondary }}>気づき・メモ</h3>
             <p className="leading-relaxed" style={{ color: theme.text }}>{currentLog.notes}</p>
+          </Card>
+        )}
+
+        {/* 動画（iOS版に準拠） */}
+        {currentLog.video_urls && currentLog.video_urls.length > 0 && (
+          <Card>
+            <h3 className="text-sm mb-3" style={{ color: theme.textSecondary }}>
+              練習動画（{currentLog.video_urls.length}件）
+            </h3>
+            <div className="space-y-2">
+              {currentLog.video_urls.map((url, index) => (
+                <div
+                  key={index}
+                  className="rounded-xl overflow-hidden"
+                  style={{ background: theme.cardBorder }}
+                >
+                  <video
+                    src={url}
+                    controls
+                    className="w-full"
+                    style={{ maxHeight: '200px', objectFit: 'contain' }}
+                  />
+                </div>
+              ))}
+            </div>
           </Card>
         )}
 

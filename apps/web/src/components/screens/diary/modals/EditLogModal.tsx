@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { X, Loader2 } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { X, Loader2, Video, Plus, Trash2 } from 'lucide-react';
 import { TrainingLog } from '@/types';
 
 interface EditLogModalProps {
@@ -10,6 +10,8 @@ interface EditLogModalProps {
   onClose: () => void;
   onSave: (updates: Partial<TrainingLog>) => Promise<void>;
 }
+
+const MAX_VIDEOS = 10; // iOS版に準拠
 
 export function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps) {
   const [date, setDate] = useState(log.training_date);
@@ -20,6 +22,38 @@ export function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps)
   const [sparringRounds, setSparringRounds] = useState(log.sparring_rounds?.toString() || '');
   const [condition, setCondition] = useState(log.condition || 3);
   const [saving, setSaving] = useState(false);
+  const [videos, setVideos] = useState<{ url: string; name: string }[]>(
+    (log.video_urls || []).map((url, i) => ({ url, name: `動画 ${i + 1}` }))
+  );
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleVideoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const remainingSlots = MAX_VIDEOS - videos.length;
+    const filesToAdd = Array.from(files).slice(0, remainingSlots);
+
+    const newVideos = filesToAdd.map(file => ({
+      url: URL.createObjectURL(file),
+      name: file.name,
+    }));
+
+    setVideos(prev => [...prev, ...newVideos]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const removeVideo = (index: number) => {
+    setVideos(prev => {
+      const video = prev[index];
+      if (video.url.startsWith('blob:')) {
+        URL.revokeObjectURL(video.url);
+      }
+      return prev.filter((_, i) => i !== index);
+    });
+  };
 
   const calculateDuration = () => {
     const [startH, startM] = startTime.split(':').map(Number);
@@ -43,6 +77,7 @@ export function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps)
       notes: notes || undefined,
       condition,
       sparring_rounds: sparringRounds ? parseInt(sparringRounds) : undefined,
+      video_urls: videos.length > 0 ? videos.map(v => v.url) : undefined,
     });
     setSaving(false);
   };
@@ -174,6 +209,57 @@ export function EditLogModal({ theme, log, onClose, onSave }: EditLogModalProps)
               className="w-full rounded-lg px-3 py-2 outline-none border focus:border-blue-500 resize-none text-sm"
               style={{ background: theme.card, color: theme.text, borderColor: theme.cardBorder }}
             />
+          </div>
+
+          {/* 動画（iOS版に準拠：最大10件） */}
+          <div>
+            <label className="text-xs mb-1 block" style={{ color: theme.textSecondary }}>
+              練習動画（{videos.length}/{MAX_VIDEOS}）
+            </label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="video/*"
+              multiple
+              onChange={handleVideoSelect}
+              className="hidden"
+            />
+
+            {/* 動画リスト */}
+            {videos.length > 0 && (
+              <div className="space-y-2 mb-2">
+                {videos.map((video, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-2 p-2 rounded-lg"
+                    style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}
+                  >
+                    <Video size={18} style={{ color: theme.primary }} />
+                    <span className="flex-1 text-xs truncate" style={{ color: theme.text }}>
+                      {video.name}
+                    </span>
+                    <button
+                      onClick={() => removeVideo(index)}
+                      className="p-1 rounded hover:bg-red-100"
+                    >
+                      <Trash2 size={14} className="text-red-500" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* 追加ボタン */}
+            {videos.length < MAX_VIDEOS && (
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full py-2 rounded-lg border-2 border-dashed flex items-center justify-center gap-2 transition-colors hover:border-blue-400"
+                style={{ borderColor: theme.cardBorder, color: theme.textSecondary }}
+              >
+                <Plus size={16} />
+                <span className="text-sm">動画を追加</span>
+              </button>
+            )}
           </div>
 
           {/* 保存ボタン */}

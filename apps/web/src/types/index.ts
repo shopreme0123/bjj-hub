@@ -31,7 +31,7 @@ export type TechniqueType = 'sweep' | 'pass' | 'submission' | 'escape' | 'takedo
 // 習得レベル
 export type MasteryLevel = 'learning' | 'learned' | 'favorite';
 
-// 技
+// 技（iOS版Techniqueに準拠）
 export interface Technique {
   id: string;
   user_id: string;
@@ -41,8 +41,9 @@ export interface Technique {
   category?: string; // カテゴリID（ローカル用）
   technique_type: TechniqueType;
   description?: string;
-  video_url?: string;
+  video_url?: string; // YouTube URL
   video_type: 'youtube' | 'uploaded';
+  video_urls?: string[]; // ローカル動画URL（複数対応）iOS版に準拠
   tags: string[];
   difficulty?: 'beginner' | 'intermediate' | 'advanced';
   mastery_level: MasteryLevel;
@@ -89,7 +90,16 @@ export interface FlowEdge {
   created_at: string;
 }
 
-// 練習日記
+// ビデオ情報（iOS版に準拠）
+export interface VideoInfo {
+  id: string;
+  url: string; // ローカルBlob URLまたはアップロードURL
+  title?: string;
+  thumbnail?: string;
+  duration?: number; // 秒
+}
+
+// 練習日記（iOS版TrainingLogに準拠）
 export interface TrainingLog {
   id: string;
   user_id: string;
@@ -101,6 +111,7 @@ export interface TrainingLog {
   notes?: string;
   condition?: number;
   sparring_rounds?: number;
+  video_urls?: string[]; // 動画URL（最大10件）iOS版に準拠
   created_at: string;
   updated_at: string;
   techniques?: Technique[];
