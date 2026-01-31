@@ -97,8 +97,55 @@ const beltThemes: Record<BeltColor, BeltTheme> = {
 
 export default function RootPage() {
   const [currentBelt, setCurrentBelt] = useState<BeltColor>('blue');
-  const [showDiaryModal, setShowDiaryModal] = useState(false);
-  const [showTechniqueModal, setShowTechniqueModal] = useState(false);
+  const [selectedDiary, setSelectedDiary] = useState<number | null>(null);
+  const [selectedTechnique, setSelectedTechnique] = useState<number | null>(null);
+
+  const diaryEntries = [
+    {
+      day: '07',
+      month: '1月',
+      title: 'スパーリング練習',
+      meta: '90分 · 技術向上',
+      fullDate: '2026年1月7日',
+      duration: '90分',
+      tags: ['技術向上', 'スパーリング'],
+      memo: '今日はガードからのスイープを重点的に練習。相手の重心移動を感じ取るタイミングが少しずつ掴めてきた。次回はパスガード対策も意識したい。',
+    },
+    {
+      day: '04',
+      month: '1月',
+      title: '基本練習',
+      meta: '60分 · 復習',
+      fullDate: '2026年1月4日',
+      duration: '60分',
+      tags: ['復習', '基本練習'],
+      memo: 'エビやブリッジなどの基本動作を復習。地味だけど大切な練習。足回しの動きがスムーズになってきた気がする。',
+    },
+  ];
+
+  const techniques = [
+    {
+      icon: '🛡️',
+      name: 'クローズドガード',
+      category: 'ガード',
+      description: '相手を両脚で挟み込み、コントロールする基本的なガードポジション。攻撃と守備の両方で使える重要な技術。',
+      keyPoints: '• 足首をしっかりロック\n• 腰を使って相手を引き寄せる\n• 姿勢を崩してコントロール',
+    },
+    {
+      icon: '🔄',
+      name: 'シザースイープ',
+      category: 'スイープ',
+      description: '相手の片足を刈り、ハサミの動きで相手を転がすスイープ技。タイミングと体重移動がポイント。',
+      keyPoints: '• 相手のバランスを崩す\n• 足でハサミのように刈る\n• 上半身で方向をコントロール',
+    },
+    {
+      icon: '⚔️',
+      name: 'アームバー',
+      category: 'サブミッション',
+      description: '相手の腕を両脚で固定し、肘関節を極める技。マウントやガードから狙える万能技。',
+      keyPoints: '• 腕をしっかりグリップ\n• 膝で相手の頭をブロック\n• 腰を上げて極める',
+    },
+  ];
 
   useEffect(() => {
     try {
@@ -271,6 +318,7 @@ export default function RootPage() {
           font-size: 0.9rem;
           box-shadow: 0 8px 20px var(--glow);
           transition: all 0.2s ease;
+          white-space: nowrap;
         }
 
         .cta:hover {
@@ -1235,28 +1283,19 @@ export default function RootPage() {
               </div>
             </div>
             <div className="diary-entries">
-              <div className="diary-entry" onClick={() => setShowDiaryModal(true)}>
-                <div className="entry-date">
-                  <div className="entry-day">07</div>
-                  <div className="entry-month">1月</div>
+              {diaryEntries.map((entry, index) => (
+                <div key={index} className="diary-entry" onClick={() => setSelectedDiary(index)}>
+                  <div className="entry-date">
+                    <div className="entry-day">{entry.day}</div>
+                    <div className="entry-month">{entry.month}</div>
+                  </div>
+                  <div className="entry-content">
+                    <div className="entry-title">{entry.title}</div>
+                    <div className="entry-meta">{entry.meta}</div>
+                  </div>
+                  <div className="entry-arrow">›</div>
                 </div>
-                <div className="entry-content">
-                  <div className="entry-title">スパーリング練習</div>
-                  <div className="entry-meta">90分 · 技術向上</div>
-                </div>
-                <div className="entry-arrow">›</div>
-              </div>
-              <div className="diary-entry" onClick={() => setShowDiaryModal(true)}>
-                <div className="entry-date">
-                  <div className="entry-day">04</div>
-                  <div className="entry-month">1月</div>
-                </div>
-                <div className="entry-content">
-                  <div className="entry-title">基本練習</div>
-                  <div className="entry-meta">60分 · 復習</div>
-                </div>
-                <div className="entry-arrow">›</div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -1294,39 +1333,19 @@ export default function RootPage() {
             </div>
           </div>
           <div className="technique-cards-container">
-            <div className="technique-card technique-card-1" onClick={() => setShowTechniqueModal(true)}>
-              <div className="technique-icon">🛡️</div>
-              <div className="technique-content">
-                <div className="technique-name">クローズドガード</div>
-                <div className="technique-badge">
-                  <span className="badge-dot"></span>
-                  <span>ガード</span>
+            {techniques.map((technique, index) => (
+              <div key={index} className={`technique-card technique-card-${index + 1}`} onClick={() => setSelectedTechnique(index)}>
+                <div className="technique-icon">{technique.icon}</div>
+                <div className="technique-content">
+                  <div className="technique-name">{technique.name}</div>
+                  <div className="technique-badge">
+                    <span className="badge-dot"></span>
+                    <span>{technique.category}</span>
+                  </div>
                 </div>
+                <div className="technique-arrow">›</div>
               </div>
-              <div className="technique-arrow">›</div>
-            </div>
-            <div className="technique-card technique-card-2" onClick={() => setShowTechniqueModal(true)}>
-              <div className="technique-icon">🔄</div>
-              <div className="technique-content">
-                <div className="technique-name">シザースイープ</div>
-                <div className="technique-badge">
-                  <span className="badge-dot"></span>
-                  <span>スイープ</span>
-                </div>
-              </div>
-              <div className="technique-arrow">›</div>
-            </div>
-            <div className="technique-card technique-card-3" onClick={() => setShowTechniqueModal(true)}>
-              <div className="technique-icon">⚔️</div>
-              <div className="technique-content">
-                <div className="technique-name">アームバー</div>
-                <div className="technique-badge">
-                  <span className="badge-dot"></span>
-                  <span>サブミッション</span>
-                </div>
-              </div>
-              <div className="technique-arrow">›</div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -1384,33 +1403,34 @@ export default function RootPage() {
         <p>© 2026 Your BJJ. All rights reserved.</p>
       </footer>
 
-      {showDiaryModal && (
-        <div className="modal-overlay" onClick={() => setShowDiaryModal(false)}>
+      {selectedDiary !== null && (
+        <div className="modal-overlay" onClick={() => setSelectedDiary(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>スパーリング練習</h3>
-              <button className="modal-close" onClick={() => setShowDiaryModal(false)}>×</button>
+              <h3>{diaryEntries[selectedDiary].title}</h3>
+              <button className="modal-close" onClick={() => setSelectedDiary(null)}>×</button>
             </div>
             <div className="modal-body">
               <div className="modal-section">
                 <div className="modal-label">日付</div>
-                <div className="modal-info">2026年1月7日</div>
+                <div className="modal-info">{diaryEntries[selectedDiary].fullDate}</div>
               </div>
               <div className="modal-section">
                 <div className="modal-label">時間</div>
-                <div className="modal-info">90分</div>
+                <div className="modal-info">{diaryEntries[selectedDiary].duration}</div>
               </div>
               <div className="modal-section">
                 <div className="modal-label">目的</div>
                 <div className="modal-tags">
-                  <div className="modal-tag">技術向上</div>
-                  <div className="modal-tag">スパーリング</div>
+                  {diaryEntries[selectedDiary].tags.map((tag, i) => (
+                    <div key={i} className="modal-tag">{tag}</div>
+                  ))}
                 </div>
               </div>
               <div className="modal-section">
                 <div className="modal-label">メモ</div>
                 <div className="modal-info">
-                  今日はガードからのスイープを重点的に練習。相手の重心移動を感じ取るタイミングが少しずつ掴めてきた。次回はパスガード対策も意識したい。
+                  {diaryEntries[selectedDiary].memo}
                 </div>
               </div>
               <div className="modal-section">
@@ -1427,32 +1447,30 @@ export default function RootPage() {
         </div>
       )}
 
-      {showTechniqueModal && (
-        <div className="modal-overlay" onClick={() => setShowTechniqueModal(false)}>
+      {selectedTechnique !== null && (
+        <div className="modal-overlay" onClick={() => setSelectedTechnique(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>クローズドガード</h3>
-              <button className="modal-close" onClick={() => setShowTechniqueModal(false)}>×</button>
+              <h3>{techniques[selectedTechnique].name}</h3>
+              <button className="modal-close" onClick={() => setSelectedTechnique(null)}>×</button>
             </div>
             <div className="modal-body">
               <div className="modal-section">
                 <div className="modal-label">カテゴリ</div>
                 <div className="modal-tags">
-                  <div className="modal-tag">ガード</div>
+                  <div className="modal-tag">{techniques[selectedTechnique].category}</div>
                 </div>
               </div>
               <div className="modal-section">
                 <div className="modal-label">説明</div>
                 <div className="modal-info">
-                  相手を両脚で挟み込み、コントロールする基本的なガードポジション。攻撃と守備の両方で使える重要な技術。
+                  {techniques[selectedTechnique].description}
                 </div>
               </div>
               <div className="modal-section">
                 <div className="modal-label">キーポイント</div>
-                <div className="modal-info">
-                  • 足首をしっかりロック<br />
-                  • 腰を使って相手を引き寄せる<br />
-                  • 姿勢を崩してコントロール
+                <div className="modal-info" style={{ whiteSpace: 'pre-line' }}>
+                  {techniques[selectedTechnique].keyPoints}
                 </div>
               </div>
               <div className="modal-section">
