@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Your BJJ</string>
+
+    <!-- Tab Labels -->
+    <string name="tab_diary">Diary</string>
+    <string name="tab_techniques">Techniques</string>
+    <string name="tab_settings">Settings</string>
+
+    <!-- Diary Screen -->
+    <string name="diary_title">Training Diary</string>
+    <string name="diary_empty">No diary entries yet</string>
+    <string name="diary_add">Add entry</string>
+    <string name="diary_condition">Condition</string>
+    <string name="diary_sparring_rounds">Sparring</string>
+    <string name="diary_content">Training content</string>
+    <string name="diary_notes">Notes</string>
+    <string name="diary_techniques_learned">Techniques learned</string>
+    <string name="diary_duration">Duration</string>
+
+    <!-- Techniques Screen -->
+    <string name="techniques_title">Technique Library</string>
+    <string name="techniques_empty">No techniques registered yet</string>
+    <string name="techniques_add">Add technique</string>
+    <string name="technique_category">Category</string>
+    <string name="technique_type">Type</string>
+    <string name="technique_description">Description</string>
+    <string name="technique_key_points">Key points</string>
+    <string name="technique_reference_videos">Reference videos</string>
+    <string name="technique_device_videos">Device videos</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_belt">Belt color</string>
+    <string name="settings_stripes">Stripes</string>
+    <string name="settings_backup">Backup</string>
+    <string name="settings_restore">Restore</string>
+    <string name="settings_premium">Premium</string>
+    <string name="settings_privacy_policy">Privacy Policy</string>
+    <string name="settings_terms">Terms of Service</string>
+    <string name="settings_version">Version</string>
+
+    <!-- Belt Colors -->
+    <string name="belt_white">White Belt</string>
+    <string name="belt_blue">Blue Belt</string>
+    <string name="belt_purple">Purple Belt</string>
+    <string name="belt_brown">Brown Belt</string>
+    <string name="belt_black">Black Belt</string>
+
+    <!-- Categories -->
+    <string name="category_guard">Guard (Bottom)</string>
+    <string name="category_top">Top Position</string>
+    <string name="category_stand">Standing</string>
+    <string name="category_leglock">Leg Lock</string>
+    <string name="category_turtle">Turtle</string>
+    <string name="category_back">Back</string>
+
+    <!-- Technique Types -->
+    <string name="type_guard">Guard</string>
+    <string name="type_sweep">Sweep</string>
+    <string name="type_submission">Submission</string>
+    <string name="type_pass">Pass</string>
+    <string name="type_escape">Escape</string>
+    <string name="type_takedown">Takedown</string>
+
+    <!-- Common -->
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="close">Close</string>
+    <string name="confirm">Confirm</string>
+</resources>

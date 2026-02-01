@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Your BJJ</string>
+
+    <!-- Tab Labels -->
+    <string name="tab_diary">日記</string>
+    <string name="tab_techniques">技</string>
+    <string name="tab_settings">設定</string>
+
+    <!-- Diary Screen -->
+    <string name="diary_title">練習日記</string>
+    <string name="diary_empty">まだ日記がありません</string>
+    <string name="diary_add">日記を追加</string>
+    <string name="diary_condition">コンディション</string>
+    <string name="diary_sparring_rounds">スパーリング</string>
+    <string name="diary_content">練習内容</string>
+    <string name="diary_notes">メモ</string>
+    <string name="diary_techniques_learned">習った技</string>
+    <string name="diary_duration">時間</string>
+
+    <!-- Techniques Screen -->
+    <string name="techniques_title">技ライブラリ</string>
+    <string name="techniques_empty">まだ技が登録されていません</string>
+    <string name="techniques_add">技を追加</string>
+    <string name="technique_category">カテゴリ</string>
+    <string name="technique_type">タイプ</string>
+    <string name="technique_description">説明</string>
+    <string name="technique_key_points">キーポイント</string>
+    <string name="technique_reference_videos">参考動画</string>
+    <string name="technique_device_videos">端末の動画</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">設定</string>
+    <string name="settings_belt">帯色</string>
+    <string name="settings_stripes">帯の本数</string>
+    <string name="settings_backup">バックアップ</string>
+    <string name="settings_restore">復元</string>
+    <string name="settings_premium">プレミアム</string>
+    <string name="settings_privacy_policy">プライバシーポリシー</string>
+    <string name="settings_terms">利用規約</string>
+    <string name="settings_version">バージョン</string>
+
+    <!-- Belt Colors -->
+    <string name="belt_white">白帯</string>
+    <string name="belt_blue">青帯</string>
+    <string name="belt_purple">紫帯</string>
+    <string name="belt_brown">茶帯</string>
+    <string name="belt_black">黒帯</string>
+
+    <!-- Categories -->
+    <string name="category_guard">ガード（ボトム）</string>
+    <string name="category_top">トップポジション</string>
+    <string name="category_stand">スタンド</string>
+    <string name="category_leglock">レッグロック</string>
+    <string name="category_turtle">タートル</string>
+    <string name="category_back">バック</string>
+
+    <!-- Technique Types -->
+    <string name="type_guard">ガード</string>
+    <string name="type_sweep">スイープ</string>
+    <string name="type_submission">サブミッション</string>
+    <string name="type_pass">パス</string>
+    <string name="type_escape">エスケープ</string>
+    <string name="type_takedown">テイクダウン</string>
+
+    <!-- Common -->
+    <string name="save">保存</string>
+    <string name="cancel">キャンセル</string>
+    <string name="delete">削除</string>
+    <string name="edit">編集</string>
+    <string name="close">閉じる</string>
+    <string name="confirm">確認</string>
+</resources>
