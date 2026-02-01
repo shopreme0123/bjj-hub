@@ -1281,7 +1281,7 @@ export default function RootPage() {
             <li><a href="#techniques">技</a></li>
             <li><a href="#theme">ベルトテーマ</a></li>
           </ul>
-          <Link href="/home" className="cta">今すぐ使う</Link>
+          <a href="#download" className="cta">今すぐ使う</a>
         </div>
       </header>
 
@@ -1290,14 +1290,14 @@ export default function RootPage() {
           <p style={{ color: 'var(--muted)', fontSize: '0.9rem', letterSpacing: '0.2em' }}>IOS FIRST</p>
           <h1 className="hero-title">
             毎日の練習を<br />
-            <span>記録と技で強くする。</span>
+            <span>効率的に記録する。</span>
           </h1>
           <p className="hero-text">
             Your BJJは、柔術家のための練習日記と技ライブラリに特化したトレーニングアプリ。
             練習の「量」と「質」を見える化し、次の一手を明確にします。
           </p>
           <div className="hero-actions">
-            <Link href="/home" className="cta">アプリを開く</Link>
+            <a href="#download" className="cta">アプリを開く</a>
             <a href="#features" className="ghost">機能を知る</a>
           </div>
         </div>
@@ -1507,19 +1507,16 @@ export default function RootPage() {
         </div>
       </section>
 
-      <section className="section cta-section">
+      <section id="download" className="section cta-section">
         <h2 className="section-title">記録は、最速の強化。</h2>
         <p className="section-desc" style={{ margin: '0 auto' }}>
           今日の練習から始めよう。Your BJJで「続く仕組み」を。
         </p>
-        <div className="hero-actions" style={{ justifyContent: 'center' }}>
-          <Link href="/home" className="cta">今すぐ使う</Link>
-          <a href="#features" className="ghost">特徴を見る</a>
-        </div>
         <div className="ios-cta">
           <div className="ios-badge">iOSアプリ：近日公開</div>
+          <div className="ios-badge">Androidアプリ：近日公開</div>
         </div>
-        <div className="ios-note">リリース次第、App Store導線を追加します。</div>
+        <div className="ios-note">リリース次第、App Store・Google Play導線を追加します。</div>
       </section>
 
       <footer className="footer">
