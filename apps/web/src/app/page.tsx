@@ -480,6 +480,7 @@ export default function RootPage() {
           max-width: 1120px;
           margin: 0 auto;
           padding: 4.5rem 1.5rem;
+          scroll-margin-top: 80px;
         }
 
         .section-title {
@@ -1463,7 +1464,6 @@ export default function RootPage() {
                       <span className="badge-dot"></span>
                       <span>{technique.techniqueTypeLabel}</span>
                     </div>
-                    <span className={`mastery-indicator mastery-${technique.masteryLevel}`}>{technique.masteryLevelLabel}</span>
                   </div>
                 </div>
                 <div className="technique-arrow">›</div>
@@ -1582,7 +1582,7 @@ export default function RootPage() {
                 <div className="modal-video">
                   <div>
                     <div className="modal-video-icon">🎥</div>
-                    <div>練習動画を登録可能（最大10件）</div>
+                    <div>YouTube等の動画URLと端末の動画を保存可能（最大10件）</div>
                   </div>
                 </div>
               </div>
@@ -1616,14 +1616,6 @@ export default function RootPage() {
                 </div>
               </div>
               <div className="modal-section">
-                <div className="modal-label">習得レベル</div>
-                <div className="modal-info">
-                  <span className={`mastery-badge mastery-${techniques[selectedTechnique].masteryLevel}`}>
-                    {techniques[selectedTechnique].masteryLevelLabel}
-                  </span>
-                </div>
-              </div>
-              <div className="modal-section">
                 <div className="modal-label">説明</div>
                 <div className="modal-info">{techniques[selectedTechnique].description}</div>
               </div>
@@ -1634,19 +1626,20 @@ export default function RootPage() {
                 </div>
               </div>
               <div className="modal-section">
-                <div className="modal-label">タグ</div>
-                <div className="modal-tags">
-                  {techniques[selectedTechnique].tags.map((tag, i) => (
-                    <div key={i} className="modal-tag">{tag}</div>
-                  ))}
-                </div>
-              </div>
-              <div className="modal-section">
                 <div className="modal-label">参考動画</div>
                 <div className="modal-video">
                   <div>
                     <div className="modal-video-icon">🎥</div>
-                    <div>YouTube等の動画URLを保存可能</div>
+                    <div>YouTube等の動画URLと端末の動画を保存可能</div>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-section">
+                <div className="modal-label">端末の動画</div>
+                <div className="modal-video">
+                  <div>
+                    <div className="modal-video-icon">📱</div>
+                    <div>自分で撮影した動画を保存可能</div>
                   </div>
                 </div>
               </div>
