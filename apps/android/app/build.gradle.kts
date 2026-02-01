@@ -24,7 +24,7 @@ android {
 
         // Supabase configuration
         buildConfigField("String", "SUPABASE_URL", "\"https://hizjdfztqofmrivexzpy.supabase.co\"")
-        buildConfigField("String", "SUPABASE_ANON_KEY", "\"YOUR_ANON_KEY_HERE\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpempkZnp0cW9mbXJpdmV4enB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyMTI0NDEsImV4cCI6MjA4Mjc4ODQ0MX0.HJmd4GtnPSa1W6lCo68krs5LyeFvJa3mAM198vMfH0k\"")
     }
 
     buildTypes {
